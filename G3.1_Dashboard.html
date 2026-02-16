@@ -121,6 +121,16 @@
   .callout.info { background: var(--blue-bg); border-color: var(--blue); }
   .callout.info h3 { color: var(--blue); }
 
+  /* Explainer key */
+  .key-box { background: var(--gray-light); border: 1px solid var(--gray-border); border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+  .key-box h3 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+  .key-grid { display: grid; gap: 10px; }
+  .key-grid.two-col { grid-template-columns: 1fr 1fr; }
+  .key-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; }
+  .key-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 3px; margin-top: 4px; }
+  .key-label { font-weight: 700; }
+  .key-desc { color: var(--gray); }
+
   @media (max-width: 768px) {
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .comparison-section { grid-template-columns: 1fr; }
@@ -240,6 +250,30 @@
     </div>
   </div>
 
+  <!-- Complexity Level Key -->
+  <div class="key-box">
+    <h3>What Do the Complexity Levels Mean?</h3>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:12px;">From Achieve's <em>Framework to Evaluate the Cognitive Complexity of Science Assessment Tasks</em> (2019). Each question is classified based on how students are expected to think.</p>
+    <div class="key-grid two-col">
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--red);"></div>
+        <div><span class="key-label" style="color:var(--red);">Scripted (Recall)</span><br><span class="key-desc">Student recalls a fact, definition, or formula. No reasoning required. Example: "What is the function of a root?" These are DOK Level 1 tasks. Achieve says NGSS-aligned tests should have <strong>0%</strong> of these.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--yellow);"></div>
+        <div><span class="key-label" style="color:var(--yellow);">Low Guided (Application)</span><br><span class="key-desc">Student applies a known concept to a familiar scenario. Some reasoning, but the path is clear. Example: "A cart is heavy. Which action makes it easier to move?" Target: 40-50% of assessment.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--blue);"></div>
+        <div><span class="key-label" style="color:var(--blue);">High Guided (Transfer)</span><br><span class="key-desc">Student applies understanding to a new or unfamiliar situation. Must integrate multiple ideas and make sense of data or evidence. Example: "Given this data table, which claim about magnet strength is best supported?" Target: 20-30%.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--green);"></div>
+        <div><span class="key-label" style="color:var(--green);">Doing Science (Authentic)</span><br><span class="key-desc">Student engages in genuine scientific reasoning — analyzing novel data, constructing explanations, designing investigations. No single "right path." Example: "A population of mice changed color over 10 years. Use the evidence to explain why." Target: 5-10%.</span></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Gap Analysis -->
   <div class="card">
     <h2>Gap Analysis: Actual vs. Target</h2>
@@ -297,18 +331,18 @@
       <div style="background:transparent;border:none;box-shadow:none;padding:0;">
         <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Actual Content Distribution</div>
         <div class="stacked-bar">
-          <div class="stacked-segment" style="width:53.3%;background:#27ae60;">53% LS</div>
-          <div class="stacked-segment" style="width:23.3%;background:#2980b9;">23% PS</div>
-          <div class="stacked-segment" style="width:13.3%;background:#d4a017;">13% ESS</div>
+          <div class="stacked-segment" style="width:53.3%;background:#16a085;">53% LS</div>
+          <div class="stacked-segment" style="width:23.3%;background:#5b6abf;">23% PS</div>
+          <div class="stacked-segment" style="width:13.3%;background:#d35400;">13% ESS</div>
           <div class="stacked-segment" style="width:10%;background:#8e44ad;">10% ETS</div>
         </div>
       </div>
       <div style="background:transparent;border:none;box-shadow:none;padding:0;">
         <div style="font-size:13px;font-weight:600;margin-bottom:6px;">NGSS Expected (by PE Count)</div>
         <div class="stacked-bar">
-          <div class="stacked-segment" style="width:44.4%;background:#27ae60;">44% LS</div>
-          <div class="stacked-segment" style="width:22.2%;background:#2980b9;">22% PS</div>
-          <div class="stacked-segment" style="width:16.7%;background:#d4a017;">17% ESS</div>
+          <div class="stacked-segment" style="width:44.4%;background:#16a085;">44% LS</div>
+          <div class="stacked-segment" style="width:22.2%;background:#5b6abf;">22% PS</div>
+          <div class="stacked-segment" style="width:16.7%;background:#d35400;">17% ESS</div>
           <div class="stacked-segment" style="width:16.7%;background:#8e44ad;">17% ETS</div>
         </div>
       </div>
@@ -317,9 +351,9 @@
     <!-- Domain legend -->
     <div style="text-align:center; margin-bottom:20px;">
       <div class="legend" style="justify-content:center;">
-        <div class="legend-item"><div class="legend-dot" style="background:#27ae60"></div>Life Science (LS)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>Physical Science (PS)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d4a017"></div>Earth & Space Science (ESS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a085"></div>Life Science (LS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5b6abf"></div>Physical Science (PS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d35400"></div>Earth & Space Science (ESS)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div>Engineering & Technology (ETS)</div>
       </div>
     </div>
@@ -332,27 +366,27 @@
       <div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div>
     </div>
     <div class="gap-row">
-      <div class="gap-label" style="color:#27ae60;">Life Science</div>
+      <div class="gap-label" style="color:#16a085;">Life Science</div>
       <div class="gap-bar-container">
-        <div class="gap-bar-actual" style="width:88.8%; background:#27ae60;border-radius:6px;"></div>
+        <div class="gap-bar-actual" style="width:88.8%; background:#16a085;border-radius:6px;"></div>
         <div class="gap-bar-target" style="left:72%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
         <div style="position:absolute;top:-14px;left:74%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 44%</div>
       </div>
       <div class="gap-delta over">+9% over</div>
     </div>
     <div class="gap-row">
-      <div class="gap-label" style="color:#2980b9;">Physical Sci</div>
+      <div class="gap-label" style="color:#5b6abf;">Physical Sci</div>
       <div class="gap-bar-container">
-        <div class="gap-bar-actual" style="width:38.8%; background:#2980b9;border-radius:6px;"></div>
+        <div class="gap-bar-actual" style="width:38.8%; background:#5b6abf;border-radius:6px;"></div>
         <div class="gap-bar-target" style="left:35%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
         <div style="position:absolute;top:-14px;left:37%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 22%</div>
       </div>
       <div class="gap-delta ok">+1% over</div>
     </div>
     <div class="gap-row">
-      <div class="gap-label" style="color:#d4a017;">Earth & Space</div>
+      <div class="gap-label" style="color:#d35400;">Earth & Space</div>
       <div class="gap-bar-container">
-        <div class="gap-bar-actual" style="width:22.2%; background:#d4a017;border-radius:6px;"></div>
+        <div class="gap-bar-actual" style="width:22.2%; background:#d35400;border-radius:6px;"></div>
         <div class="gap-bar-target" style="left:25.8%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
         <div style="position:absolute;top:-14px;left:27.8%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 17%</div>
       </div>
@@ -370,21 +404,21 @@
 
     <!-- Domain detail counts -->
     <div style="margin-top:16px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
-      <div style="text-align:center; padding:12px; border-radius:8px; background:#eafaf1; border:1px solid #27ae60;">
-        <div style="font-size:11px; font-weight:600; color:#27ae60; margin-bottom:2px;">LIFE SCIENCE</div>
-        <div style="font-size:20px; font-weight:800; color:#27ae60;">16</div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#e8f6f3; border:1px solid #16a085;">
+        <div style="font-size:11px; font-weight:600; color:#16a085; margin-bottom:2px;">LIFE SCIENCE</div>
+        <div style="font-size:20px; font-weight:800; color:#16a085;">16</div>
         <div style="font-size:11px; color:var(--gray);">53% (target 44%)</div>
         <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q1,2,3,5,6,8,10-12,14-17,23,29,30</div>
       </div>
-      <div style="text-align:center; padding:12px; border-radius:8px; background:#ebf5fb; border:1px solid #2980b9;">
-        <div style="font-size:11px; font-weight:600; color:#2980b9; margin-bottom:2px;">PHYSICAL SCIENCE</div>
-        <div style="font-size:20px; font-weight:800; color:#2980b9;">7</div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#ecedf8; border:1px solid #5b6abf;">
+        <div style="font-size:11px; font-weight:600; color:#5b6abf; margin-bottom:2px;">PHYSICAL SCIENCE</div>
+        <div style="font-size:20px; font-weight:800; color:#5b6abf;">7</div>
         <div style="font-size:11px; color:var(--gray);">23% (target 22%)</div>
         <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q7,9,18,24,25,27,28</div>
       </div>
-      <div style="text-align:center; padding:12px; border-radius:8px; background:#fef9e7; border:1px solid #d4a017;">
-        <div style="font-size:11px; font-weight:600; color:#d4a017; margin-bottom:2px;">EARTH & SPACE</div>
-        <div style="font-size:20px; font-weight:800; color:#d4a017;">4</div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#fdf2e9; border:1px solid #d35400;">
+        <div style="font-size:11px; font-weight:600; color:#d35400; margin-bottom:2px;">EARTH & SPACE</div>
+        <div style="font-size:20px; font-weight:800; color:#d35400;">4</div>
         <div style="font-size:11px; color:var(--gray);">13% (target 17%)</div>
         <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q4,21,22,26</div>
       </div>
@@ -454,6 +488,31 @@
   <div class="card">
     <h2>Achieve Assessment Criteria Summary</h2>
     <div class="card-subtitle">Criteria for Procuring and Evaluating High-Quality Science Assessments (2018)</div>
+
+    <!-- Criteria Key -->
+    <div style="background:var(--gray-light); border:1px solid var(--gray-border); border-radius:8px; padding:16px 20px; margin-bottom:16px; font-size:13px; line-height:1.5;">
+      <div style="font-weight:700; color:var(--primary); margin-bottom:8px;">What Do These Criteria Measure?</div>
+      <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">Achieve published 7 criteria for evaluating science assessments. The 4 most relevant to individual question quality are shown below. Each question is rated: <strong style="color:var(--green);">Meets</strong>, <strong style="color:var(--yellow);">Partially Meets</strong>, or <strong style="color:var(--red);">Does Not Meet</strong>.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);">
+          <strong style="color:var(--primary);">Criterion 2: Three-Dimensional</strong><br>
+          <span style="color:var(--gray); font-size:12px;">Does the question require students to use all three NGSS dimensions together — a Science/Engineering Practice (SEP), a Disciplinary Core Idea (DCI), and a Crosscutting Concept (CCC)? A question that only tests vocabulary is <em>not</em> three-dimensional.</span>
+        </div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);">
+          <strong style="color:var(--primary);">Criterion 3: Phenomena / Problems</strong><br>
+          <span style="color:var(--gray); font-size:12px;">Is the question anchored in a real-world phenomenon (something observable that needs explaining) or an engineering problem? Students should be figuring out <em>why</em> or <em>how</em> something happens, not just recalling a definition.</span>
+        </div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);">
+          <strong style="color:var(--primary);">Criterion 5: Cognitive Complexity</strong><br>
+          <span style="color:var(--gray); font-size:12px;">Does the question require real thinking? It should go beyond recall (DOK1) and ask students to analyze, evaluate, or construct explanations. Achieve's standard: an NGSS-aligned assessment should have <strong>0% pure recall</strong> items.</span>
+        </div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);">
+          <strong style="color:var(--primary);">Criterion 6: Technical Quality</strong><br>
+          <span style="color:var(--gray); font-size:12px;">Is the question well-constructed? Scientifically accurate content, clear wording, plausible distractors (wrong answers that reveal real misconceptions), no cueing or trick phrasing. A question can be technically sound but still too simple.</span>
+        </div>
+      </div>
+    </div>
+
     <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;">
       <div style="text-align:center; padding:16px; border-radius:8px; background:var(--red-bg); border:1px solid var(--red);">
         <div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 2: Three-Dimensional</div>
@@ -547,7 +606,7 @@ const questions = [
 
 // Render table
 const tbody = document.getElementById('qTableBody');
-const domColors = {LS:'#27ae60', PS:'#2980b9', ESS:'#d4a017', ETS:'#8e44ad'};
+const domColors = {LS:'#16a085', PS:'#5b6abf', ESS:'#d35400', ETS:'#8e44ad'};
 questions.forEach(q => {
   const scoreClass = (v) => v <= 2 ? 'low' : v === 3 ? 'med' : 'high';
   const row = document.createElement('tr');
