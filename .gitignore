@@ -1,0 +1,15 @@
+# Don't push raw test PDFs or extracted images
+Science Tests/
+G3.1_images/
+*.pdf
+
+# Don't push the API proxy or evaluator tool
+server.py
+Science_Question_Evaluator.html
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc

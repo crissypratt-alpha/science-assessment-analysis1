@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G3.1 Evaluation Dashboard — Actual vs. Achieve Targets</title>
+<style>
+  :root {
+    --red: #c0392b; --red-bg: #fdecea;
+    --yellow: #d4a017; --yellow-bg: #fef9e7;
+    --blue: #2980b9; --blue-bg: #ebf5fb;
+    --green: #27ae60; --green-bg: #eafaf1;
+    --gray: #7f8c8d; --gray-light: #f5f6fa; --gray-border: #dcdde1;
+    --primary: #1a6b8a; --primary-light: #e8f4f8;
+    --text: #2c3e50; --bg: #fafbfc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
+
+  .header { background: var(--primary); color: white; padding: 20px 32px; }
+  .header h1 { font-size: 22px; }
+  .header-sub { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  /* Top stats row */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: white; border: 1px solid var(--gray-border); border-radius: 10px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat-number { font-size: 36px; font-weight: 800; line-height: 1; }
+  .stat-label { font-size: 13px; color: var(--gray); margin-top: 4px; font-weight: 500; }
+  .stat-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+  /* Section cards */
+  .card { background: white; border: 1px solid var(--gray-border); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .card h2 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+  .card-subtitle { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+
+  /* Comparison bars */
+  .comparison-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+  .comparison-chart { background: white; border: 1px solid var(--gray-border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .comparison-chart h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+
+  .bar-group { margin-bottom: 16px; }
+  .bar-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .bar-track { background: var(--gray-light); border-radius: 8px; height: 28px; position: relative; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; transition: width 0.8s ease; min-width: 32px; }
+  .bar-fill.scripted { background: var(--red); }
+  .bar-fill.low-guided { background: var(--yellow); }
+  .bar-fill.high-guided { background: var(--blue); }
+  .bar-fill.doing-science { background: var(--green); }
+  .bar-target { position: absolute; height: 100%; border-right: 3px dashed rgba(0,0,0,0.4); top: 0; z-index: 2; }
+  .bar-target-label { position: absolute; top: -16px; transform: translateX(-50%); font-size: 10px; color: var(--gray); font-weight: 600; white-space: nowrap; }
+
+  /* Stacked bar */
+  .stacked-container { margin-bottom: 12px; }
+  .stacked-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .stacked-bar { display: flex; border-radius: 8px; overflow: hidden; height: 36px; }
+  .stacked-segment { display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; transition: width 0.8s ease; }
+  .stacked-segment.scripted { background: var(--red); }
+  .stacked-segment.low-guided { background: var(--yellow); }
+  .stacked-segment.high-guided { background: var(--blue); }
+  .stacked-segment.doing-science { background: var(--green); }
+
+  .legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* Indicator radar-style display */
+  .indicator-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .indicator-card { text-align: center; padding: 16px; border: 1px solid var(--gray-border); border-radius: 10px; }
+  .indicator-name { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .indicator-ring { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 8px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .indicator-score { font-size: 24px; font-weight: 800; }
+  .indicator-max { font-size: 12px; color: var(--gray); }
+  .indicator-target { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+  /* Gap analysis */
+  .gap-row { display: grid; grid-template-columns: 140px 1fr 80px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-light); }
+  .gap-row:last-child { border-bottom: none; }
+  .gap-label { font-size: 13px; font-weight: 600; }
+  .gap-bar-container { position: relative; height: 24px; }
+  .gap-bar-actual { position: absolute; top: 0; left: 0; height: 100%; border-radius: 6px; opacity: 0.8; }
+  .gap-bar-target { position: absolute; top: 0; height: 100%; border: 2px dashed rgba(0,0,0,0.3); border-radius: 6px; background: transparent; }
+  .gap-delta { font-size: 13px; font-weight: 700; text-align: center; }
+  .gap-delta.over { color: var(--red); }
+  .gap-delta.under { color: var(--red); }
+  .gap-delta.ok { color: var(--green); }
+
+  /* Redundancy flags */
+  .flag-list { list-style: none; padding: 0; }
+  .flag-item { padding: 12px 16px; border-left: 4px solid var(--red); background: var(--red-bg); border-radius: 0 8px 8px 0; margin-bottom: 8px; font-size: 13px; }
+  .flag-item strong { color: var(--red); }
+  .flag-item.warn { border-left-color: var(--yellow); background: var(--yellow-bg); }
+  .flag-item.warn strong { color: var(--yellow); }
+
+  /* Question table */
+  .q-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .q-table th { background: var(--primary); color: white; padding: 8px 6px; text-align: left; font-size: 11px; position: sticky; top: 0; }
+  .q-table td { padding: 6px; border-bottom: 1px solid var(--gray-light); vertical-align: top; }
+  .q-table tr:hover { background: var(--primary-light); }
+  .q-table .stem-cell { max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .q-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; color: white; }
+  .q-badge.scripted { background: var(--red); }
+  .q-badge.low-guided { background: var(--yellow); }
+  .q-badge.high-guided { background: var(--blue); }
+  .q-badge.doing-science { background: var(--green); }
+  .q-badge.strong { background: var(--green); }
+  .q-badge.needs-improvement { background: var(--yellow); }
+  .q-badge.weak { background: var(--red); }
+  .score-cell { text-align: center; font-weight: 600; }
+  .score-cell.low { color: var(--red); }
+  .score-cell.med { color: var(--yellow); }
+  .score-cell.high { color: var(--green); }
+
+  .table-scroll { max-height: 600px; overflow-y: auto; border: 1px solid var(--gray-border); border-radius: 8px; }
+
+  /* DOK callout */
+  .callout { background: var(--red-bg); border: 1px solid var(--red); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .callout h3 { color: var(--red); font-size: 14px; margin-bottom: 6px; }
+  .callout p { font-size: 13px; }
+  .callout.info { background: var(--blue-bg); border-color: var(--blue); }
+  .callout.info h3 { color: var(--blue); }
+
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .comparison-section { grid-template-columns: 1fr; }
+    .indicator-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media print {
+    body { background: white; }
+    .card, .comparison-chart, .stat-card { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Assessment Quality Dashboard</h1>
+  <div class="header-sub">Alpha Standardized Science G3.1 &mdash; 30 Questions &mdash; Evaluated Against Achieve/MAP Cognitive Complexity Framework</div>
+</div>
+
+<div class="container">
+
+  <!-- Top stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--red);">60%</div>
+      <div class="stat-label">Scripted</div>
+      <div class="stat-sub">18 of 30 questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--red);">2.03</div>
+      <div class="stat-label">Avg Complexity</div>
+      <div class="stat-sub">out of 5.0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--red);">0%</div>
+      <div class="stat-label">Doing Science</div>
+      <div class="stat-sub">target: 5-10%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--green);">1</div>
+      <div class="stat-label">Strong Question</div>
+      <div class="stat-sub">Q30: mouse camouflage</div>
+    </div>
+  </div>
+
+  <!-- Achieve DOK callout -->
+  <div class="callout">
+    <h3>Achieve Standard: 0% DOK1 Items</h3>
+    <p>Achieve's criteria state that high-quality NGSS-aligned assessments should contain <strong>0% DOK Level 1 (recall) tasks</strong>. On this assessment, an estimated <strong>60% of items are at DOK1</strong> (all 18 Scripted items). This is the single largest quality gap.</p>
+  </div>
+
+  <!-- Side-by-side: Actual vs Target -->
+  <div class="comparison-section">
+    <div class="comparison-chart">
+      <h3>Actual Distribution</h3>
+      <div class="stacked-container">
+        <div class="stacked-bar">
+          <div class="stacked-segment scripted" style="width:60%">60%</div>
+          <div class="stacked-segment low-guided" style="width:37%">37%</div>
+          <div class="stacked-segment high-guided" style="width:3%"></div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Scripted</span><span>18 questions (60%)</span></div>
+        <div class="bar-track"><div class="bar-fill scripted" style="width:60%">60%</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Low Guided</span><span>11 questions (37%)</span></div>
+        <div class="bar-track"><div class="bar-fill low-guided" style="width:37%">37%</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>High Guided</span><span>1 question (3%)</span></div>
+        <div class="bar-track"><div class="bar-fill high-guided" style="width:3%"></div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Doing Science</span><span>0 questions (0%)</span></div>
+        <div class="bar-track"><div class="bar-fill doing-science" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="comparison-chart">
+      <h3>Achieve Target Distribution</h3>
+      <div class="stacked-container">
+        <div class="stacked-bar">
+          <div class="stacked-segment scripted" style="width:25%">25%</div>
+          <div class="stacked-segment low-guided" style="width:45%">45%</div>
+          <div class="stacked-segment high-guided" style="width:22%">22%</div>
+          <div class="stacked-segment doing-science" style="width:8%">8%</div>
+        </div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Scripted</span><span>target: 20-30%</span></div>
+        <div class="bar-track"><div class="bar-fill scripted" style="width:25%">25%</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Low Guided</span><span>target: 40-50%</span></div>
+        <div class="bar-track"><div class="bar-fill low-guided" style="width:45%">45%</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>High Guided</span><span>target: 20-30%</span></div>
+        <div class="bar-track"><div class="bar-fill high-guided" style="width:25%">25%</div></div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-label"><span>Doing Science</span><span>target: 5-10%</span></div>
+        <div class="bar-track"><div class="bar-fill doing-science" style="width:8%">8%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="text-align:center; margin-bottom:24px;">
+    <div class="legend" style="justify-content:center;">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Scripted (recall)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Low Guided (application)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>High Guided (transfer)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Doing Science (authentic)</div>
+    </div>
+  </div>
+
+  <!-- Gap Analysis -->
+  <div class="card">
+    <h2>Gap Analysis: Actual vs. Target</h2>
+    <div class="card-subtitle">How far the assessment is from Achieve's recommended distribution</div>
+    <div class="gap-row" style="border-bottom:none; padding-bottom:0;">
+      <div class="gap-label" style="font-size:11px; color:var(--gray);">CATEGORY</div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      <div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--red);">Scripted</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual scripted" style="width:60%; background:var(--red);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:20%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div>
+      </div>
+      <div class="gap-delta over">+35% over</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--yellow);">Low Guided</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:37%; background:var(--yellow);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:40%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:45%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 40-50%</div>
+      </div>
+      <div class="gap-delta under">-8% under</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--blue);">High Guided</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:3%; background:var(--blue);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:20%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div>
+      </div>
+      <div class="gap-delta under">-22% under</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--green);">Doing Science</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:0%; background:var(--green);border-radius:6px;min-width:2px;"></div>
+        <div class="gap-bar-target" style="left:5%; width:5%;"></div>
+        <div style="position:absolute;top:-14px;left:7.5%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 5-10%</div>
+      </div>
+      <div class="gap-delta under">-8% under</div>
+    </div>
+  </div>
+
+  <!-- Content Domain Distribution -->
+  <div class="card">
+    <h2>Content Domain Distribution: Actual vs. NGSS Expected</h2>
+    <div class="card-subtitle">Based on Grade 3 NGSS Performance Expectation counts — 18 PEs total (LS: 8, PS: 4, ESS: 3, ETS: 3)</div>
+
+    <!-- Side-by-side stacked bars -->
+    <div class="comparison-section" style="margin-bottom:8px;">
+      <div style="background:transparent;border:none;box-shadow:none;padding:0;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Actual Content Distribution</div>
+        <div class="stacked-bar">
+          <div class="stacked-segment" style="width:53.3%;background:#27ae60;">53% LS</div>
+          <div class="stacked-segment" style="width:23.3%;background:#2980b9;">23% PS</div>
+          <div class="stacked-segment" style="width:13.3%;background:#d4a017;">13% ESS</div>
+          <div class="stacked-segment" style="width:10%;background:#8e44ad;">10% ETS</div>
+        </div>
+      </div>
+      <div style="background:transparent;border:none;box-shadow:none;padding:0;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">NGSS Expected (by PE Count)</div>
+        <div class="stacked-bar">
+          <div class="stacked-segment" style="width:44.4%;background:#27ae60;">44% LS</div>
+          <div class="stacked-segment" style="width:22.2%;background:#2980b9;">22% PS</div>
+          <div class="stacked-segment" style="width:16.7%;background:#d4a017;">17% ESS</div>
+          <div class="stacked-segment" style="width:16.7%;background:#8e44ad;">17% ETS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Domain legend -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <div class="legend" style="justify-content:center;">
+        <div class="legend-item"><div class="legend-dot" style="background:#27ae60"></div>Life Science (LS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>Physical Science (PS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d4a017"></div>Earth & Space Science (ESS)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div>Engineering & Technology (ETS)</div>
+      </div>
+    </div>
+
+    <!-- Gap rows -->
+    <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;">Domain Gap Analysis</div>
+    <div class="gap-row" style="border-bottom:none; padding-bottom:0;">
+      <div class="gap-label" style="font-size:11px; color:var(--gray);">DOMAIN</div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span></div>
+      <div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:#27ae60;">Life Science</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:88.8%; background:#27ae60;border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:72%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
+        <div style="position:absolute;top:-14px;left:74%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 44%</div>
+      </div>
+      <div class="gap-delta over">+9% over</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:#2980b9;">Physical Sci</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:38.8%; background:#2980b9;border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:35%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
+        <div style="position:absolute;top:-14px;left:37%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 22%</div>
+      </div>
+      <div class="gap-delta ok">+1% over</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:#d4a017;">Earth & Space</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:22.2%; background:#d4a017;border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:25.8%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
+        <div style="position:absolute;top:-14px;left:27.8%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 17%</div>
+      </div>
+      <div class="gap-delta under">-3% under</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:#8e44ad;">Engineering</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:16.7%; background:#8e44ad;border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:25.8%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div>
+        <div style="position:absolute;top:-14px;left:27.8%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 17%</div>
+      </div>
+      <div class="gap-delta under">-7% under</div>
+    </div>
+
+    <!-- Domain detail counts -->
+    <div style="margin-top:16px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#eafaf1; border:1px solid #27ae60;">
+        <div style="font-size:11px; font-weight:600; color:#27ae60; margin-bottom:2px;">LIFE SCIENCE</div>
+        <div style="font-size:20px; font-weight:800; color:#27ae60;">16</div>
+        <div style="font-size:11px; color:var(--gray);">53% (target 44%)</div>
+        <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q1,2,3,5,6,8,10-12,14-17,23,29,30</div>
+      </div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#ebf5fb; border:1px solid #2980b9;">
+        <div style="font-size:11px; font-weight:600; color:#2980b9; margin-bottom:2px;">PHYSICAL SCIENCE</div>
+        <div style="font-size:20px; font-weight:800; color:#2980b9;">7</div>
+        <div style="font-size:11px; color:var(--gray);">23% (target 22%)</div>
+        <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q7,9,18,24,25,27,28</div>
+      </div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#fef9e7; border:1px solid #d4a017;">
+        <div style="font-size:11px; font-weight:600; color:#d4a017; margin-bottom:2px;">EARTH & SPACE</div>
+        <div style="font-size:20px; font-weight:800; color:#d4a017;">4</div>
+        <div style="font-size:11px; color:var(--gray);">13% (target 17%)</div>
+        <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q4,21,22,26</div>
+      </div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#f4ecf7; border:1px solid #8e44ad;">
+        <div style="font-size:11px; font-weight:600; color:#8e44ad; margin-bottom:2px;">ENGINEERING</div>
+        <div style="font-size:20px; font-weight:800; color:#8e44ad;">3</div>
+        <div style="font-size:11px; color:var(--gray);">10% (target 17%)</div>
+        <div style="font-size:10px; color:var(--gray); margin-top:4px;">Q13,19,20</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicator scores -->
+  <div class="card">
+    <h2>Indicator Scores (Average Across All 30 Questions)</h2>
+    <div class="card-subtitle">Achieve Cognitive Complexity Framework — Scale: 1 (Low) to 5 (High). Target for balanced assessment: ~3.0</div>
+    <div class="indicator-grid">
+      <div class="indicator-card">
+        <div class="indicator-name">Scenario</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 44%, var(--gray-light) 44% 100%);">
+          <div class="indicator-score" style="color:var(--red);">2.2</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+        <div class="indicator-target">Most questions lack a puzzling phenomenon</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">SEP (Practices)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 40%, var(--gray-light) 40% 100%);">
+          <div class="indicator-score" style="color:var(--red);">2.0</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+        <div class="indicator-target">Mostly recall — no authentic practice use</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">DCI (Core Ideas)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--yellow) 0% 45%, var(--gray-light) 45% 100%);">
+          <div class="indicator-score" style="color:var(--yellow);">2.3</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+        <div class="indicator-target">Definitions tested, rarely applied</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">CCC (Crosscutting)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 33%, var(--gray-light) 33% 100%);">
+          <div class="indicator-score" style="color:var(--red);">1.7</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+        <div class="indicator-target">Weakest — almost never engaged</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content redundancy flags -->
+  <div class="card">
+    <h2>Content Coverage Flags</h2>
+    <div class="card-subtitle">Issues with construct redundancy and topic balance</div>
+    <ul class="flag-list">
+      <li class="flag-item"><strong>CRITICAL: Inherited vs. Acquired Traits — 5 questions (Q3, Q5, Q11, Q12, Q14)</strong><br>17% of the test assesses the same construct at the same low complexity level. Achieve recommends diverse construct coverage. Remove 3-4 of these and replace with under-represented standards.</li>
+      <li class="flag-item"><strong>Duplicate: Weather vs. Climate — 2 questions (Q4, Q26)</strong><br>Both test the identical definition-level distinction. Keep one, redesign the other to require data analysis.</li>
+      <li class="flag-item"><strong>Duplicate: Fur Keeps Animals Warm — 2 questions (Q6, Q23)</strong><br>Both test structure-function at the most obvious recall level (fur = warmth). Merge or replace one.</li>
+      <li class="flag-item warn"><strong>Magnets Over-represented — 3 questions (Q18, Q25, Q27)</strong><br>Q18 is strong (data-driven). Q25 and Q27 are pure recall. Remove Q25 and Q27; Q18 alone covers the magnet standard well.</li>
+      <li class="flag-item warn"><strong>No Questions on Key Grade 3 Standards</strong><br>Missing or under-represented: 3-ESS2-1 (weather/climate data tables), 3-ESS2-2 (climate predictions), 3-ESS3-1 (natural hazard mitigation beyond one item), 3-PS2-2 (predicting motion changes). Heavy emphasis on LS3 (inheritance) at expense of PS and ESS.</li>
+    </ul>
+  </div>
+
+  <!-- Criteria assessment summary -->
+  <div class="card">
+    <h2>Achieve Assessment Criteria Summary</h2>
+    <div class="card-subtitle">Criteria for Procuring and Evaluating High-Quality Science Assessments (2018)</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;">
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--red-bg); border:1px solid var(--red);">
+        <div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 2: Three-Dimensional</div>
+        <div style="font-size:24px; font-weight:800; color:var(--red);">3</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--red-bg); border:1px solid var(--red);">
+        <div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 3: Phenomena</div>
+        <div style="font-size:24px; font-weight:800; color:var(--red);">3</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--red-bg); border:1px solid var(--red);">
+        <div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 5: Complexity</div>
+        <div style="font-size:24px; font-weight:800; color:var(--red);">1</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--yellow-bg); border:1px solid var(--yellow);">
+        <div style="font-size:11px; font-weight:600; color:var(--yellow); margin-bottom:4px;">CRIT 6: Technical Quality</div>
+        <div style="font-size:24px; font-weight:800; color:var(--yellow);">18</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet or partially</div>
+      </div>
+    </div>
+    <div class="callout info">
+      <h3>Bright Spot: Technical Quality</h3>
+      <p>While the cognitive complexity is low, many questions are technically well-constructed — scientifically accurate with plausible, diagnostic distractors. The issue isn't that the questions are <em>wrong</em>, it's that they test <em>the wrong things</em> (recall instead of sense-making).</p>
+    </div>
+  </div>
+
+  <!-- Full question table -->
+  <div class="card">
+    <h2>All 30 Questions — Detailed Scores</h2>
+    <div class="card-subtitle">Click column headers to sort. Color coding: <span style="color:var(--red);font-weight:600;">Red = Low (1-2)</span>, <span style="color:var(--yellow);font-weight:600;">Yellow = Medium (3)</span>, <span style="color:var(--green);font-weight:600;">Green = High (4-5)</span></div>
+    <div class="table-scroll">
+      <table class="q-table" id="qTable">
+        <thead>
+          <tr>
+            <th style="width:30px;">Q#</th>
+            <th>Stem</th>
+            <th style="width:40px;">Domain</th>
+            <th style="width:40px;">Scen</th>
+            <th style="width:40px;">SEP</th>
+            <th style="width:40px;">DCI</th>
+            <th style="width:40px;">CCC</th>
+            <th style="width:40px;">Avg</th>
+            <th style="width:100px;">Holistic</th>
+            <th style="width:90px;">Overall</th>
+          </tr>
+        </thead>
+        <tbody id="qTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Question data
+const questions = [
+  {n:1,stem:"White oak trees — which ecosystem would they survive in?",dom:"LS",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:2,stem:"Thomson's gazelle vs. gerenuk — advantage in obtaining food?",dom:"LS",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:3,stem:"Inherited vs. acquired traits — which is NOT correct?",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:4,stem:"Which is an example of climate, NOT weather?",dom:"ESS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:5,stem:"Leaf observations — which does NOT describe an inherited trait?",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:6,stem:"Arctic foxes — primary role of fur and fat?",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:7,stem:"Cart with books — which actions make moving easiest?",dom:"PS",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:8,stem:"Plant fossil — which question can scientist answer?",dom:"LS",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:9,stem:"Toy truck — Kobe uses twice as much force as Rachel?",dom:"PS",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:10,stem:"Otters have special flaps — survive in which environment?",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:11,stem:"Fish aquarium observations — which are inherited traits?",dom:"LS",sc:2,sep:2,dci:2,ccc:1,avg:1.75,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:12,stem:"Bird genetics — which trait might a chick inherit?",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:13,stem:"Hurricane coast — best design solution for flooding?",dom:"ETS",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:14,stem:"Insects — which characteristic is NOT an inherited trait?",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:15,stem:"Dolphin groups — which evidence supports survival claim?",dom:"LS",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:16,stem:"Dolphin vs. human life cycles — how are they most alike?",dom:"LS",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:17,stem:"Dolphin forced out of group — what is one effect?",dom:"LS",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:18,stem:"Magnetic train cars — which explains the pattern?",dom:"PS",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:19,stem:"Grabber tool Part A — what is the design problem?",dom:"ETS",sc:2,sep:2,dci:2,ccc:1,avg:1.75,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:20,stem:"Grabber tool Part B — which change would best help?",dom:"ETS",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:21,stem:"Four cities table — which most likely to have a blizzard?",dom:"ESS",sc:3,sep:3,dci:2,ccc:2,avg:2.5,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:22,stem:"Table 1 — which state most important to prepare for storms?",dom:"ESS",sc:2,sep:2,dci:1,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:23,stem:"Polar bear thick fur — how is it an adaptation?",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:24,stem:"Temperature 19°C — what is it in Fahrenheit?",dom:"PS",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:25,stem:"Two bar magnets N-N — what will happen?",dom:"PS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:26,stem:"Maine cold winters warm summers — writing about what?",dom:"ESS",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:27,stem:"Toy car moved by magnet under table — what force?",dom:"PS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:28,stem:"Two balloons — charges after rubbing on hair?",dom:"PS",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement"},
+  {n:29,stem:"Desert food chain — which are the producers?",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"},
+  {n:30,stem:"Forest mice fur color — which explanation best uses evidence?",dom:"LS",sc:4,sep:4,dci:3,ccc:3,avg:3.5,hol:"high-guided",holLabel:"High Guided",ov:"strong",ovLabel:"Strong"}
+];
+
+// Render table
+const tbody = document.getElementById('qTableBody');
+const domColors = {LS:'#27ae60', PS:'#2980b9', ESS:'#d4a017', ETS:'#8e44ad'};
+questions.forEach(q => {
+  const scoreClass = (v) => v <= 2 ? 'low' : v === 3 ? 'med' : 'high';
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td style="font-weight:700;">${q.n}</td>
+    <td class="stem-cell" title="${q.stem}">${q.stem}</td>
+    <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:white;background:${domColors[q.dom]}">${q.dom}</span></td>
+    <td class="score-cell ${scoreClass(q.sc)}">${q.sc}</td>
+    <td class="score-cell ${scoreClass(q.sep)}">${q.sep}</td>
+    <td class="score-cell ${scoreClass(q.dci)}">${q.dci}</td>
+    <td class="score-cell ${scoreClass(q.ccc)}">${q.ccc}</td>
+    <td class="score-cell ${scoreClass(Math.round(q.avg))}">${q.avg.toFixed(1)}</td>
+    <td><span class="q-badge ${q.hol}">${q.holLabel}</span></td>
+    <td><span class="q-badge ${q.ov}">${q.ovLabel}</span></td>
+  `;
+  tbody.appendChild(row);
+});
+</script>
+</body>
+</html>
