@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G3.3 Evaluation Dashboard — Actual vs. Achieve Targets</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>Assessment Quality Dashboard</h1>
+  <div class="header-sub">Alpha Standardized Science G3.3 &mdash; 32 Questions &mdash; Evaluated Against Achieve/MAP Cognitive Complexity Framework</div>
+</div>
+
+<div class="container">
+
+  <a href="../index.html" class="back-link">&larr; Back to Grade 3 Overview</a>
+
+  <!-- Top stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--red);">66%</div>
+      <div class="stat-label">Scripted</div>
+      <div class="stat-sub">21 of 32 questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--red);">1.63</div>
+      <div class="stat-label">Avg Complexity</div>
+      <div class="stat-sub">out of 5.0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--blue);">6%</div>
+      <div class="stat-label">High Guided</div>
+      <div class="stat-sub">2 questions (target: 20-30%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--green);">2</div>
+      <div class="stat-label">Strong Questions</div>
+      <div class="stat-sub">Q2, Q30</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3>Achieve Standard: 0% DOK1 Items</h3>
+    <p>This assessment has <strong>66% DOK1 items</strong> &mdash; the highest Scripted rate of any G3 test evaluated. Two-thirds of the questions are pure recall. With only 2 High Guided questions (both involving experimental magnet data) and no Doing Science items, this test fails to measure scientific reasoning for most of its length. The avg complexity of 1.63 is the lowest of any Grade 3 test. However, Q2 and Q30 demonstrate that even this test can produce strong data-driven items when experimental scenarios are used.</p>
+  </div>
+
+  <div class="key-box">
+    <h3>What Do the Complexity Levels Mean?</h3>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:12px;">From Achieve's <em>Framework to Evaluate the Cognitive Complexity of Science Assessment Tasks</em> (2019).</p>
+    <div class="key-grid two-col">
+      <div class="key-item"><div class="key-dot" style="background:var(--red);"></div><div><span class="key-label" style="color:var(--red);">Scripted (Recall)</span><br><span class="key-desc">Student recalls a fact or definition. No reasoning. DOK Level 1. Target: <strong>0%</strong>.</span></div></div>
+      <div class="key-item"><div class="key-dot" style="background:var(--yellow);"></div><div><span class="key-label" style="color:var(--yellow);">Low Guided (Application)</span><br><span class="key-desc">Student applies a concept to a familiar scenario. Some reasoning. Target: 40-50%.</span></div></div>
+      <div class="key-item"><div class="key-dot" style="background:var(--blue);"></div><div><span class="key-label" style="color:var(--blue);">High Guided (Transfer)</span><br><span class="key-desc">Student applies understanding to unfamiliar situations with data/evidence. Target: 20-30%.</span></div></div>
+      <div class="key-item"><div class="key-dot" style="background:var(--green);"></div><div><span class="key-label" style="color:var(--green);">Doing Science (Authentic)</span><br><span class="key-desc">Genuine scientific reasoning with novel data. No single right path. Target: 5-10%.</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Gap Analysis: Actual vs. Target</h2>
+    <div class="card-subtitle">How far the assessment is from Achieve's recommended distribution</div>
+    <div class="gap-row" style="border-bottom:none; padding-bottom:0;"><div class="gap-label" style="font-size:11px; color:var(--gray);">CATEGORY</div><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div><div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:var(--red);">Scripted</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:66%; background:var(--red);border-radius:6px;"></div><div class="gap-bar-target" style="left:20%; width:10%;"></div><div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div></div><div class="gap-delta over">+41% over</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:var(--yellow);">Low Guided</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:28%; background:var(--yellow);border-radius:6px;"></div><div class="gap-bar-target" style="left:40%; width:10%;"></div><div style="position:absolute;top:-14px;left:45%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 40-50%</div></div><div class="gap-delta under">-17% under</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:var(--blue);">High Guided</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:6%; background:var(--blue);border-radius:6px;"></div><div class="gap-bar-target" style="left:20%; width:10%;"></div><div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div></div><div class="gap-delta under">-19% under</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:var(--green);">Doing Science</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:0%; background:var(--green);border-radius:6px;min-width:2px;"></div><div class="gap-bar-target" style="left:5%; width:5%;"></div><div style="position:absolute;top:-14px;left:7.5%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 5-10%</div></div><div class="gap-delta under">-8% under</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Content Domain Distribution: Actual vs. NGSS Expected</h2>
+    <div class="card-subtitle">Based on Grade 3 NGSS Performance Expectation counts — 18 PEs total</div>
+    <div class="comparison-section" style="margin-bottom:8px;">
+      <div style="background:transparent;border:none;box-shadow:none;padding:0;"><div style="font-size:13px;font-weight:600;margin-bottom:6px;">Actual Content Distribution</div><div class="stacked-bar"><div class="stacked-segment" style="width:56%;background:#16a085;">56% LS</div><div class="stacked-segment" style="width:34%;background:#5b6abf;">34% PS</div><div class="stacked-segment" style="width:9%;background:#d35400;font-size:9px;">9%</div><div class="stacked-segment" style="width:1%;background:#8e44ad;font-size:0px;"></div></div></div>
+      <div style="background:transparent;border:none;box-shadow:none;padding:0;"><div style="font-size:13px;font-weight:600;margin-bottom:6px;">NGSS Expected (by PE Count)</div><div class="stacked-bar"><div class="stacked-segment" style="width:44.4%;background:#16a085;">44% LS</div><div class="stacked-segment" style="width:22.2%;background:#5b6abf;">22% PS</div><div class="stacked-segment" style="width:16.7%;background:#d35400;">17% ESS</div><div class="stacked-segment" style="width:16.7%;background:#8e44ad;">17% ETS</div></div></div>
+    </div>
+    <div style="text-align:center; margin-bottom:20px;"><div class="legend" style="justify-content:center;"><div class="legend-item"><div class="legend-dot" style="background:#16a085"></div>Life Science (LS)</div><div class="legend-item"><div class="legend-dot" style="background:#5b6abf"></div>Physical Science (PS)</div><div class="legend-item"><div class="legend-dot" style="background:#d35400"></div>Earth & Space Science (ESS)</div><div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div>Engineering & Technology (ETS)</div></div></div>
+    <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;">Domain Gap Analysis</div>
+    <div class="gap-row" style="border-bottom:none; padding-bottom:0;"><div class="gap-label" style="font-size:11px; color:var(--gray);">DOMAIN</div><div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span></div><div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:#16a085;">Life Science</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:93%; background:#16a085;border-radius:6px;"></div><div class="gap-bar-target" style="left:72%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div><div style="position:absolute;top:-14px;left:74%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 44%</div></div><div class="gap-delta over">+12% over</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:#5b6abf;">Physical Sci</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:57%; background:#5b6abf;border-radius:6px;"></div><div class="gap-bar-target" style="left:35%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div><div style="position:absolute;top:-14px;left:37%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 22%</div></div><div class="gap-delta over">+12% over</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:#d35400;">Earth & Space</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:15%; background:#d35400;border-radius:6px;"></div><div class="gap-bar-target" style="left:25.8%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div><div style="position:absolute;top:-14px;left:27.8%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 17%</div></div><div class="gap-delta under">-8% under</div></div>
+    <div class="gap-row"><div class="gap-label" style="color:#8e44ad;">Engineering</div><div class="gap-bar-container"><div class="gap-bar-actual" style="width:0%; background:#8e44ad;border-radius:6px;min-width:2px;"></div><div class="gap-bar-target" style="left:25.8%; width:4%;border:2px dashed rgba(0,0,0,0.3);border-radius:6px;"></div><div style="position:absolute;top:-14px;left:27.8%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 17%</div></div><div class="gap-delta under">-17% under</div></div>
+    <div style="margin-top:16px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#e8f6f3; border:1px solid #16a085;"><div style="font-size:11px; font-weight:600; color:#16a085; margin-bottom:2px;">LIFE SCIENCE</div><div style="font-size:20px; font-weight:800; color:#16a085;">18</div><div style="font-size:11px; color:var(--gray);">56% (target 44%)</div><div style="font-size:10px; color:var(--gray); margin-top:4px;">Q1,6,7,8,9,13,14,15,16,17,19,22,23,25,27,29,31,32</div></div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#ecedf8; border:1px solid #5b6abf;"><div style="font-size:11px; font-weight:600; color:#5b6abf; margin-bottom:2px;">PHYSICAL SCIENCE</div><div style="font-size:20px; font-weight:800; color:#5b6abf;">11</div><div style="font-size:11px; color:var(--gray);">34% (target 22%)</div><div style="font-size:10px; color:var(--gray); margin-top:4px;">Q2,3,4,5,18,20,21,24,26,28,30</div></div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#fdf2e9; border:1px solid #d35400;"><div style="font-size:11px; font-weight:600; color:#d35400; margin-bottom:2px;">EARTH & SPACE</div><div style="font-size:20px; font-weight:800; color:#d35400;">3</div><div style="font-size:11px; color:var(--gray);">9% (target 17%)</div><div style="font-size:10px; color:var(--gray); margin-top:4px;">Q10,11,12</div></div>
+      <div style="text-align:center; padding:12px; border-radius:8px; background:#f4ecf7; border:1px solid #8e44ad;"><div style="font-size:11px; font-weight:600; color:#8e44ad; margin-bottom:2px;">ENGINEERING</div><div style="font-size:20px; font-weight:800; color:#8e44ad;">0</div><div style="font-size:11px; color:var(--gray);">0% (target 17%)</div><div style="font-size:10px; color:var(--gray); margin-top:4px;">None</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Indicator Scores (Average Across All 32 Questions)</h2>
+    <div class="card-subtitle">Achieve Cognitive Complexity Framework — Scale: 1 (Low) to 5 (High). Target: ~3.0</div>
+    <div style="background:var(--gray-light); border:1px solid var(--gray-border); border-radius:8px; padding:16px 20px; margin-bottom:16px; font-size:13px; line-height:1.5;">
+      <div style="font-weight:700; color:var(--primary); margin-bottom:8px;">What Are These Four Indicators?</div>
+      <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">Each question scored on four dimensions. Together they determine the holistic classification.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);"><strong style="color:var(--primary);">Scenario</strong> <span style="font-size:11px; color:var(--gray);">(1.7 avg)</span><br><span style="color:var(--gray); font-size:12px;">Does it present a puzzling, real-world phenomenon?</span></div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);"><strong style="color:var(--primary);">SEP</strong> <span style="font-size:11px; color:var(--gray);">(1.4 avg)</span><br><span style="color:var(--gray); font-size:12px;">Does it require doing what scientists do?</span></div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);"><strong style="color:var(--primary);">DCI</strong> <span style="font-size:11px; color:var(--gray);">(1.8 avg)</span><br><span style="color:var(--gray); font-size:12px;">How deeply is science content engaged?</span></div>
+        <div style="padding:10px 12px; background:white; border-radius:6px; border:1px solid var(--gray-border);"><strong style="color:var(--primary);">CCC</strong> <span style="font-size:11px; color:var(--gray);">(1.4 avg)</span><br><span style="color:var(--gray); font-size:12px;">Does it use Cause & Effect, Patterns, etc.?</span></div>
+      </div>
+    </div>
+    <div class="indicator-grid">
+      <div class="indicator-card"><div class="indicator-name">Scenario</div><div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 34%, var(--gray-light) 34% 100%);"><div class="indicator-score" style="color:var(--red);">1.7</div></div><div class="indicator-max">of 5.0</div><div class="indicator-target">Most questions lack any scenario</div></div>
+      <div class="indicator-card"><div class="indicator-name">SEP (Practices)</div><div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 28%, var(--gray-light) 28% 100%);"><div class="indicator-score" style="color:var(--red);">1.4</div></div><div class="indicator-max">of 5.0</div><div class="indicator-target">Weakest indicator — almost no practice</div></div>
+      <div class="indicator-card"><div class="indicator-name">DCI (Core Ideas)</div><div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 36%, var(--gray-light) 36% 100%);"><div class="indicator-score" style="color:var(--red);">1.8</div></div><div class="indicator-max">of 5.0</div><div class="indicator-target">Shallow content engagement</div></div>
+      <div class="indicator-card"><div class="indicator-name">CCC (Crosscutting)</div><div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 28%, var(--gray-light) 28% 100%);"><div class="indicator-score" style="color:var(--red);">1.4</div></div><div class="indicator-max">of 5.0</div><div class="indicator-target">Lowest CCC of any G3 test</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Content Coverage Flags</h2>
+    <div class="card-subtitle">Issues with construct redundancy and topic balance</div>
+    <ul class="flag-list">
+      <li class="flag-item warn"><strong>Extreme Scripted Overrepresentation (66% &mdash; more than double the 20-30% target)</strong><br>Two-thirds of the assessment is pure recall. This is the highest Scripted rate of any G3 test evaluated.</li>
+      <li class="flag-item warn"><strong>No ETS/Engineering Questions (0% vs. 17% target)</strong><br>Zero engineering design items. An entire NGSS domain is completely absent from this assessment.</li>
+      <li class="flag-item warn"><strong>ESS Severely Underrepresented (9% vs. 17% target)</strong><br>Only 3 ESS questions, all at Scripted level. Need at least 2-3 more with higher complexity.</li>
+      <li class="flag-item"><strong>Multiple Redundant Recall Items</strong><br>Q7/Q8 (True/False and list selection about inheritance/life cycles), Q10/Q11 (both test weather/climate definitions), Q13/Q14 (both about trait variation at recall level), Q18/Q26 (both gravity recall), Q20/Q24 (both magnet force recall). These redundancies waste assessment slots.</li>
+      <li class="flag-item"><strong>Technical Issue: Non-Standard Answer Choices</strong><br>Q7 and Q13 have only 2-3 answer choices instead of the standard 4, reducing psychometric reliability.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Achieve Assessment Criteria Summary</h2>
+    <div class="card-subtitle">Criteria for Procuring and Evaluating High-Quality Science Assessments (2018)</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;">
+      <div style="text-align:center; padding:16px; border-radius:8px; background:#fdecea; border:1px solid var(--red);"><div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 2: Three-Dimensional</div><div style="font-size:24px; font-weight:800; color:var(--red);">DNM</div><div style="font-size:11px; color:var(--gray);">30 of 32 do not meet</div></div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:#fdecea; border:1px solid var(--red);"><div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 3: Phenomena</div><div style="font-size:24px; font-weight:800; color:var(--red);">DNM</div><div style="font-size:11px; color:var(--gray);">Most questions do not meet</div></div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:#fdecea; border:1px solid var(--red);"><div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 5: Complexity</div><div style="font-size:24px; font-weight:800; color:var(--red);">DNM</div><div style="font-size:11px; color:var(--gray);">Overwhelming majority</div></div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--green-bg); border:1px solid var(--green);"><div style="font-size:11px; font-weight:600; color:var(--green); margin-bottom:4px;">CRIT 6: Technical Quality</div><div style="font-size:24px; font-weight:800; color:var(--green);">Meets</div><div style="font-size:11px; color:var(--gray);">28 of 32 meet (4 partially)</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recommendations: Aligning G3.3 to MAP Expectations</h2>
+    <div class="card-subtitle">G3.3 serves 17 students (19 attempts, 89.5% avg score) &mdash; 10 priority items identified for redesign.</div>
+    <div class="rec-summary-bar">
+      <div class="rec-summary-item" style="background:#fdecea; border:1px solid var(--red);"><div style="font-size:11px; font-weight:600; color:var(--red);">REDESIGN (SCRIPTED &rarr; GUIDED)</div><div style="font-size:28px; font-weight:800; color:var(--red);">10</div><div style="font-size:11px; color:var(--gray);">questions</div></div>
+      <div class="rec-summary-item" style="background:#fef9e7; border:1px solid var(--yellow);"><div style="font-size:11px; font-weight:600; color:var(--yellow);">KEEP LOW GUIDED</div><div style="font-size:28px; font-weight:800; color:var(--yellow);">20</div><div style="font-size:11px; color:var(--gray);">questions</div></div>
+      <div class="rec-summary-item" style="background:#eafaf1; border:1px solid var(--green);"><div style="font-size:11px; font-weight:600; color:var(--green);">KEEP STRONG</div><div style="font-size:28px; font-weight:800; color:var(--green);">2</div><div style="font-size:11px; color:var(--gray);">questions</div></div>
+    </div>
+    <div class="rec-section">
+      <div class="rec-section-title">MAP Alignment: Before &amp; After Redesigns</div>
+      <div class="rec-grid">
+        <div class="rec-item"><div class="rec-num">1</div><div><div class="rec-title">Q7 &mdash; True/False About Inheritance</div><div class="rec-detail">Replace True/False format with evidence-based analysis.<br><strong>Before:</strong> &ldquo;True or False: Children always show all of their parents traits.&rdquo;<br><strong>After:</strong> &ldquo;A student collected data on eye color from 10 families [data table showing parent and child eye colors]. Based on this data, do children always have the same eye color as their parents? Use evidence from the table to support your answer.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">2</div><div><div class="rec-title">Q10 &mdash; Weather Forecast Recall</div><div class="rec-detail">Replace definition recall with data application.<br><strong>Before:</strong> &ldquo;Scientists record patterns of weather across different times and areas so that they can make...&rdquo;<br><strong>After:</strong> &ldquo;A meteorologist collected 5 days of temperature, wind, and pressure data [data table]. Based on the pattern in the data, predict tomorrow&rsquo;s most likely weather conditions. Explain how you used the data to make your prediction.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">3</div><div><div class="rec-title">Q18 &mdash; Gravity Recall</div><div class="rec-detail">Replace recall with data-driven investigation.<br><strong>Before:</strong> &ldquo;If you drop an object off a roof and it falls downward, this is because of...&rdquo;<br><strong>After:</strong> &ldquo;Students dropped balls of different masses from the same height and recorded the time each took to reach the ground [data table]. Based on the data, what pattern do you notice? What does this tell you about how gravity affects objects of different masses?&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">4</div><div><div class="rec-title">Q8 &mdash; Life Cycle Recall</div><div class="rec-detail">Replace with comparative analysis.<br><strong>Before:</strong> &ldquo;Which statement is true about life cycles?&rdquo;<br><strong>After:</strong> &ldquo;Here are life cycle diagrams for three different organisms [images]. Compare the life cycles and identify: (1) Which stages are common to all three? (2) Which organism has the most different life cycle? Use evidence from the diagrams.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">5</div><div><div class="rec-title">Q26 &mdash; Gravity Facts</div><div class="rec-detail">Replace with experimental analysis.<br><strong>Before:</strong> &ldquo;Which of these statements are true about the force of gravity?&rdquo;<br><strong>After:</strong> &ldquo;Students rolled a ball up a ramp and recorded its speed at different heights [data table]. Based on the data, describe what happens to the ball&rsquo;s speed as it goes up. What force is causing this change? Use the data to support your explanation.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">6</div><div><div class="rec-title">Q24 &mdash; Magnet Distance</div><div class="rec-detail">Replace with data interpretation.<br><strong>Before:</strong> &ldquo;Which is true about magnet distance and force?&rdquo;<br><strong>After:</strong> &ldquo;Students measured how many paper clips a magnet could pick up at different distances [data: 1cm=15, 3cm=8, 5cm=3, 10cm=0]. Graph the data and describe the pattern. Predict how many clips could be picked up at 7cm.&rdquo;</div><span class="rec-impact high">Scripted &rarr; Doing Science</span></div></div>
+        <div class="rec-item"><div class="rec-num">7</div><div><div class="rec-title">Q11 &mdash; Climate Definition</div><div class="rec-detail">Replace with data analysis.<br><strong>Before:</strong> &ldquo;An area&rsquo;s typical weather conditions over time is known as...&rdquo;<br><strong>After:</strong> &ldquo;Here are two data sets: Set A shows temperature readings for one week. Set B shows average monthly temperatures for 30 years [both displayed]. Which data set shows weather? Which shows climate? Explain the difference using specific data points.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">8</div><div><div class="rec-title">Q13 &mdash; Trait Variation Recall</div><div class="rec-detail">Replace with evidence-based reasoning.<br><strong>Before:</strong> &ldquo;Variations in traits between individuals in a population...&rdquo;<br><strong>After:</strong> &ldquo;Scientists measured beak length in 50 finches on an island. During a drought year, only seeds with hard shells remained. Finches with longer beaks were more successful at cracking these seeds [data graph]. Based on this data, explain how trait variation can affect survival.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">9</div><div><div class="rec-title">Q16 &mdash; Habitat Parts</div><div class="rec-detail">Replace with ecosystem data analysis.<br><strong>Before:</strong> &ldquo;The parts of a habitat...&rdquo;<br><strong>After:</strong> &ldquo;A local pond ecosystem includes algae, tadpoles, fish, and herons [food web diagram + population data]. If a disease killed most of the algae, predict what would happen to each population. Use the food web to explain the chain of effects.&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+        <div class="rec-item"><div class="rec-num">10</div><div><div class="rec-title">Q21 &mdash; Static Electricity</div><div class="rec-detail">Replace with investigation data.<br><strong>Before:</strong> &ldquo;What causes hair to stand up when you rub a balloon on it?&rdquo;<br><strong>After:</strong> &ldquo;Students rubbed different materials together and tested if they attracted small pieces of paper [data table showing material pairs and results]. Based on the data, which material combinations created the strongest attraction? What pattern do you notice about which materials produce static charge?&rdquo;</div><span class="rec-impact high">Scripted &rarr; High Guided</span></div></div>
+      </div>
+    </div>
+    <div style="background:var(--primary-light); border:1px solid var(--primary); border-radius:8px; padding:16px 20px; margin-top:8px;">
+      <h3 style="font-size:14px; color:var(--primary); margin-bottom:8px;">Projected Impact</h3>
+      <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:12px;">This test requires the most extensive revision of any G3 assessment. Converting the 21 Scripted recall items to evidence-based questions would shift the complexity from 66%/28%/6%/0% to approximately 0%/45%/40%/15% &mdash; meeting all four Achieve targets. The dramatic improvement shown by Q2 and Q30 (the only items with experimental data) proves that even simple data tables transform recall questions into genuine reasoning tasks. Priority: Replace all definition/vocabulary recall items with data-driven tasks.</p>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; font-size:13px;">
+        <div><div style="font-weight:700; color:var(--gray); font-size:11px;">SCRIPTED</div><div><span style="color:var(--red); font-weight:700;">66%</span> &rarr; <span style="color:var(--green); font-weight:700;">~0%</span></div></div>
+        <div><div style="font-weight:700; color:var(--gray); font-size:11px;">LOW GUIDED</div><div><span style="color:var(--yellow); font-weight:700;">28%</span> &rarr; <span style="color:var(--green); font-weight:700;">~45%</span></div></div>
+        <div><div style="font-weight:700; color:var(--gray); font-size:11px;">HIGH GUIDED</div><div><span style="color:var(--blue); font-weight:700;">6%</span> &rarr; <span style="color:var(--green); font-weight:700;">~40%</span></div></div>
+        <div><div style="font-weight:700; color:var(--gray); font-size:11px;">DOING SCIENCE</div><div><span style="color:var(--red); font-weight:700;">0%</span> &rarr; <span style="color:var(--green); font-weight:700;">~15%</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>All 32 Questions — Detailed Scores</h2>
+    <div class="card-subtitle">Color coding: <span style="color:var(--red);font-weight:600;">Red = Low (1-2)</span>, <span style="color:var(--yellow);font-weight:600;">Yellow = Medium (3)</span>, <span style="color:var(--green);font-weight:600;">Green = High (4-5)</span> &nbsp;|&nbsp; &#9733; = Strong Question</div>
+    <div class="table-scroll">
+      <table class="q-table" id="qTable"><thead><tr><th style="width:30px;">Q#</th><th>Stem</th><th style="width:40px;">NGSS</th><th style="width:40px;">Scen</th><th style="width:40px;">SEP</th><th style="width:40px;">DCI</th><th style="width:40px;">CCC</th><th style="width:40px;">Avg</th><th style="width:100px;">Holistic</th><th style="width:90px;">Overall</th></tr></thead><tbody id="qTableBody"></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {n:1,stem:"Horse family diagram — which traits did foal inherit?",dom:"LS",ngss:"3-LS3-1",sc:3,sep:2,dci:3,ccc:2,avg:2.5,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:2,stem:"Jacob's magnet train data — which pattern explains results?",dom:"PS",ngss:"3-PS2-3",sc:3,sep:3,dci:3,ccc:2,avg:2.75,hol:"high-guided",holLabel:"High Guided",ov:"strong",ovLabel:"Strong",strong:true},
+  {n:3,stem:"Two students push box with equal force — what happens?",dom:"PS",ngss:"3-PS2-1",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:4,stem:"Elephant pushes box left, mouse pushes right — what happens?",dom:"PS",ngss:"3-PS2-1",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:5,stem:"Set magnet on desk, move another toward it — what happens?",dom:"PS",ngss:"3-PS2-3",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:6,stem:"Which is an example of environment influencing traits?",dom:"LS",ngss:"3-LS3-2",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:7,stem:"True or False: Children always show all parents' traits",dom:"LS",ngss:"3-LS3-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:8,stem:"Which statement is true about life cycles?",dom:"LS",ngss:"3-LS1-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:9,stem:"Which is true about hair color inheritance?",dom:"LS",ngss:"3-LS3-1",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:10,stem:"Scientists record weather patterns to make...",dom:"ESS",ngss:"3-ESS2-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:11,stem:"Typical weather conditions over time is known as...",dom:"ESS",ngss:"3-ESS2-2",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:12,stem:"Winter season with snow/rain/cold is an example of...",dom:"ESS",ngss:"3-ESS2-2",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:13,stem:"Variations in traits between individuals in a population...",dom:"LS",ngss:"3-LS4-2",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:14,stem:"Example of trait variation that benefits survival is...",dom:"LS",ngss:"3-LS4-2",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:15,stem:"Hot dry desert — organism survives if it has trait that...",dom:"LS",ngss:"3-LS4-3",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:16,stem:"The parts of a habitat...",dom:"LS",ngss:"3-LS4-4",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:17,stem:"Which behavior does a person learn rather than inherit?",dom:"LS",ngss:"3-LS3-1",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:18,stem:"Drop object off roof, falls down because of...",dom:"PS",ngss:"3-PS2-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:19,stem:"Animal behavior chart — which is NOT correctly classified?",dom:"LS",ngss:"3-LS3-1",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:20,stem:"Magnet hovering above paper clip — what causes it to jump up?",dom:"PS",ngss:"3-PS2-3",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:21,stem:"What causes hair to stand up when you rub a balloon on it?",dom:"PS",ngss:"3-PS2-3",sc:2,sep:1,dci:1,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:22,stem:"Bats in cave — how does group living help survival?",dom:"LS",ngss:"3-LS2-1",sc:3,sep:2,dci:2,ccc:2,avg:2.25,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:23,stem:"Lions in prides — the pride depends on lionesses for...",dom:"LS",ngss:"3-LS2-1",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:24,stem:"Which is true about magnet distance and force?",dom:"PS",ngss:"3-PS2-3",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:25,stem:"Arctic fox fur changes brown to white — main reason?",dom:"LS",ngss:"3-LS4-2",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:26,stem:"Which statements are true about the force of gravity?",dom:"PS",ngss:"3-PS2-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:27,stem:"Which is NOT a stage in the life cycle of a mammal?",dom:"LS",ngss:"3-LS1-1",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:28,stem:"Magnets attract/repel — which problem could a magnet solve?",dom:"PS",ngss:"3-PS2-4",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:29,stem:"Plant leaf imprints in rock — what does this fossil tell us?",dom:"LS",ngss:"3-LS4-1",sc:2,sep:2,dci:2,ccc:1,avg:1.75,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false},
+  {n:30,stem:"Magnets at different heights above tacks — what can students conclude?",dom:"PS",ngss:"3-PS2-3",sc:3,sep:3,dci:3,ccc:3,avg:3.0,hol:"high-guided",holLabel:"High Guided",ov:"strong",ovLabel:"Strong",strong:true},
+  {n:31,stem:"Brook trout orange belly — how does this trait help?",dom:"LS",ngss:"3-LS4-2",sc:3,sep:2,dci:3,ccc:2,avg:2.5,hol:"low-guided",holLabel:"Low Guided",ov:"needs-improvement",ovLabel:"Needs Improvement",strong:false},
+  {n:32,stem:"Green tree frog in forest — how does green color help survive?",dom:"LS",ngss:"3-LS4-2",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak",strong:false}
+];
+
+const tbody = document.getElementById('qTableBody');
+const domColors = {LS:'#16a085', PS:'#5b6abf', ESS:'#d35400', ETS:'#8e44ad'};
+questions.forEach(q => {
+  const scoreClass = (v) => v <= 2 ? 'low' : v === 3 ? 'med' : 'high';
+  const row = document.createElement('tr');
+  const starIcon = q.strong ? ' &#9733;' : '';
+  row.innerHTML = `
+    <td style="font-weight:700;">${q.n}${starIcon}</td>
+    <td class="stem-cell" title="${q.stem}">${q.stem}</td>
+    <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:white;background:${domColors[q.dom]}">${q.dom}</span></td>
+    <td class="score-cell ${scoreClass(q.sc)}">${q.sc}</td>
+    <td class="score-cell ${scoreClass(q.sep)}">${q.sep}</td>
+    <td class="score-cell ${scoreClass(q.dci)}">${q.dci}</td>
+    <td class="score-cell ${scoreClass(q.ccc)}">${q.ccc}</td>
+    <td class="score-cell ${scoreClass(Math.round(q.avg))}">${q.avg.toFixed(1)}</td>
+    <td><span class="q-badge ${q.hol}">${q.holLabel}</span></td>
+    <td><span class="q-badge ${q.ov}">${q.ovLabel}</span></td>
+  `;
+  tbody.appendChild(row);
+});
+</script>
+</body>
+</html>
