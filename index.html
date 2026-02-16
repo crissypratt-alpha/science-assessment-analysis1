@@ -1,6 +1,269 @@
 <!DOCTYPE html>
-<html><head>
-<meta http-equiv="refresh" content="0; url=G3.1_Dashboard.html">
-</head><body>
-<p>Redirecting to <a href="G3.1_Dashboard.html">G3.1 Dashboard</a>...</p>
-</body></html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha Science Assessment Quality Analysis</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>Alpha Science Assessment Quality Analysis</h1>
+  <div class="header-sub">Evaluating test question quality against Achieve/MAP Cognitive Complexity Framework &mdash; Alpha School</div>
+</div>
+
+<div class="container">
+
+  <!-- Grade Navigation Tabs -->
+  <div class="grade-tabs">
+    <a class="grade-tab active" href="#grade3">Grade 3<span class="tab-sub">18 tests</span></a>
+    <a class="grade-tab disabled">Grade 4<span class="tab-sub">coming soon</span></a>
+    <a class="grade-tab disabled">Grade 5<span class="tab-sub">coming soon</span></a>
+    <a class="grade-tab disabled">Grade 6<span class="tab-sub">coming soon</span></a>
+    <a class="grade-tab disabled">Grade 7<span class="tab-sub">coming soon</span></a>
+    <a class="grade-tab disabled">Grade 8<span class="tab-sub">coming soon</span></a>
+  </div>
+
+  <!-- Grade 3 Summary Stats -->
+  <div class="stats-row" id="summaryStats">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Test Overview Table -->
+  <div class="card">
+    <h2>Grade 3 — All Tests</h2>
+    <div class="card-subtitle">Click any test name to view its full evaluation dashboard. Tests are ordered by student usage (most to fewest).</div>
+    <div class="table-scroll" style="max-height:none;">
+      <table class="test-table" id="testTable">
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Questions</th>
+            <th>Students</th>
+            <th>Attempts</th>
+            <th>Avg Score</th>
+            <th>Avg Complexity</th>
+            <th style="min-width:140px;">Complexity Distribution</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="testTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Indicator Heatmap -->
+  <div class="card" id="heatmapCard" style="display:none;">
+    <h2>Indicator Heatmap: All Grade 3 Tests</h2>
+    <div class="card-subtitle">Average indicator scores per test. Color scale: <span style="color:var(--red);font-weight:600;">1.0-1.9 (red)</span>, <span style="color:#d35400;font-weight:600;">2.0-2.4 (orange)</span>, <span style="color:var(--yellow);font-weight:600;">2.5-3.0 (yellow)</span>, <span style="color:#16a085;font-weight:600;">3.1-3.9 (teal)</span>, <span style="color:var(--green);font-weight:600;">4.0-5.0 (green)</span></div>
+    <div class="table-scroll" style="max-height:none;">
+      <table class="heatmap-table" id="heatmapTable">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Test</th>
+            <th>Scenario</th>
+            <th>SEP</th>
+            <th>DCI</th>
+            <th>CCC</th>
+            <th>Overall Avg</th>
+          </tr>
+        </thead>
+        <tbody id="heatmapBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Aggregate Complexity Distribution (shown once we have data) -->
+  <div class="card" id="aggDistCard" style="display:none;">
+    <h2>Aggregate Complexity Distribution: All Grade 3 Tests Combined</h2>
+    <div class="card-subtitle">How all Grade 3 questions compare to Achieve's recommended distribution</div>
+    <div id="aggDistContent"></div>
+  </div>
+
+  <!-- Complexity Level Key -->
+  <div class="key-box">
+    <h3>What Do the Complexity Levels Mean?</h3>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:12px;">From Achieve's <em>Framework to Evaluate the Cognitive Complexity of Science Assessment Tasks</em> (2019). Each question is classified based on how students are expected to think.</p>
+    <div class="key-grid two-col">
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--red);"></div>
+        <div><span class="key-label" style="color:var(--red);">Scripted (Recall)</span><br><span class="key-desc">Student recalls a fact, definition, or formula. No reasoning required. These are DOK Level 1 tasks. Achieve says NGSS-aligned tests should have <strong>0%</strong> of these.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--yellow);"></div>
+        <div><span class="key-label" style="color:var(--yellow);">Low Guided (Application)</span><br><span class="key-desc">Student applies a known concept to a familiar scenario. Some reasoning, but the path is clear. Target: 40-50% of assessment.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--blue);"></div>
+        <div><span class="key-label" style="color:var(--blue);">High Guided (Transfer)</span><br><span class="key-desc">Student applies understanding to a new or unfamiliar situation. Must integrate multiple ideas and make sense of data or evidence. Target: 20-30%.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--green);"></div>
+        <div><span class="key-label" style="color:var(--green);">Doing Science (Authentic)</span><br><span class="key-desc">Student engages in genuine scientific reasoning — analyzing novel data, constructing explanations, designing investigations. Target: 5-10%.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// GRADE 3 TEST DATA
+// TimeBack stats + evaluation results (populated as tests are processed)
+// ============================================
+
+const TESTS = [
+  // Each test: id, questions, students, attempts, avgScore, avgComplexity, holistic distribution, indicator avgs, status
+  // status: "evaluated" = dashboard ready, "pending" = not yet evaluated, "no-pdf" = no PDF available
+  {id:"G3.12", q:0, students:516, attempts:535, avgScore:62.8, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.13", q:0, students:282, attempts:282, avgScore:79.6, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.14", q:0, students:132, attempts:132, avgScore:86.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.1",  q:30, students:82,  attempts:86,  avgScore:79.8, avgCx:2.03, hol:{s:18,l:11,h:1,d:0}, ind:{sc:2.2,sep:2.0,dci:2.3,ccc:1.7}, status:"evaluated"},
+  {id:"G3.2",  q:0, students:59,  attempts:64,  avgScore:80.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.11", q:0, students:51,  attempts:58,  avgScore:81.4, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.3",  q:0, students:17,  attempts:19,  avgScore:89.5, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.15", q:0, students:14,  attempts:14,  avgScore:86.7, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.10", q:0, students:12,  attempts:12,  avgScore:67.1, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.16", q:0, students:9,   attempts:9,   avgScore:86.9, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.4",  q:0, students:8,   attempts:8,   avgScore:81.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.5",  q:0, students:5,   attempts:7,   avgScore:89.1, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.17", q:0, students:5,   attempts:5,   avgScore:89.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.18", q:0, students:3,   attempts:3,   avgScore:91.7, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.9",  q:0, students:1,   attempts:1,   avgScore:80.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.6",  q:0, students:1,   attempts:1,   avgScore:80.0, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.8",  q:0, students:1,   attempts:1,   avgScore:31.1, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+  {id:"G3.7",  q:0, students:1,   attempts:1,   avgScore:28.6, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"no-pdf"},
+  {id:"G3.19", q:0, students:0,   attempts:0,   avgScore:0,    avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"pending"},
+];
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+
+function renderSummaryStats() {
+  const evaluated = TESTS.filter(t => t.status === 'evaluated');
+  const totalQ = TESTS.reduce((s,t) => s + t.q, 0);
+  const totalStudents = new Set(); // approximate unique
+  let totalAttempts = 0;
+  TESTS.forEach(t => { totalAttempts += t.attempts; });
+  // Use the sum of unique per test as an approximation (some overlap)
+  const totalUniqueStudents = TESTS.reduce((s,t) => s + t.students, 0);
+
+  const evalCount = evaluated.length;
+  const pendingCount = TESTS.filter(t => t.status === 'pending').length;
+
+  const html = `
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${TESTS.length}</div>
+      <div class="stat-label">Total Tests</div>
+      <div class="stat-sub">${evalCount} evaluated, ${pendingCount} pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${totalQ || '—'}</div>
+      <div class="stat-label">Questions Evaluated</div>
+      <div class="stat-sub">${evalCount > 0 ? 'across ' + evalCount + ' test(s)' : 'processing...'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${totalAttempts.toLocaleString()}</div>
+      <div class="stat-label">Total Test Attempts</div>
+      <div class="stat-sub">from TimeBack data</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:${evalCount > 0 ? 'var(--red)' : 'var(--gray)'};">${evalCount > 0 ? (evaluated.reduce((s,t)=>s+t.avgCx,0)/evalCount).toFixed(1) : '—'}</div>
+      <div class="stat-label">Avg Complexity</div>
+      <div class="stat-sub">${evalCount > 0 ? 'across evaluated tests (target ~3.0)' : 'pending evaluation'}</div>
+    </div>
+  `;
+  document.getElementById('summaryStats').innerHTML = html;
+}
+
+function renderTestTable() {
+  const tbody = document.getElementById('testTableBody');
+  tbody.innerHTML = '';
+  TESTS.forEach(t => {
+    const row = document.createElement('tr');
+    const totalH = t.hol.s + t.hol.l + t.hol.h + t.hol.d;
+    const pctS = totalH ? (t.hol.s/totalH*100).toFixed(0) : 0;
+    const pctL = totalH ? (t.hol.l/totalH*100).toFixed(0) : 0;
+    const pctH = totalH ? (t.hol.h/totalH*100).toFixed(0) : 0;
+    const pctD = totalH ? (t.hol.d/totalH*100).toFixed(0) : 0;
+
+    let nameCell, statusBadge, miniBar, cxCell;
+
+    if (t.status === 'evaluated') {
+      nameCell = `<a href="grade3/${t.id}_Dashboard.html">${t.id}</a>`;
+      statusBadge = `<span class="q-badge strong">Evaluated</span>`;
+      miniBar = `<div class="mini-bar">
+        <div class="seg" style="width:${pctS}%;background:var(--red);" title="Scripted ${pctS}%">${pctS>8?pctS+'%':''}</div>
+        <div class="seg" style="width:${pctL}%;background:var(--yellow);" title="Low Guided ${pctL}%">${pctL>8?pctL+'%':''}</div>
+        <div class="seg" style="width:${pctH}%;background:var(--blue);" title="High Guided ${pctH}%">${pctH>8?pctH+'%':''}</div>
+        <div class="seg" style="width:${pctD}%;background:var(--green);" title="Doing Science ${pctD}%">${pctD>8?pctD+'%':''}</div>
+      </div>`;
+      cxCell = `<span style="color:${t.avgCx < 2.5 ? 'var(--red)' : t.avgCx < 3.0 ? 'var(--yellow)' : 'var(--green)'};font-weight:700;">${t.avgCx.toFixed(1)}</span>`;
+    } else if (t.status === 'no-pdf') {
+      nameCell = `<span style="color:var(--gray);">${t.id}</span>`;
+      statusBadge = `<span class="q-badge weak">No PDF</span>`;
+      miniBar = `<span style="color:var(--gray);font-size:11px;">—</span>`;
+      cxCell = `<span style="color:var(--gray);">—</span>`;
+    } else {
+      nameCell = `<span style="color:var(--gray);">${t.id}</span>`;
+      statusBadge = `<span class="q-badge needs-improvement">Pending</span>`;
+      miniBar = `<span style="color:var(--gray);font-size:11px;">—</span>`;
+      cxCell = `<span style="color:var(--gray);">—</span>`;
+    }
+
+    row.innerHTML = `
+      <td>${nameCell}</td>
+      <td style="text-align:center;">${t.q || '—'}</td>
+      <td style="text-align:center;">${t.students > 0 ? t.students.toLocaleString() : '—'}</td>
+      <td style="text-align:center;">${t.attempts > 0 ? t.attempts.toLocaleString() : '—'}</td>
+      <td style="text-align:center;">${t.avgScore > 0 ? t.avgScore.toFixed(1) + '%' : '—'}</td>
+      <td style="text-align:center;">${cxCell}</td>
+      <td>${miniBar}</td>
+      <td style="text-align:center;">${statusBadge}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderHeatmap() {
+  const evaluated = TESTS.filter(t => t.status === 'evaluated');
+  if (evaluated.length === 0) return;
+
+  document.getElementById('heatmapCard').style.display = '';
+  const tbody = document.getElementById('heatmapBody');
+  tbody.innerHTML = '';
+
+  function heatClass(v) {
+    if (v < 2.0) return 'heat-1';
+    if (v < 2.5) return 'heat-2';
+    if (v <= 3.0) return 'heat-3';
+    if (v < 4.0) return 'heat-4';
+    return 'heat-5';
+  }
+
+  evaluated.forEach(t => {
+    const avg = ((t.ind.sc + t.ind.sep + t.ind.dci + t.ind.ccc) / 4).toFixed(1);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="test-link"><a href="grade3/${t.id}_Dashboard.html">${t.id}</a></td>
+      <td class="${heatClass(t.ind.sc)}">${t.ind.sc.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.sep)}">${t.ind.sep.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.dci)}">${t.ind.dci.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.ccc)}">${t.ind.ccc.toFixed(1)}</td>
+      <td class="${heatClass(parseFloat(avg))}">${avg}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Initialize
+renderSummaryStats();
+renderTestTable();
+renderHeatmap();
+</script>
+</body>
+</html>

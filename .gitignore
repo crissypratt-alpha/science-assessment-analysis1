@@ -1,15 +1,33 @@
-# Don't push raw test PDFs or extracted images
-Science Tests/
-G3.1_images/
-*.pdf
+# ============================================
+# Only push: styles.css, index.html, Question_Evaluation_Prompt.md,
+#            and everything in grade3/, grade4/, etc.
+# ============================================
 
-# Don't push the API proxy or evaluator tool
-server.py
-Science_Question_Evaluator.html
+# Ignore everything by default
+*
+
+# Allow the files and folders we want
+!.gitignore
+!styles.css
+!index.html
+!Question_Evaluation_Prompt.md
+
+# Allow grade directories and their contents
+!grade3/
+!grade3/**
+!grade4/
+!grade4/**
+!grade5/
+!grade5/**
+!grade6/
+!grade6/**
+!grade7/
+!grade7/**
+!grade8/
+!grade8/**
+
+# But still exclude images within grade directories
+grade*/*_images/
 
 # macOS
 .DS_Store
-
-# Python
-__pycache__/
-*.pyc
