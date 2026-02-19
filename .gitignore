@@ -12,6 +12,13 @@
 !index.html
 !Question_Evaluation_Prompt.md
 
+# Allow dashboard files
+!NGSS_Skills_Matrix.html
+!dashboard_data.js
+!MAP_Readiness_Dashboard.html
+!MAP_Readiness_Dashboard_v2.html
+!MAP_Readiness_Action_Plan.md
+
 # Allow grade directories and their contents
 !grade3/
 !grade3/**

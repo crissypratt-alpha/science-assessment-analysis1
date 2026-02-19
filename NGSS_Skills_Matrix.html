@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha School — NGSS Skills Matrix</title>
+<style>
+:root{--pri:#1a365d;--pri-l:#2c5282;--acc:#3182ce;--ok:#38a169;--warn:#d69e2e;--bad:#e53e3e;--bg:#f7fafc;--card:#fff;--txt:#2d3748;--txtL:#718096;--brd:#e2e8f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);}
+.hdr{background:linear-gradient(135deg,var(--pri),var(--pri-l));color:#fff;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;}
+.hdr h1{font-size:22px;font-weight:700;} .hdr .sub{opacity:.8;font-size:13px;margin-top:3px;} .hdr .dt{font-size:12px;opacity:.6;}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 28px;}
+
+/* KPI Row */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px;}
+.kpi{background:var(--card);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid var(--acc);}
+.kpi.g{border-left-color:var(--ok);} .kpi.r{border-left-color:var(--bad);} .kpi.y{border-left-color:var(--warn);} .kpi.p{border-left-color:#805ad5;} .kpi.o{border-left-color:#dd6b20;}
+.kpi-lab{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txtL);font-weight:600;}
+.kpi-val{font-size:28px;font-weight:800;margin:3px 0 1px;}
+.kpi .kpi-val{color:var(--acc);} .kpi.g .kpi-val{color:var(--ok);} .kpi.r .kpi-val{color:var(--bad);} .kpi.y .kpi-val{color:var(--warn);} .kpi.p .kpi-val{color:#805ad5;} .kpi.o .kpi-val{color:#dd6b20;}
+.kpi-sub{font-size:11px;color:var(--txtL);}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;background:var(--card);padding:14px 18px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.filter-bar label{font-size:12px;font-weight:600;color:var(--txtL);}
+.filter-bar select{padding:6px 12px;border:1px solid var(--brd);border-radius:6px;font-size:12px;background:#fff;}
+.search-box{padding:6px 12px;border:1px solid var(--brd);border-radius:6px;font-size:12px;width:200px;}
+.filter-bar .sep{width:1px;height:24px;background:var(--brd);margin:0 4px;}
+.count-label{font-size:12px;color:var(--acc);font-weight:700;margin-left:auto;}
+
+/* Table */
+.table-wrap{background:var(--card);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;}
+.table-scroll{max-height:calc(100vh - 310px);overflow-y:auto;}
+.table-scroll::-webkit-scrollbar{width:6px;} .table-scroll::-webkit-scrollbar-thumb{background:#cbd5e0;border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 12px;background:#f1f5f9;font-weight:600;color:var(--pri);border-bottom:2px solid var(--brd);position:sticky;top:0;z-index:2;}
+td{padding:8px 12px;border-bottom:1px solid var(--brd);}
+tr:hover td{background:#f0f7ff;}
+tr.urgent td{background:#fff5f5;}
+tr.gap td{background:#fffaf0;}
+
+/* Badges */
+.b{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;white-space:nowrap;}
+.b-r{background:#fff5f5;color:var(--bad);} .b-y{background:#fffff0;color:#b7791f;} .b-g{background:#f0fff4;color:var(--ok);} .b-b{background:#ebf8ff;color:var(--acc);} .b-p{background:#faf5ff;color:#805ad5;} .b-gr{background:#f7fafc;color:var(--txtL);}
+
+/* Accuracy bar */
+.bar-mini{display:flex;align-items:center;gap:6px;}
+.bar-track{flex:1;background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;min-width:60px;}
+.bar-fill{height:100%;border-radius:4px;transition:.3s;}
+.bar-label{font-size:12px;font-weight:700;min-width:36px;text-align:right;}
+
+/* Legend */
+.legend{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;font-size:12px;color:var(--txtL);}
+.legend-item{display:flex;align-items:center;gap:4px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
+@media(max-width:1000px){.kpi-row{grid-template-columns:repeat(3,1fr);}.filter-bar{flex-direction:column;align-items:flex-start;}}
+@media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>🎯 NGSS Skills Matrix</h1><div class="sub">Alpha School — Every NGSS Standard: MAP Coverage · Testing · Curriculum · Student Performance</div></div>
+  <div class="dt">Data as of Feb 2025</div>
+</div>
+<div class="wrap">
+
+<!-- KPI Row -->
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-lab">Total MAP Standards</div><div class="kpi-val" id="k1">—</div><div class="kpi-sub">Grades 3-8</div></div>
+  <div class="kpi g"><div class="kpi-lab">We Test</div><div class="kpi-val" id="k2">—</div><div class="kpi-sub" id="k2s">—</div></div>
+  <div class="kpi r"><div class="kpi-lab">Testing Gaps</div><div class="kpi-val" id="k3">—</div><div class="kpi-sub">Not tested by Alpha</div></div>
+  <div class="kpi o"><div class="kpi-lab">Not Taught</div><div class="kpi-val" id="k4">—</div><div class="kpi-sub">No curriculum (❌)</div></div>
+  <div class="kpi y"><div class="kpi-lab">Below 75%</div><div class="kpi-val" id="k5">—</div><div class="kpi-sub">Need reteaching</div></div>
+  <div class="kpi p"><div class="kpi-lab">Urgent (&lt;50%)</div><div class="kpi-val" id="k6">—</div><div class="kpi-sub">Critical intervention</div></div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#38a169"></div> ≥75% On Track</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d69e2e"></div> 50-74% Reteach</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e53e3e"></div> &lt;50% Urgent</div>
+  <div class="legend-item">✅ Yes</div>
+  <div class="legend-item">⚠️ Weak</div>
+  <div class="legend-item">❌ No</div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <label>Grade:</label>
+  <select id="fGrade" onchange="render()">
+    <option value="all">All Grades</option>
+    <option value="3">Grade 3</option><option value="4">Grade 4</option><option value="5">Grade 5</option>
+    <option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option>
+  </select>
+  <div class="sep"></div>
+  <label>Domain:</label>
+  <select id="fDom" onchange="render()">
+    <option value="all">All Domains</option>
+    <option value="LS">Life Science</option><option value="PS">Physical Science</option>
+    <option value="ESS">Earth/Space Science</option><option value="ETS">Engineering/Technology</option>
+  </select>
+  <div class="sep"></div>
+  <label>Status:</label>
+  <select id="fStatus" onchange="render()">
+    <option value="all">All Standards</option>
+    <option value="gap">Gaps Only — Not Tested</option>
+    <option value="nottaught">Not Taught (❌)</option>
+    <option value="weak">Weak Curriculum (⚠️)</option>
+    <option value="urgent">Urgent Reteach (&lt;50%)</option>
+    <option value="reteach">Needs Reteach (&lt;75%)</option>
+    <option value="ok">On Track (≥75%)</option>
+  </select>
+  <div class="sep"></div>
+  <label>Search:</label>
+  <input type="text" class="search-box" id="fSearch" placeholder="e.g. MS-LS1 or Life..." oninput="render()">
+  <span class="count-label" id="countLabel"></span>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="table-scroll" id="tableScroll">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:60px;cursor:pointer" onclick="sortBy('grade')">Grade ⇅</th>
+          <th style="width:130px;cursor:pointer" onclick="sortBy('standard')">NGSS Standard ⇅</th>
+          <th style="cursor:pointer" onclick="sortBy('domain')">Domain ⇅</th>
+          <th style="width:70px;text-align:center">On MAP?</th>
+          <th style="width:70px;text-align:center;cursor:pointer" onclick="sortBy('tested')">We Test? ⇅</th>
+          <th style="width:80px;text-align:center;cursor:pointer" onclick="sortBy('taught')">We Teach? ⇅</th>
+          <th style="width:170px;cursor:pointer" onclick="sortBy('accuracy')">Student Accuracy ⇅</th>
+          <th style="width:160px;cursor:pointer" onclick="sortBy('action')">Action Needed ⇅</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script src="dashboard_data.js"></script>
+<script>
+const domMap={LS:'Life Science',PS:'Physical Science',ESS:'Earth/Space Science',ETS:'Engineering/Technology'};
+const domCol={LS:'#38a169',PS:'#3182ce',ESS:'#d69e2e',ETS:'#805ad5'};
+
+function badge(action){
+  const a=(action||'').toLowerCase();
+  if(a.includes('urgent')) return '<span class="b b-r">URGENT</span>';
+  if(a.includes('add to test')&&a.includes('add to curriculum')) return '<span class="b b-r">Add Test+Curriculum</span>';
+  if(a.includes('add to test')) return '<span class="b b-y">Add to Test</span>';
+  if(a.includes('strengthen')&&a.includes('reteach')) return '<span class="b b-y">Strengthen+Reteach</span>';
+  if(a.includes('reteach')) return '<span class="b b-y">Reteach</span>';
+  if(a.includes('strengthen')) return '<span class="b b-b">Strengthen</span>';
+  if(a.includes('add to curriculum')) return '<span class="b b-b">Add Curriculum</span>';
+  if(a.includes('no action')) return '<span class="b b-g">On Track</span>';
+  return '<span class="b b-gr">'+action+'</span>';
+}
+
+function pctBar(v){
+  if(v==null) return '<span style="color:#a0aec0;font-size:12px">N/A</span>';
+  const c=v>=75?'#38a169':v>=50?'#d69e2e':'#e53e3e';
+  return `<div class="bar-mini"><div class="bar-track"><div class="bar-fill" style="width:${v}%;background:${c}"></div></div><div class="bar-label" style="color:${c}">${Math.round(v)}%</div></div>`;
+}
+
+// KPIs
+const total=mapStandardsMatrix.length;
+const testedN=mapStandardsMatrix.filter(s=>s.tested==='Y').length;
+const gapsN=mapStandardsMatrix.filter(s=>s.tested==='N').length;
+const notTaughtN=mapStandardsMatrix.filter(s=>s.taught==='N').length;
+const below75=mapStandardsMatrix.filter(s=>s.studentAccuracy!=null&&s.studentAccuracy<75).length;
+const urgentN=mapStandardsMatrix.filter(s=>s.studentAccuracy!=null&&s.studentAccuracy<50).length;
+document.getElementById('k1').textContent=total;
+document.getElementById('k2').textContent=testedN;
+document.getElementById('k2s').textContent=Math.round(100*testedN/total)+'% coverage';
+document.getElementById('k3').textContent=gapsN;
+document.getElementById('k4').textContent=notTaughtN;
+document.getElementById('k5').textContent=below75;
+document.getElementById('k6').textContent=urgentN;
+
+// Sort state
+let sortCol='grade', sortAsc=true;
+function sortBy(col){
+  if(sortCol===col) sortAsc=!sortAsc;
+  else{sortCol=col;sortAsc=true;}
+  render();
+}
+
+function render(){
+  const gf=document.getElementById('fGrade').value;
+  const df=document.getElementById('fDom').value;
+  const sf=document.getElementById('fStatus').value;
+  const search=document.getElementById('fSearch').value.toLowerCase();
+
+  let data=mapStandardsMatrix.slice();
+  if(gf!=='all') data=data.filter(s=>String(s.grade)===gf);
+  if(df!=='all') data=data.filter(s=>s.domain===df);
+  if(sf==='gap') data=data.filter(s=>s.tested==='N');
+  else if(sf==='nottaught') data=data.filter(s=>s.taught==='N');
+  else if(sf==='weak') data=data.filter(s=>s.taught==='Weak');
+  else if(sf==='urgent') data=data.filter(s=>s.studentAccuracy!=null&&s.studentAccuracy<50);
+  else if(sf==='reteach') data=data.filter(s=>s.studentAccuracy!=null&&s.studentAccuracy<75);
+  else if(sf==='ok') data=data.filter(s=>s.studentAccuracy!=null&&s.studentAccuracy>=75);
+  if(search) data=data.filter(s=>s.standard.toLowerCase().includes(search)||s.domain.toLowerCase().includes(search)||(domMap[s.domain]||'').toLowerCase().includes(search)||(s.action||'').toLowerCase().includes(search));
+
+  // Sort
+  data.sort((a,b)=>{
+    let va,vb;
+    if(sortCol==='grade'){va=a.grade;vb=b.grade;}
+    else if(sortCol==='standard'){va=a.standard;vb=b.standard;}
+    else if(sortCol==='domain'){va=a.domain;vb=b.domain;}
+    else if(sortCol==='tested'){va=a.tested;vb=b.tested;}
+    else if(sortCol==='taught'){va=a.taught==='Y'?0:a.taught==='Weak'?1:2;vb=b.taught==='Y'?0:b.taught==='Weak'?1:2;}
+    else if(sortCol==='accuracy'){va=a.studentAccuracy!=null?a.studentAccuracy:-1;vb=b.studentAccuracy!=null?b.studentAccuracy:-1;}
+    else if(sortCol==='action'){va=a.action||'';vb=b.action||'';}
+    else{va=a.grade;vb=b.grade;}
+    if(va<vb)return sortAsc?-1:1;
+    if(va>vb)return sortAsc?1:-1;
+    // secondary sort by standard
+    if(a.standard<b.standard)return -1;
+    if(a.standard>b.standard)return 1;
+    return 0;
+  });
+
+  let html='';
+  data.forEach(s=>{
+    const acc=s.studentAccuracy;
+    const rowClass=acc!=null&&acc<50?'urgent':(s.tested==='N'?'gap':'');
+    html+=`<tr class="${rowClass}">
+      <td style="font-weight:700;text-align:center">G${s.grade}</td>
+      <td style="font-weight:600">${s.standard}</td>
+      <td><span style="color:${domCol[s.domain]||'#666'};font-weight:600">${domMap[s.domain]||s.domain}</span></td>
+      <td style="text-align:center">✅</td>
+      <td style="text-align:center;font-size:16px">${s.tested==='Y'?'✅':'❌'}</td>
+      <td style="text-align:center;font-size:16px">${s.taught==='Y'?'✅':s.taught==='Weak'?'⚠️':'❌'}</td>
+      <td>${pctBar(acc)}</td>
+      <td>${badge(s.action)}</td>
+    </tr>`;
+  });
+  document.getElementById('tbody').innerHTML=html;
+  document.getElementById('countLabel').textContent='Showing '+data.length+' of '+total+' standards';
+}
+
+render();
+</script>
+</body>
+</html>

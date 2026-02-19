@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha School — MAP Science Readiness Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2c5282;
+    --accent: #3182ce;
+    --success: #38a169;
+    --warning: #d69e2e;
+    --danger: #e53e3e;
+    --danger-light: #fc8181;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-light: #718096;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
+
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white; padding: 28px 40px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .header h1 { font-size: 24px; font-weight: 700; }
+  .header .subtitle { opacity: 0.85; font-size: 14px; margin-top: 4px; }
+  .header .date { font-size: 13px; opacity: 0.7; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  /* KPI Cards */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+  .kpi-card {
+    background: var(--card); border-radius: 12px; padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid var(--accent);
+  }
+  .kpi-card.green { border-left-color: var(--success); }
+  .kpi-card.red { border-left-color: var(--danger); }
+  .kpi-card.yellow { border-left-color: var(--warning); }
+  .kpi-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); font-weight: 600; }
+  .kpi-value { font-size: 36px; font-weight: 800; margin: 6px 0 2px; }
+  .kpi-card.green .kpi-value { color: var(--success); }
+  .kpi-card.red .kpi-value { color: var(--danger); }
+  .kpi-card.yellow .kpi-value { color: var(--warning); }
+  .kpi-card .kpi-value { color: var(--accent); }
+  .kpi-sub { font-size: 13px; color: var(--text-light); }
+
+  /* Two column layout */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .row.three-col { grid-template-columns: 1fr 1fr 1fr; }
+  .full-width { grid-column: 1 / -1; }
+
+  .card {
+    background: var(--card); border-radius: 12px; padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+  .card h3 { font-size: 14px; font-weight: 600; margin: 12px 0 8px; color: var(--primary-light); }
+
+  /* Charts */
+  .chart-container { position: relative; height: 320px; }
+  .chart-container.tall { height: 400px; }
+  .chart-container.short { height: 260px; }
+
+  /* Grade tabs */
+  .tab-row { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 8px 20px; border: 2px solid var(--border); border-radius: 8px;
+    background: white; cursor: pointer; font-weight: 600; font-size: 14px;
+    color: var(--text-light); transition: all 0.2s;
+  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: #f1f5f9; font-weight: 600; color: var(--primary); border-bottom: 2px solid var(--border); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f8fafc; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
+  }
+  .badge-red { background: #fff5f5; color: var(--danger); }
+  .badge-yellow { background: #fffff0; color: #b7791f; }
+  .badge-green { background: #f0fff4; color: var(--success); }
+  .badge-blue { background: #ebf8ff; color: var(--accent); }
+  .badge-gray { background: #f7fafc; color: var(--text-light); }
+
+  .progress-bar { background: #e2e8f0; border-radius: 6px; height: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
+
+  /* Urgency section */
+  .urgent-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    border-radius: 8px; margin-bottom: 8px; background: #fff5f5; border: 1px solid #fed7d7;
+  }
+  .urgent-item .std { font-weight: 700; color: var(--danger); min-width: 100px; }
+  .urgent-item .acc { font-weight: 700; font-size: 18px; color: var(--danger); min-width: 50px; }
+  .urgent-item .desc { font-size: 12px; color: var(--text-light); flex: 1; }
+  .urgent-item .grade-tag { font-size: 11px; font-weight: 700; background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; }
+
+  /* Section titles */
+  .section-title {
+    font-size: 20px; font-weight: 800; color: var(--primary); margin: 32px 0 16px;
+    padding-bottom: 8px; border-bottom: 3px solid var(--accent);
+  }
+  .section-title:first-of-type { margin-top: 8px; }
+
+  /* Scrollable table wrapper */
+  .table-scroll { max-height: 420px; overflow-y: auto; }
+  .table-scroll::-webkit-scrollbar { width: 6px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .row { grid-template-columns: 1fr; }
+    .row.three-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🔬 MAP Science Readiness Dashboard</h1>
+    <div class="subtitle">Alpha School — Grades 3–8 Gap Analysis & Action Plan</div>
+  </div>
+  <div class="date">Data as of Feb 2025</div>
+</div>
+
+<div class="container">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total MAP Standards</div>
+      <div class="kpi-value">228</div>
+      <div class="kpi-sub">NGSS PEs across Grades 3-8</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Currently Tested</div>
+      <div class="kpi-value">124</div>
+      <div class="kpi-sub">54.4% of MAP standards covered</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Testing Gaps</div>
+      <div class="kpi-value">104</div>
+      <div class="kpi-sub">Standards MAP tests that we don't</div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="kpi-label">Below 75% Accuracy</div>
+      <div class="kpi-value">36</div>
+      <div class="kpi-sub">Standards needing reteaching</div>
+    </div>
+  </div>
+
+  <!-- SECTION: Overview Charts -->
+  <div class="section-title">📊 Overview</div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Testing Coverage by Grade</h2>
+      <div class="chart-container"><canvas id="coverageChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Gap Breakdown by Grade</h2>
+      <div class="chart-container"><canvas id="gapChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Coverage by Domain (All Grades)</h2>
+      <div class="chart-container"><canvas id="domainChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Action Required Summary</h2>
+      <div class="chart-container"><canvas id="actionChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- SECTION: Urgent Reteaching -->
+  <div class="section-title">🚨 Urgent Reteaching Needed</div>
+  <div class="card">
+    <p style="font-size:13px; color:var(--text-light); margin-bottom:14px;">Standards where student accuracy is critically low — prioritize these before MAP testing.</p>
+    <div id="urgentList"></div>
+  </div>
+
+  <!-- SECTION: Per-Grade Detail -->
+  <div class="section-title">📋 Grade-Level Detail</div>
+
+  <div class="tab-row" id="gradeTabs"></div>
+
+  <div class="row">
+    <div class="card">
+      <h2 id="gradeChartTitle">Grade 3 — Standards Readiness</h2>
+      <div class="chart-container tall"><canvas id="gradeDetailChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2 id="gradeTableTitle">Grade 3 — All Standards</h2>
+      <div class="table-scroll" id="gradeTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- SECTION: Curriculum & Test Fix Priorities -->
+  <div class="section-title">🛠️ Test & Curriculum Fix Priorities</div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Questions to Add per Grade</h2>
+      <div class="chart-container short"><canvas id="questionsChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Lessons to Add/Strengthen per Grade</h2>
+      <div class="chart-container short"><canvas id="lessonsChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card full-width">
+      <h2>Highest Priority Gaps — Standards Needing Both Test + Curriculum</h2>
+      <div class="table-scroll" id="priorityTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- SECTION: Cross-Grade Summary -->
+  <div class="section-title">📈 Cross-Grade Standard Matrix</div>
+  <div class="card">
+    <h2>Full Standards Coverage Matrix (scroll to explore)</h2>
+    <div class="table-scroll" style="max-height:600px;" id="matrixTableWrap"></div>
+  </div>
+
+</div>
+
+<script>
+// ============ DATA ============
+
+const gradeData = {
+  3: {
+    mapStandards: 18, tested: 18, gaps: 0, lessonsToAdd: 6, questionsToAdd: 0,
+    curriculum: 'MobyMax',
+    standards: [
+      {std:'3-5-ETS1-1',domain:'ETS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'3-5-ETS1-2',domain:'ETS',tested:'Y',taught:'Weak',accuracy:'N/A',action:'Strengthen curriculum'},
+      {std:'3-5-ETS1-3',domain:'ETS',tested:'Y',taught:'Weak',accuracy:'68%',action:'Strengthen curriculum + Reteach'},
+      {std:'3-ESS2-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'44%',action:'URGENT reteach'},
+      {std:'3-ESS2-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'70%',action:'Reteach'},
+      {std:'3-ESS3-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'82%',action:'No action needed'},
+      {std:'3-LS1-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'84%',action:'No action needed'},
+      {std:'3-LS2-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'96%',action:'No action needed'},
+      {std:'3-LS3-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'85%',action:'No action needed'},
+      {std:'3-LS3-2',domain:'LS',tested:'Y',taught:'Y',accuracy:'79%',action:'No action needed'},
+      {std:'3-LS4-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'76%',action:'No action needed'},
+      {std:'3-LS4-2',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'3-LS4-3',domain:'LS',tested:'Y',taught:'Y',accuracy:'79%',action:'No action needed'},
+      {std:'3-LS4-4',domain:'LS',tested:'Y',taught:'N',accuracy:'N/A',action:'Add to curriculum'},
+      {std:'3-PS2-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'76%',action:'No action needed'},
+      {std:'3-PS2-2',domain:'PS',tested:'Y',taught:'N',accuracy:'N/A',action:'Add to curriculum'},
+      {std:'3-PS2-3',domain:'PS',tested:'Y',taught:'Y',accuracy:'75%',action:'No action needed'},
+      {std:'3-PS2-4',domain:'PS',tested:'Y',taught:'Y',accuracy:'71%',action:'Reteach'}
+    ],
+    struggles: [
+      {std:'3-ESS2-1', accuracy:44.2, fraction:'23/52', domain:'ESS'},
+      {std:'3-5-ETS1-3', accuracy:68.2, fraction:'15/22', domain:'ETS'},
+      {std:'3-ESS2-2', accuracy:70.0, fraction:'7/10', domain:'ESS'},
+      {std:'3-PS2-4', accuracy:70.6, fraction:'12/17', domain:'PS'}
+    ]
+  },
+  4: {
+    mapStandards: 17, tested: 12, gaps: 5, lessonsToAdd: 6, questionsToAdd: 5,
+    curriculum: 'MobyMax',
+    standards: [
+      {std:'3-5-ETS1-1',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'3-5-ETS1-2',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'3-5-ETS1-3',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'4-ESS1-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'85%',action:'No action needed'},
+      {std:'4-ESS2-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'73%',action:'Reteach'},
+      {std:'4-ESS2-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'61%',action:'Reteach'},
+      {std:'4-ESS3-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'90%',action:'No action needed'},
+      {std:'4-ESS3-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'69%',action:'Reteach'},
+      {std:'4-LS1-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'84%',action:'No action needed'},
+      {std:'4-LS1-2',domain:'LS',tested:'Y',taught:'Y',accuracy:'94%',action:'No action needed'},
+      {std:'4-PS3-1',domain:'PS',tested:'Y',taught:'Weak',accuracy:'71%',action:'Strengthen curriculum + Reteach'},
+      {std:'4-PS3-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'91%',action:'No action needed'},
+      {std:'4-PS3-3',domain:'PS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'4-PS3-4',domain:'PS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'},
+      {std:'4-PS4-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'62%',action:'Reteach'},
+      {std:'4-PS4-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'75%',action:'No action needed'},
+      {std:'4-PS4-3',domain:'PS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'}
+    ],
+    struggles: [
+      {std:'3-PS2-3', accuracy:50.0, fraction:'2/4', domain:'PS'},
+      {std:'4-ESS2-2', accuracy:60.7, fraction:'17/28', domain:'ESS'},
+      {std:'4-PS4-1', accuracy:62.5, fraction:'5/8', domain:'PS'},
+      {std:'4-ESS3-2', accuracy:69.2, fraction:'9/13', domain:'ESS'},
+      {std:'4-PS3-1', accuracy:70.6, fraction:'12/17', domain:'PS'},
+      {std:'4-ESS2-1', accuracy:72.7, fraction:'40/55', domain:'ESS'}
+    ]
+  },
+  5: {
+    mapStandards: 16, tested: 13, gaps: 3, lessonsToAdd: 4, questionsToAdd: 3,
+    curriculum: 'MobyMax',
+    standards: [
+      {std:'3-5-ETS1-1',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'3-5-ETS1-2',domain:'ETS',tested:'Y',taught:'Weak',accuracy:'33%',action:'Strengthen curriculum + URGENT reteach'},
+      {std:'3-5-ETS1-3',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'5-ESS1-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'85%',action:'No action needed'},
+      {std:'5-ESS1-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'77%',action:'No action needed'},
+      {std:'5-ESS2-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'88%',action:'No action needed'},
+      {std:'5-ESS2-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'93%',action:'No action needed'},
+      {std:'5-ESS3-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'95%',action:'No action needed'},
+      {std:'5-LS1-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'95%',action:'No action needed'},
+      {std:'5-LS2-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'88%',action:'No action needed'},
+      {std:'5-PS1-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'75%',action:'No action needed'},
+      {std:'5-PS1-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'93%',action:'No action needed'},
+      {std:'5-PS1-3',domain:'PS',tested:'Y',taught:'Y',accuracy:'79%',action:'No action needed'},
+      {std:'5-PS1-4',domain:'PS',tested:'Y',taught:'Y',accuracy:'89%',action:'No action needed'},
+      {std:'5-PS2-1',domain:'PS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'5-PS3-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'88%',action:'No action needed'}
+    ],
+    struggles: [
+      {std:'3-5-ETS1-2', accuracy:33.3, fraction:'2/6', domain:'ETS'},
+      {std:'MS-ESS2-1', accuracy:50.0, fraction:'3/6', domain:'ESS'}
+    ]
+  },
+  6: {
+    mapStandards: 59, tested: 20, gaps: 39, lessonsToAdd: 43, questionsToAdd: 39,
+    curriculum: 'Nice Academy',
+    standards: [
+      {std:'MS-ESS1-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'89%',action:'No action needed'},
+      {std:'MS-ESS1-2',domain:'ESS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'MS-ESS1-3',domain:'ESS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ESS1-4',domain:'ESS',tested:'Y',taught:'Y',accuracy:'76%',action:'No action needed'},
+      {std:'MS-ESS2-4',domain:'ESS',tested:'Y',taught:'Y',accuracy:'85%',action:'No action needed'},
+      {std:'MS-ESS2-5',domain:'ESS',tested:'Y',taught:'Y',accuracy:'80%',action:'No action needed'},
+      {std:'MS-ESS2-6',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'69%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-ESS3-3',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'76%',action:'Strengthen curriculum'},
+      {std:'MS-ESS3-4',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'94%',action:'Strengthen curriculum'},
+      {std:'MS-ETS1-1',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-2',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-3',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-4',domain:'ETS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'MS-LS1-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'86%',action:'No action needed'},
+      {std:'MS-LS1-2',domain:'LS',tested:'Y',taught:'Y',accuracy:'69%',action:'Reteach'},
+      {std:'MS-LS1-3',domain:'LS',tested:'Y',taught:'Y',accuracy:'85%',action:'No action needed'},
+      {std:'MS-LS1-7',domain:'LS',tested:'Y',taught:'Y',accuracy:'67%',action:'Reteach'},
+      {std:'MS-LS2-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'},
+      {std:'MS-LS3-2',domain:'LS',tested:'Y',taught:'Y',accuracy:'69%',action:'Reteach'},
+      {std:'MS-LS4-4',domain:'LS',tested:'Y',taught:'Y',accuracy:'82%',action:'No action needed'},
+      {std:'MS-PS1-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'83%',action:'No action needed'},
+      {std:'MS-PS1-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'74%',action:'Reteach'},
+      {std:'MS-PS1-4',domain:'PS',tested:'Y',taught:'Y',accuracy:'88%',action:'No action needed'},
+      {std:'MS-PS2-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'87%',action:'No action needed'},
+      {std:'MS-PS3-4',domain:'PS',tested:'Y',taught:'Y',accuracy:'94%',action:'No action needed'}
+    ],
+    struggles: [
+      {std:'MS-LS1-7', accuracy:66.7, fraction:'10/15', domain:'LS'},
+      {std:'MS-ESS2-6', accuracy:68.8, fraction:'11/16', domain:'ESS'},
+      {std:'MS-LS1-2', accuracy:68.9, fraction:'42/61', domain:'LS'},
+      {std:'MS-LS3-2', accuracy:69.4, fraction:'68/98', domain:'LS'},
+      {std:'MS-PS1-2', accuracy:73.7, fraction:'14/19', domain:'PS'}
+    ]
+  },
+  7: {
+    mapStandards: 59, tested: 31, gaps: 28, lessonsToAdd: 44, questionsToAdd: 28,
+    curriculum: 'Nice Academy',
+    standards: [
+      {std:'MS-ESS1-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'73%',action:'Reteach'},
+      {std:'MS-ESS1-4',domain:'ESS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'},
+      {std:'MS-ESS2-1',domain:'ESS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'},
+      {std:'MS-ESS2-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'79%',action:'No action needed'},
+      {std:'MS-ESS2-5',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-ESS3-2',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'88%',action:'Strengthen curriculum'},
+      {std:'MS-ESS3-5',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'86%',action:'Strengthen curriculum'},
+      {std:'MS-ETS1-1',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-2',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-3',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-4',domain:'ETS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'MS-LS1-1',domain:'LS',tested:'Y',taught:'Weak',accuracy:'71%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-LS1-3',domain:'LS',tested:'Y',taught:'Y',accuracy:'94%',action:'No action needed'},
+      {std:'MS-LS1-4',domain:'LS',tested:'Y',taught:'Y',accuracy:'96%',action:'No action needed'},
+      {std:'MS-LS1-6',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-LS1-7',domain:'LS',tested:'Y',taught:'Weak',accuracy:'89%',action:'Strengthen curriculum'},
+      {std:'MS-LS1-8',domain:'LS',tested:'Y',taught:'Y',accuracy:'92%',action:'No action needed'},
+      {std:'MS-LS2-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'93%',action:'No action needed'},
+      {std:'MS-LS2-3',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-LS2-4',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-LS2-5',domain:'LS',tested:'Y',taught:'Weak',accuracy:'0%',action:'Strengthen curriculum + URGENT reteach'},
+      {std:'MS-LS3-1',domain:'LS',tested:'Y',taught:'Weak',accuracy:'50%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-LS4-1',domain:'LS',tested:'Y',taught:'Weak',accuracy:'82%',action:'Strengthen curriculum'},
+      {std:'MS-PS1-1',domain:'PS',tested:'Y',taught:'Weak',accuracy:'73%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS1-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'86%',action:'No action needed'},
+      {std:'MS-PS1-3',domain:'PS',tested:'Y',taught:'Weak',accuracy:'50%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS1-4',domain:'PS',tested:'Y',taught:'Weak',accuracy:'90%',action:'Strengthen curriculum'},
+      {std:'MS-PS1-6',domain:'PS',tested:'Y',taught:'Weak',accuracy:'80%',action:'Strengthen curriculum'},
+      {std:'MS-PS2-1',domain:'PS',tested:'Y',taught:'Weak',accuracy:'61%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS2-3',domain:'PS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-PS3-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'33%',action:'URGENT reteach'},
+      {std:'MS-PS3-3',domain:'PS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-PS3-4',domain:'PS',tested:'Y',taught:'Weak',accuracy:'88%',action:'Strengthen curriculum'},
+      {std:'MS-PS4-1',domain:'PS',tested:'Y',taught:'Weak',accuracy:'75%',action:'Strengthen curriculum'},
+      {std:'MS-PS4-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'}
+    ],
+    struggles: [
+      {std:'MS-LS2-5', accuracy:0.0, fraction:'0/3', domain:'LS'},
+      {std:'MS-PS3-1', accuracy:33.3, fraction:'1/3', domain:'PS'},
+      {std:'MS-PS1-3', accuracy:50.0, fraction:'1/2', domain:'PS'},
+      {std:'MS-LS3-1', accuracy:50.0, fraction:'1/2', domain:'LS'},
+      {std:'MS-PS2-1', accuracy:61.1, fraction:'11/18', domain:'PS'},
+      {std:'MS-LS1-1', accuracy:71.4, fraction:'20/28', domain:'LS'},
+      {std:'MS-ESS1-2', accuracy:72.7, fraction:'8/11', domain:'ESS'},
+      {std:'MS-PS1-1', accuracy:73.2, fraction:'60/82', domain:'PS'}
+    ]
+  },
+  8: {
+    mapStandards: 59, tested: 27, gaps: 32, lessonsToAdd: 45, questionsToAdd: 32,
+    curriculum: 'Nice Academy',
+    standards: [
+      {std:'MS-ESS1-2',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'69%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-ESS1-4',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-ESS2-2',domain:'ESS',tested:'Y',taught:'Y',accuracy:'62%',action:'Reteach'},
+      {std:'MS-ESS2-4',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'67%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-ESS2-6',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-ESS3-1',domain:'ESS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-ETS1-1',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-2',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-3',domain:'ETS',tested:'N',taught:'N',accuracy:'N/A',action:'Add to test + Add to curriculum'},
+      {std:'MS-ETS1-4',domain:'ETS',tested:'N',taught:'Weak',accuracy:'N/A',action:'Add to test + Strengthen curriculum'},
+      {std:'MS-LS1-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'100%',action:'No action needed'},
+      {std:'MS-LS1-3',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-LS1-4',domain:'LS',tested:'Y',taught:'Y',accuracy:'86%',action:'No action needed'},
+      {std:'MS-LS1-6',domain:'LS',tested:'Y',taught:'Weak',accuracy:'0%',action:'Strengthen curriculum + URGENT reteach'},
+      {std:'MS-LS1-8',domain:'LS',tested:'Y',taught:'Y',accuracy:'86%',action:'No action needed'},
+      {std:'MS-LS2-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'91%',action:'No action needed'},
+      {std:'MS-LS2-4',domain:'LS',tested:'Y',taught:'Weak',accuracy:'0%',action:'Strengthen curriculum + URGENT reteach'},
+      {std:'MS-LS2-5',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-LS3-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'92%',action:'No action needed'},
+      {std:'MS-LS4-1',domain:'LS',tested:'Y',taught:'Y',accuracy:'89%',action:'No action needed'},
+      {std:'MS-LS4-5',domain:'LS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-PS1-1',domain:'PS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-PS1-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'67%',action:'Reteach'},
+      {std:'MS-PS1-4',domain:'PS',tested:'Y',taught:'Weak',accuracy:'67%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS2-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'80%',action:'No action needed'},
+      {std:'MS-PS2-2',domain:'PS',tested:'Y',taught:'Weak',accuracy:'33%',action:'Strengthen curriculum + URGENT reteach'},
+      {std:'MS-PS2-3',domain:'PS',tested:'Y',taught:'Y',accuracy:'88%',action:'No action needed'},
+      {std:'MS-PS2-4',domain:'PS',tested:'Y',taught:'Weak',accuracy:'100%',action:'Strengthen curriculum'},
+      {std:'MS-PS3-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'80%',action:'No action needed'},
+      {std:'MS-PS3-3',domain:'PS',tested:'Y',taught:'Weak',accuracy:'57%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS3-4',domain:'PS',tested:'Y',taught:'Weak',accuracy:'70%',action:'Strengthen curriculum + Reteach'},
+      {std:'MS-PS4-1',domain:'PS',tested:'Y',taught:'Y',accuracy:'79%',action:'No action needed'},
+      {std:'MS-PS4-2',domain:'PS',tested:'Y',taught:'Y',accuracy:'83%',action:'No action needed'},
+      {std:'MS-PS4-3',domain:'PS',tested:'Y',taught:'Y',accuracy:'25%',action:'URGENT reteach'}
+    ],
+    struggles: [
+      {std:'MS-LS1-6', accuracy:0.0, fraction:'0/1', domain:'LS'},
+      {std:'MS-LS2-4', accuracy:0.0, fraction:'0/1', domain:'LS'},
+      {std:'MS-PS4-3', accuracy:25.0, fraction:'1/4', domain:'PS'},
+      {std:'MS-PS2-2', accuracy:33.3, fraction:'2/6', domain:'PS'},
+      {std:'MS-PS3-3', accuracy:57.1, fraction:'4/7', domain:'PS'},
+      {std:'MS-ESS2-2', accuracy:61.5, fraction:'8/13', domain:'ESS'},
+      {std:'MS-ESS2-4', accuracy:66.7, fraction:'6/9', domain:'ESS'},
+      {std:'MS-PS1-2', accuracy:66.7, fraction:'2/3', domain:'PS'},
+      {std:'MS-PS1-4', accuracy:66.7, fraction:'2/3', domain:'PS'},
+      {std:'MS-ESS1-2', accuracy:68.7, fraction:'46/67', domain:'ESS'},
+      {std:'MS-PS3-4', accuracy:70.0, fraction:'7/10', domain:'PS'}
+    ]
+  }
+};
+
+const grades = [3,4,5,6,7,8];
+const gradeLabels = grades.map(g => 'Grade '+g);
+const domainNames = {LS:'Life Science', PS:'Physical Science', ESS:'Earth/Space Science', ETS:'Engineering/Technology'};
+const domainColors = {LS:'#38a169', PS:'#3182ce', ESS:'#d69e2e', ETS:'#805ad5'};
+
+// ============ CHARTS ============
+
+// 1) Coverage by Grade (stacked bar)
+new Chart(document.getElementById('coverageChart'), {
+  type: 'bar',
+  data: {
+    labels: gradeLabels,
+    datasets: [
+      { label: 'Tested', data: grades.map(g => gradeData[g].tested), backgroundColor: '#38a169' },
+      { label: 'Not Tested (Gap)', data: grades.map(g => gradeData[g].gaps), backgroundColor: '#fc8181' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { stacked: true },
+      y: { stacked: true, title: { display: true, text: 'NGSS Standards' } }
+    }
+  }
+});
+
+// 2) Gap breakdown (horizontal bar)
+new Chart(document.getElementById('gapChart'), {
+  type: 'bar',
+  data: {
+    labels: gradeLabels,
+    datasets: [
+      { label: 'Testing Gaps', data: grades.map(g => gradeData[g].gaps), backgroundColor: '#e53e3e' },
+      { label: 'Questions to Write', data: grades.map(g => gradeData[g].questionsToAdd), backgroundColor: '#fc8181' },
+      { label: 'Lessons to Add', data: grades.map(g => gradeData[g].lessonsToAdd), backgroundColor: '#feb2b2' }
+    ]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: { x: { title: { display: true, text: 'Count' } } }
+  }
+});
+
+// 3) Domain coverage (doughnut)
+function countByDomain() {
+  const domains = {LS:0, PS:0, ESS:0, ETS:0};
+  const tested = {LS:0, PS:0, ESS:0, ETS:0};
+  grades.forEach(g => {
+    gradeData[g].standards.forEach(s => {
+      if(domains[s.domain] !== undefined) {
+        domains[s.domain]++;
+        if(s.tested === 'Y') tested[s.domain]++;
+      }
+    });
+  });
+  return {domains, tested};
+}
+const dc = countByDomain();
+new Chart(document.getElementById('domainChart'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(domainNames).map(k => domainNames[k] + ' ('+dc.tested[k]+'/'+dc.domains[k]+')'),
+    datasets: [{
+      data: Object.keys(domainNames).map(k => dc.domains[k]),
+      backgroundColor: Object.keys(domainNames).map(k => domainColors[k]),
+      borderWidth: 2
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+});
+
+// 4) Action summary (pie)
+function countActions() {
+  let noAction=0, reteach=0, strengthen=0, addTest=0, addBoth=0;
+  grades.forEach(g => {
+    gradeData[g].standards.forEach(s => {
+      const a = s.action.toLowerCase();
+      if(a.includes('no action')) noAction++;
+      else if(a.includes('add to test') && a.includes('add to curriculum')) addBoth++;
+      else if(a.includes('add to test')) addTest++;
+      else if(a.includes('urgent') || (a.includes('reteach') && !a.includes('strengthen'))) reteach++;
+      else if(a.includes('strengthen')) strengthen++;
+      else reteach++;
+    });
+  });
+  return [noAction, strengthen, reteach, addTest, addBoth];
+}
+const actions = countActions();
+new Chart(document.getElementById('actionChart'), {
+  type: 'pie',
+  data: {
+    labels: ['No Action Needed', 'Strengthen Curriculum', 'Reteach Needed', 'Add to Tests', 'Add Test + Curriculum'],
+    datasets: [{
+      data: actions,
+      backgroundColor: ['#38a169', '#d69e2e', '#ed8936', '#e53e3e', '#9b2c2c'],
+      borderWidth: 2
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+});
+
+// 5) Questions to add bar
+new Chart(document.getElementById('questionsChart'), {
+  type: 'bar',
+  data: {
+    labels: gradeLabels,
+    datasets: [{ label: 'Test Questions to Write', data: grades.map(g => gradeData[g].questionsToAdd), backgroundColor: '#e53e3e', borderRadius: 6 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+
+// 6) Lessons to add bar
+new Chart(document.getElementById('lessonsChart'), {
+  type: 'bar',
+  data: {
+    labels: gradeLabels,
+    datasets: [{ label: 'Lessons to Add/Strengthen', data: grades.map(g => gradeData[g].lessonsToAdd), backgroundColor: '#d69e2e', borderRadius: 6 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+
+// ============ URGENT LIST ============
+const urgentItems = [];
+grades.forEach(g => {
+  gradeData[g].struggles.filter(s => s.accuracy < 50).forEach(s => {
+    urgentItems.push({...s, grade: g});
+  });
+});
+urgentItems.sort((a,b) => a.accuracy - b.accuracy);
+
+const urgentEl = document.getElementById('urgentList');
+urgentItems.forEach(item => {
+  urgentEl.innerHTML += `
+    <div class="urgent-item">
+      <span class="grade-tag">G${item.grade}</span>
+      <span class="acc">${item.accuracy}%</span>
+      <span class="std">${item.std}</span>
+      <span class="desc">${item.fraction} correct · ${domainNames[item.domain] || item.domain}</span>
+    </div>`;
+});
+
+// ============ GRADE TABS ============
+let currentGrade = 3;
+let gradeChart = null;
+
+const tabRow = document.getElementById('gradeTabs');
+grades.forEach(g => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (g === 3 ? ' active' : '');
+  btn.textContent = 'Grade ' + g;
+  btn.onclick = () => selectGrade(g);
+  tabRow.appendChild(btn);
+});
+
+function selectGrade(g) {
+  currentGrade = g;
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.className = 'tab-btn' + (grades[i] === g ? ' active' : '');
+  });
+  renderGradeDetail(g);
+}
+
+function getBadge(action) {
+  const a = action.toLowerCase();
+  if(a.includes('urgent')) return '<span class="badge badge-red">URGENT</span>';
+  if(a.includes('add to test') && a.includes('add to curriculum')) return '<span class="badge badge-red">Add Test + Curriculum</span>';
+  if(a.includes('add to test')) return '<span class="badge badge-yellow">Add to Test</span>';
+  if(a.includes('reteach') && a.includes('strengthen')) return '<span class="badge badge-yellow">Strengthen + Reteach</span>';
+  if(a.includes('reteach')) return '<span class="badge badge-yellow">Reteach</span>';
+  if(a.includes('strengthen')) return '<span class="badge badge-blue">Strengthen</span>';
+  if(a.includes('add to curriculum')) return '<span class="badge badge-blue">Add Curriculum</span>';
+  if(a.includes('no action')) return '<span class="badge badge-green">On Track</span>';
+  return '<span class="badge badge-gray">'+action+'</span>';
+}
+
+function renderGradeDetail(g) {
+  const data = gradeData[g];
+  document.getElementById('gradeChartTitle').textContent = `Grade ${g} — Standards Readiness (${data.curriculum})`;
+  document.getElementById('gradeTableTitle').textContent = `Grade ${g} — All ${data.mapStandards} MAP Standards`;
+
+  // Chart: accuracy of tested standards
+  const tested = data.standards.filter(s => s.tested === 'Y' && s.accuracy !== 'N/A');
+  const labels = tested.map(s => s.std);
+  const values = tested.map(s => parseFloat(s.accuracy));
+  const colors = values.map(v => v >= 75 ? '#38a169' : v >= 50 ? '#d69e2e' : '#e53e3e');
+
+  if(gradeChart) gradeChart.destroy();
+  gradeChart = new Chart(document.getElementById('gradeDetailChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Student Accuracy %', data: values, backgroundColor: colors, borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        annotation: {}
+      },
+      scales: {
+        x: { min: 0, max: 100, title: { display: true, text: 'Accuracy %' } }
+      }
+    }
+  });
+
+  // Table
+  let html = '<table><thead><tr><th>Standard</th><th>Domain</th><th>Tested?</th><th>Taught?</th><th>Accuracy</th><th>Action</th></tr></thead><tbody>';
+  data.standards.forEach(s => {
+    const accVal = s.accuracy === 'N/A' ? null : parseFloat(s.accuracy);
+    const accColor = accVal === null ? '' : accVal >= 75 ? 'color:#38a169;font-weight:700' : accVal >= 50 ? 'color:#d69e2e;font-weight:700' : 'color:#e53e3e;font-weight:700';
+    html += `<tr>
+      <td style="font-weight:600">${s.std}</td>
+      <td><span style="color:${domainColors[s.domain] || '#666'};font-weight:600">${domainNames[s.domain] || s.domain}</span></td>
+      <td>${s.tested === 'Y' ? '✅' : '❌'}</td>
+      <td>${s.taught === 'Y' ? '✅' : s.taught === 'Weak' ? '⚠️' : '❌'}</td>
+      <td style="${accColor}">${s.accuracy}</td>
+      <td>${getBadge(s.action)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('gradeTableWrap').innerHTML = html;
+}
+
+// ============ PRIORITY TABLE ============
+function renderPriorityTable() {
+  const items = [];
+  grades.forEach(g => {
+    gradeData[g].standards.forEach(s => {
+      if(s.action.toLowerCase().includes('add to test') && s.action.toLowerCase().includes('add to curriculum')) {
+        items.push({grade: g, ...s});
+      }
+    });
+  });
+  let html = '<table><thead><tr><th>Grade</th><th>Standard</th><th>Domain</th><th>Priority</th></tr></thead><tbody>';
+  items.forEach(s => {
+    html += `<tr>
+      <td style="font-weight:700">G${s.grade}</td>
+      <td style="font-weight:600">${s.std}</td>
+      <td><span style="color:${domainColors[s.domain] || '#666'};font-weight:600">${domainNames[s.domain] || s.domain}</span></td>
+      <td><span class="badge badge-red">Needs Test + Curriculum</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('priorityTableWrap').innerHTML = html;
+}
+
+// ============ FULL MATRIX TABLE ============
+function renderMatrixTable() {
+  const allStds = [];
+  grades.forEach(g => {
+    gradeData[g].standards.forEach(s => {
+      allStds.push({grade: g, ...s});
+    });
+  });
+  let html = '<table><thead><tr><th>Grade</th><th>Standard</th><th>Domain</th><th>Tested?</th><th>Taught?</th><th>Accuracy</th><th>Action</th></tr></thead><tbody>';
+  allStds.forEach(s => {
+    const accVal = s.accuracy === 'N/A' ? null : parseFloat(s.accuracy);
+    const accColor = accVal === null ? '' : accVal >= 75 ? 'color:#38a169;font-weight:700' : accVal >= 50 ? 'color:#d69e2e;font-weight:700' : 'color:#e53e3e;font-weight:700';
+    html += `<tr>
+      <td style="font-weight:700">G${s.grade}</td>
+      <td style="font-weight:600">${s.std}</td>
+      <td><span style="color:${domainColors[s.domain] || '#666'}">${domainNames[s.domain] || s.domain}</span></td>
+      <td>${s.tested === 'Y' ? '✅' : '❌'}</td>
+      <td>${s.taught === 'Y' ? '✅' : s.taught === 'Weak' ? '⚠️' : '❌'}</td>
+      <td style="${accColor}">${s.accuracy}</td>
+      <td>${getBadge(s.action)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('matrixTableWrap').innerHTML = html;
+}
+
+// ============ INIT ============
+renderGradeDetail(3);
+renderPriorityTable();
+renderMatrixTable();
+</script>
+</body>
+</html>
