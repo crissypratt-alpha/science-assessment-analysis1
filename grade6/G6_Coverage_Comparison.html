@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 Science Coverage Comparison</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 30px;
+            line-height: 1.5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+        .header p {
+            font-size: 15px;
+            color: #94a3b8;
+        }
+        .header .band-note {
+            font-size: 13px;
+            color: #f59e0b;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+        .legend-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .legend-dot.covered { background: #22c55e; }
+        .legend-dot.partial { background: #f59e0b; }
+        .legend-dot.missing { background: #ef4444; }
+        .legend-dot.na { background: #334155; border: 1px dashed #64748b; }
+
+        /* Column headers */
+        .col-headers {
+            display: grid;
+            grid-template-columns: 300px repeat(4, 1fr);
+            gap: 2px;
+            margin-bottom: 4px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #0f172a;
+            padding-bottom: 8px;
+        }
+        .col-header {
+            text-align: center;
+            padding: 12px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 8px 8px 0 0;
+        }
+        .col-header.ngss-h { background: #1e3a5f; color: #7dd3fc; }
+        .col-header.map-h { background: #3b1764; color: #c084fc; }
+        .col-header.skill-h { background: #1a3a2a; color: #86efac; }
+        .col-header.test-h { background: #3b1a1a; color: #fca5a5; }
+        .col-header .subtitle {
+            display: block;
+            font-size: 10px;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 2px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        /* Domain sections */
+        .domain-section {
+            margin-bottom: 20px;
+        }
+        .domain-header {
+            display: grid;
+            grid-template-columns: 300px repeat(4, 1fr);
+            gap: 2px;
+            margin-bottom: 2px;
+        }
+        .domain-label {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 6px 0 0 0;
+        }
+        .domain-label.life { background: #166534; color: #bbf7d0; }
+        .domain-label.physical { background: #1e40af; color: #bfdbfe; }
+        .domain-label.earth { background: #92400e; color: #fde68a; }
+        .domain-label.engineering { background: #6b21a8; color: #e9d5ff; }
+
+        .domain-fill {
+            padding: 10px;
+        }
+        .domain-fill.life { background: #14532d; }
+        .domain-fill.physical { background: #1e3a8a; }
+        .domain-fill.earth { background: #78350f; }
+        .domain-fill.engineering { background: #581c87; }
+
+        /* Standard rows */
+        .standard-row {
+            display: grid;
+            grid-template-columns: 300px repeat(4, 1fr);
+            gap: 2px;
+            margin-bottom: 2px;
+        }
+        .standard-info {
+            padding: 10px 16px;
+            background: #1e293b;
+            border-left: 4px solid transparent;
+        }
+        .standard-info.life-border { border-left-color: #22c55e; }
+        .standard-info.physical-border { border-left-color: #3b82f6; }
+        .standard-info.earth-border { border-left-color: #f59e0b; }
+        .standard-info.engineering-border { border-left-color: #a855f7; }
+
+        .standard-code {
+            font-size: 12px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+        }
+        .standard-desc {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 8px;
+            background: #1e293b;
+            text-align: center;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-badge.covered { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .status-badge.partial { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .status-badge.missing { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .status-badge.na { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+
+        .status-icon { font-size: 13px; }
+
+        .cell-detail {
+            font-size: 10px;
+            color: #64748b;
+            max-width: 160px;
+            line-height: 1.3;
+        }
+
+        /* Summary cards */
+        .summary-section {
+            margin-top: 50px;
+        }
+        .summary-section h2 {
+            text-align: center;
+            font-size: 22px;
+            color: #f8fafc;
+            margin-bottom: 24px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .summary-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .summary-card .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .summary-card.ngss-card .card-title { color: #7dd3fc; }
+        .summary-card.map-card .card-title { color: #c084fc; }
+        .summary-card.skill-card .card-title { color: #86efac; }
+        .summary-card.test-card .card-title { color: #fca5a5; }
+
+        .big-number {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .big-number.ngss-num { color: #38bdf8; }
+        .big-number.map-num { color: #a78bfa; }
+        .big-number.skill-num { color: #4ade80; }
+        .big-number.test-num { color: #f87171; }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .card-fraction {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Domain breakdown bars */
+        .domain-breakdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .breakdown-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+        }
+        .breakdown-card h3 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+        }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .bar-label {
+            font-size: 11px;
+            color: #94a3b8;
+            width: 50px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .bar-track {
+            flex: 1;
+            height: 20px;
+            background: #0f172a;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .bar-fill.life-bar { background: linear-gradient(90deg, #166534, #22c55e); }
+        .bar-fill.physical-bar { background: linear-gradient(90deg, #1e40af, #3b82f6); }
+        .bar-fill.earth-bar { background: linear-gradient(90deg, #92400e, #f59e0b); }
+        .bar-fill.eng-bar { background: linear-gradient(90deg, #6b21a8, #a855f7); }
+        .bar-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #e2e8f0;
+            width: 32px;
+            flex-shrink: 0;
+        }
+
+        /* Takeaway section */
+        .takeaways {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid #334155;
+            margin-top: 40px;
+        }
+        .takeaways h2 {
+            font-size: 18px;
+            color: #f8fafc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .takeaway-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .takeaway-item {
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .takeaway-item.good { background: rgba(34, 197, 94, 0.08); border-left-color: #22c55e; }
+        .takeaway-item.warn { background: rgba(245, 158, 11, 0.08); border-left-color: #f59e0b; }
+        .takeaway-item.bad { background: rgba(239, 68, 68, 0.08); border-left-color: #ef4444; }
+        .takeaway-item.info { background: rgba(59, 130, 246, 0.08); border-left-color: #3b82f6; }
+
+        .takeaway-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+        }
+        .takeaway-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .summary-grid, .domain-breakdown { grid-template-columns: repeat(2, 1fr); }
+            .col-headers, .domain-header, .standard-row {
+                grid-template-columns: 200px repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Grade 6 Science: Coverage Comparison</h1>
+    <p>NGSS MS Standards vs. MAP Science 6-8 vs. MobyMax 6-8 Skill Plan vs. Alpha G6.1 Test</p>
+    <p class="band-note">Note: NGSS middle school standards (MS-PS, MS-LS, MS-ESS, MS-ETS) are banded across Grades 6-8 &mdash; they are NOT grade-specific. The skill plan is also a single 6-8 band. The tests ARE grade-specific.</p>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+    <div class="legend-item"><div class="legend-dot covered"></div> Fully Covered</div>
+    <div class="legend-item"><div class="legend-dot partial"></div> Partial / Implicit</div>
+    <div class="legend-item"><div class="legend-dot missing"></div> Not Covered</div>
+    <div class="legend-item"><div class="legend-dot na"></div> N/A (out of grade band)</div>
+</div>
+
+<!-- Summary Cards -->
+<div class="summary-grid">
+    <div class="summary-card ngss-card">
+        <div class="card-title">NGSS MS (G6 Focus)</div>
+        <div class="big-number ngss-num">17</div>
+        <div class="card-subtitle">Performance Expectations</div>
+        <div class="card-fraction">Subset of MS band relevant to G6</div>
+    </div>
+    <div class="summary-card map-card">
+        <div class="card-title">MAP Science 6-8</div>
+        <div class="big-number map-num">17</div>
+        <div class="card-subtitle">of 17 PEs Assessable</div>
+        <div class="card-fraction">Covers ALL MS NGSS standards (adaptive)</div>
+    </div>
+    <div class="summary-card skill-card">
+        <div class="card-title">MobyMax 6-8 Skill Plan</div>
+        <div class="big-number skill-num">15</div>
+        <div class="card-subtitle">of 17 PEs Taught</div>
+        <div class="card-fraction">433 lessons; engineering partially covered</div>
+    </div>
+    <div class="summary-card test-card">
+        <div class="card-title">Alpha G6.1 Test</div>
+        <div class="big-number test-num">13</div>
+        <div class="card-subtitle">of 17 PEs Tested</div>
+        <div class="card-fraction">4 standards completely missing (21 Qs)</div>
+    </div>
+</div>
+
+<!-- Column Headers -->
+<div class="col-headers">
+    <div></div>
+    <div class="col-header ngss-h">
+        NGSS MS (G6 Focus)
+        <span class="subtitle">The Standard</span>
+    </div>
+    <div class="col-header map-h">
+        MAP Science 6-8
+        <span class="subtitle">NWEA Assessment</span>
+    </div>
+    <div class="col-header skill-h">
+        MobyMax 6-8 Skill Plan
+        <span class="subtitle">What We Teach (433 lessons)</span>
+    </div>
+    <div class="col-header test-h">
+        Alpha G6.1 Test
+        <span class="subtitle">What We Test (21 Qs)</span>
+    </div>
+</div>
+
+<!-- LIFE SCIENCE -->
+<div class="domain-section">
+    <div class="domain-header">
+        <div class="domain-label life">Life Science</div>
+        <div class="domain-fill life"></div>
+        <div class="domain-fill life"></div>
+        <div class="domain-fill life"></div>
+        <div class="domain-fill life"></div>
+    </div>
+
+    <!-- MS-LS1-1 -->
+    <div class="standard-row">
+        <div class="standard-info life-border">
+            <div class="standard-code">MS-LS1-1</div>
+            <div class="standard-desc">Conduct investigation: living things are made of cells</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Biology: Cells unit (144 lessons total in bio)</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> 4 Qs</span>
+            <span class="cell-detail">Q6: smallest plant unit; Q7: uni/multicellular; Q12: stimuli; Q13-14: asexual repro</span>
+        </div>
+    </div>
+
+    <!-- MS-LS1-2 -->
+    <div class="standard-row">
+        <div class="standard-info life-border">
+            <div class="standard-code">MS-LS1-2</div>
+            <div class="standard-desc">Model the function of a cell and how parts contribute to function</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Biology: Cell organelles &amp; function</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q8: ribosomes make proteins</span>
+        </div>
+    </div>
+
+    <!-- MS-LS1-3 -->
+    <div class="standard-row">
+        <div class="standard-info life-border">
+            <div class="standard-code">MS-LS1-3</div>
+            <div class="standard-desc">Body is a system of interacting subsystems of cell groups</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Biology: Body systems &amp; organization</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 2 Qs</span>
+            <span class="cell-detail">Q9: circulatory system; Q10: cell-tissue-organ ordering</span>
+        </div>
+    </div>
+
+    <!-- MS-LS1-6 -->
+    <div class="standard-row">
+        <div class="standard-info life-border">
+            <div class="standard-code">MS-LS1-6</div>
+            <div class="standard-desc">Photosynthesis role in cycling of matter and flow of energy</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Biology: Photosynthesis &amp; matter-energy cycling</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge missing"><span class="status-icon">&#10008;</span> 0 Qs</span>
+            <span class="cell-detail">Not tested &mdash; core life science gap</span>
+        </div>
+    </div>
+
+    <!-- MS-LS4-2 -->
+    <div class="standard-row">
+        <div class="standard-info life-border">
+            <div class="standard-code">MS-LS4-2</div>
+            <div class="standard-desc">Anatomical similarities/differences among modern &amp; fossil organisms</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Biology: Evolution &amp; comparative anatomy</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q11: bombardier beetle defense behavior</span>
+        </div>
+    </div>
+</div>
+
+<!-- PHYSICAL SCIENCE -->
+<div class="domain-section">
+    <div class="domain-header">
+        <div class="domain-label physical">Physical Science</div>
+        <div class="domain-fill physical"></div>
+        <div class="domain-fill physical"></div>
+        <div class="domain-fill physical"></div>
+        <div class="domain-fill physical"></div>
+    </div>
+
+    <!-- MS-PS1-4 -->
+    <div class="standard-row">
+        <div class="standard-info physical-border">
+            <div class="standard-code">MS-PS1-4</div>
+            <div class="standard-desc">Model changes in particle motion, temperature, &amp; state with thermal energy</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Chemistry: States of matter &amp; particle model (68 lessons)</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q19: states of matter kinetic energy ordering</span>
+        </div>
+    </div>
+
+    <!-- MS-PS3-3 -->
+    <div class="standard-row">
+        <div class="standard-info physical-border">
+            <div class="standard-code">MS-PS3-3</div>
+            <div class="standard-desc">Design, construct, test device for thermal energy transfer</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Physics: Thermal energy transfer (64 lessons total in physics)</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q18: thermal conductors/insulators</span>
+        </div>
+    </div>
+
+    <!-- MS-PS3-4 -->
+    <div class="standard-row">
+        <div class="standard-info physical-border">
+            <div class="standard-code">MS-PS3-4</div>
+            <div class="standard-desc">Investigate energy transfer, matter type, mass, &amp; temperature change</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Physics: Energy transfer &amp; temperature</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q20: mass affects temperature change</span>
+        </div>
+    </div>
+
+    <!-- MS-PS3-5 -->
+    <div class="standard-row">
+        <div class="standard-info physical-border">
+            <div class="standard-code">MS-PS3-5</div>
+            <div class="standard-desc">When kinetic energy changes, energy is transferred to/from object</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Physics: Kinetic energy &amp; energy transfer</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 1 Q</span>
+            <span class="cell-detail">Q21: kinetic energy increase examples</span>
+        </div>
+    </div>
+
+    <!-- MS-PS4-2 -->
+    <div class="standard-row">
+        <div class="standard-info physical-border">
+            <div class="standard-code">MS-PS4-2</div>
+            <div class="standard-desc">Waves reflected, absorbed, or transmitted through materials</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> Partial</span>
+            <span class="cell-detail">MS Physics covers waves but limited dedicated content</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge missing"><span class="status-icon">&#10008;</span> 0 Qs</span>
+            <span class="cell-detail">Not tested despite MAP assessing it</span>
+        </div>
+    </div>
+</div>
+
+<!-- EARTH & SPACE SCIENCE -->
+<div class="domain-section">
+    <div class="domain-header">
+        <div class="domain-label earth">Earth &amp; Space Science</div>
+        <div class="domain-fill earth"></div>
+        <div class="domain-fill earth"></div>
+        <div class="domain-fill earth"></div>
+        <div class="domain-fill earth"></div>
+    </div>
+
+    <!-- MS-ESS2-4 -->
+    <div class="standard-row">
+        <div class="standard-info earth-border">
+            <div class="standard-code">MS-ESS2-4</div>
+            <div class="standard-desc">Model cycling of water through Earth's systems (sun &amp; gravity)</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Earth &amp; Space: Water cycle (75 lessons total in ESS)</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 2 Qs</span>
+            <span class="cell-detail">Q1: evaporation; Q4: gravity/sun forces in water cycle</span>
+        </div>
+    </div>
+
+    <!-- MS-ESS2-5 -->
+    <div class="standard-row">
+        <div class="standard-info earth-border">
+            <div class="standard-code">MS-ESS2-5</div>
+            <div class="standard-desc">Air mass motions &amp; interactions cause weather changes</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Earth &amp; Space: Weather &amp; air masses</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 3 Qs</span>
+            <span class="cell-detail">Q2-3: continental tropical air mass; Q16: N. Hemisphere air mass motion</span>
+        </div>
+    </div>
+
+    <!-- MS-ESS2-6 -->
+    <div class="standard-row">
+        <div class="standard-info earth-border">
+            <div class="standard-code">MS-ESS2-6</div>
+            <div class="standard-desc">Unequal heating &amp; rotation cause atmospheric/oceanic circulation patterns</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Earth &amp; Space: Climate patterns &amp; circulation</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> 2 Qs</span>
+            <span class="cell-detail">Q5: rain shadow effect; Q15: ocean currents &amp; climate</span>
+        </div>
+    </div>
+
+    <!-- MS-ESS3-3 -->
+    <div class="standard-row">
+        <div class="standard-info earth-border">
+            <div class="standard-code">MS-ESS3-3</div>
+            <div class="standard-desc">Design method for monitoring/minimizing human environmental impact</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Earth &amp; Space: Human impact on environment</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> 1 Q</span>
+            <span class="cell-detail">Q17: coral reef conservation (partial &mdash; overlaps ETS1-2)</span>
+        </div>
+    </div>
+
+    <!-- MS-ESS3-4 -->
+    <div class="standard-row">
+        <div class="standard-info earth-border">
+            <div class="standard-code">MS-ESS3-4</div>
+            <div class="standard-desc">Human population growth &amp; resource consumption impact Earth's systems</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge covered"><span class="status-icon">&#10004;</span> Taught</span>
+            <span class="cell-detail">MS Earth &amp; Space: Human impact &amp; resources</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge missing"><span class="status-icon">&#10008;</span> 0 Qs</span>
+            <span class="cell-detail">Not tested</span>
+        </div>
+    </div>
+</div>
+
+<!-- ENGINEERING DESIGN -->
+<div class="domain-section">
+    <div class="domain-header">
+        <div class="domain-label engineering">Engineering Design (MS shared)</div>
+        <div class="domain-fill engineering"></div>
+        <div class="domain-fill engineering"></div>
+        <div class="domain-fill engineering"></div>
+        <div class="domain-fill engineering"></div>
+    </div>
+
+    <!-- MS-ETS1-1 -->
+    <div class="standard-row">
+        <div class="standard-info engineering-border">
+            <div class="standard-code">MS-ETS1-1</div>
+            <div class="standard-desc">Define criteria &amp; constraints of a design problem</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> Partial</span>
+            <span class="cell-detail">Implicit in science investigations; no dedicated lessons</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge missing"><span class="status-icon">&#10008;</span> 0 Qs</span>
+            <span class="cell-detail">Not tested</span>
+        </div>
+    </div>
+
+    <!-- MS-ETS1-2 -->
+    <div class="standard-row">
+        <div class="standard-info engineering-border">
+            <div class="standard-code">MS-ETS1-2</div>
+            <div class="standard-desc">Evaluate competing design solutions systematically</div>
+        </div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Required</span></div>
+        <div class="cell"><span class="status-badge covered"><span class="status-icon">&#10004;</span> Assessed</span></div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> Partial</span>
+            <span class="cell-detail">Implicit in science investigations; no dedicated lessons</span>
+        </div>
+        <div class="cell">
+            <span class="status-badge partial"><span class="status-icon">&#9888;</span> 1 Q</span>
+            <span class="cell-detail">Q17: coral reef conservation design evaluation (shared with ESS3-3)</span>
+        </div>
+    </div>
+</div>
+
+<!-- DOMAIN BREAKDOWN BARS -->
+<div class="summary-section">
+    <h2>Questions by Domain: G6.1 Distribution vs. NGSS</h2>
+    <p style="text-align:center; color:#94a3b8; font-size:13px; margin-bottom:24px;">
+        NGSS distributes PEs roughly evenly across domains. The G6.1 test is relatively balanced but still has gaps.
+    </p>
+</div>
+
+<div class="domain-breakdown">
+    <div class="breakdown-card">
+        <h3>NGSS Standard (PEs)</h3>
+        <div class="bar-row">
+            <div class="bar-label">Life</div>
+            <div class="bar-track"><div class="bar-fill life-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Phys</div>
+            <div class="bar-track"><div class="bar-fill physical-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Earth</div>
+            <div class="bar-track"><div class="bar-fill earth-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Eng</div>
+            <div class="bar-track"><div class="bar-fill eng-bar" style="width:12%"></div></div>
+            <div class="bar-value">2</div>
+        </div>
+    </div>
+
+    <div class="breakdown-card">
+        <h3>MAP Science 6-8</h3>
+        <div class="bar-row">
+            <div class="bar-label">Life</div>
+            <div class="bar-track"><div class="bar-fill life-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Phys</div>
+            <div class="bar-track"><div class="bar-fill physical-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Earth</div>
+            <div class="bar-track"><div class="bar-fill earth-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Eng</div>
+            <div class="bar-track"><div class="bar-fill eng-bar" style="width:12%"></div></div>
+            <div class="bar-value">2</div>
+        </div>
+    </div>
+
+    <div class="breakdown-card">
+        <h3>MobyMax 6-8 Skill Plan</h3>
+        <div class="bar-row">
+            <div class="bar-label">Life</div>
+            <div class="bar-track"><div class="bar-fill life-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Phys</div>
+            <div class="bar-track"><div class="bar-fill physical-bar" style="width:26%"></div></div>
+            <div class="bar-value">4-5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Earth</div>
+            <div class="bar-track"><div class="bar-fill earth-bar" style="width:29%"></div></div>
+            <div class="bar-value">5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Eng</div>
+            <div class="bar-track"><div class="bar-fill eng-bar" style="width:6%"></div></div>
+            <div class="bar-value">~1</div>
+        </div>
+    </div>
+
+    <div class="breakdown-card">
+        <h3>Alpha G6.1 Test</h3>
+        <div class="bar-row">
+            <div class="bar-label">Life</div>
+            <div class="bar-track"><div class="bar-fill life-bar" style="width:47%"></div></div>
+            <div class="bar-value">4/5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Phys</div>
+            <div class="bar-track"><div class="bar-fill physical-bar" style="width:47%"></div></div>
+            <div class="bar-value">4/5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Earth</div>
+            <div class="bar-track"><div class="bar-fill earth-bar" style="width:35%"></div></div>
+            <div class="bar-value">3/5</div>
+        </div>
+        <div class="bar-row">
+            <div class="bar-label">Eng</div>
+            <div class="bar-track"><div class="bar-fill eng-bar" style="width:6%"></div></div>
+            <div class="bar-value">1/2</div>
+        </div>
+    </div>
+</div>
+
+<!-- KEY TAKEAWAYS -->
+<div class="takeaways">
+    <h2>Key Takeaways</h2>
+    <div class="takeaway-grid">
+        <div class="takeaway-item info">
+            <div class="takeaway-title">MAP Science 6-8 covers all MS NGSS PEs</div>
+            <div class="takeaway-text">MAP Science 6-8 is aligned to ALL middle school NGSS performance expectations. Since MS standards are banded across Grades 6-8 (not grade-specific), the adaptive test draws from the full MS standard set. Students will encounter questions on every domain and standard.</div>
+        </div>
+        <div class="takeaway-item good">
+            <div class="takeaway-title">The 6-8 skill plan is robust with 433 lessons</div>
+            <div class="takeaway-text">MS Biology is especially strong with 144 lessons covering cells, body systems, photosynthesis, and evolution. Chemistry (68 lessons), Physics (64 lessons), and Earth &amp; Space (75 lessons) provide solid coverage. 15 of 17 G6-focus PEs are taught through the single 6-8 band.</div>
+        </div>
+        <div class="takeaway-item warn">
+            <div class="takeaway-title">G6.1 test is relatively balanced but still missing 4 standards</div>
+            <div class="takeaway-text">Unlike the heavily skewed G3 and G4 tests, G6.1 distributes questions more evenly across life science, physical science, and earth science. However, photosynthesis (MS-LS1-6), waves (MS-PS4-2), human population impact (MS-ESS3-4), and design problem definition (MS-ETS1-1) are completely absent.</div>
+        </div>
+        <div class="takeaway-item bad">
+            <div class="takeaway-title">Photosynthesis/matter-energy cycling (MS-LS1-6) completely untested</div>
+            <div class="takeaway-text">This is a core life science standard about photosynthesis and the cycling of matter and flow of energy. Despite being taught in the 144-lesson biology unit and assessed on MAP, the G6.1 test has zero questions on it. Students could have no understanding of this foundational concept and the test would not detect it.</div>
+        </div>
+        <div class="takeaway-item warn">
+            <div class="takeaway-title">Waves (MS-PS4-2) untested despite MAP assessing it</div>
+            <div class="takeaway-text">The wave model standard &mdash; how waves are reflected, absorbed, or transmitted through materials &mdash; is not tested on G6.1 and only partially covered in the skill plan. MAP will assess this. Students may be underprepared in this area.</div>
+        </div>
+        <div class="takeaway-item info">
+            <div class="takeaway-title">Only 21 questions total &mdash; fewer than G3 (30) or G4 (31)</div>
+            <div class="takeaway-text">With only 21 questions covering 17 target PEs, the G6.1 test has about 1.2 questions per standard on average. This limits the breadth of coverage achievable and means some standards will inevitably go untested. Consider whether the question count should be expanded for better coverage.</div>
+        </div>
+    </div>
+</div>
+
+<div style="text-align:center; margin-top:40px; padding:20px; color:#64748b; font-size:11px;">
+    Grade 6 Science Coverage Comparison &bull; NGSS MS Standards vs MAP Science 6-8 vs MobyMax 6-8 Skill Plan vs Alpha G6.1 Test<br>
+    Generated February 2025
+</div>
+
+</body>
+</html>
