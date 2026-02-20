@@ -19,10 +19,10 @@
   <div class="grade-tabs">
     <a class="grade-tab active" href="#" onclick="switchGrade(3);return false;" id="tab3">Grade 3<span class="tab-sub">18 tests</span></a>
     <a class="grade-tab" href="#" onclick="switchGrade(4);return false;" id="tab4">Grade 4<span class="tab-sub">16 tests</span></a>
-    <a class="grade-tab disabled">Grade 5<span class="tab-sub">coming soon</span></a>
-    <a class="grade-tab disabled">Grade 6<span class="tab-sub">coming soon</span></a>
-    <a class="grade-tab disabled">Grade 7<span class="tab-sub">coming soon</span></a>
-    <a class="grade-tab disabled">Grade 8<span class="tab-sub">coming soon</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(5);return false;" id="tab5">Grade 5<span class="tab-sub">15 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(6);return false;" id="tab6">Grade 6<span class="tab-sub">16 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(7);return false;" id="tab7">Grade 7<span class="tab-sub">20 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(8);return false;" id="tab8">Grade 8<span class="tab-sub">16 tests</span></a>
   </div>
 
   <!-- Summary Stats -->
@@ -158,6 +158,96 @@ const GRADE4_TESTS = [
 ];
 
 // ============================================
+// GRADE 5 TEST DATA
+// ============================================
+const GRADE5_TESTS = [
+  {id:"G5.12",q:19,students:143,attempts:143,avgScore:80.5,avgCx:2.01,hol:{s:5,l:11,h:3,d:0},ind:{sc:2.1,sep:2.1,dci:2.3,ccc:1.7},status:"evaluated"},
+  {id:"G5.1",q:30,students:97,attempts:97,avgScore:87.0,avgCx:1.77,hol:{s:10,l:18,h:2,d:0},ind:{sc:1.7,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G5.13",q:23,students:69,attempts:69,avgScore:86.2,avgCx:2.0,hol:{s:6,l:14,h:2,d:1},ind:{sc:1.9,sep:2.0,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G5.14",q:23,students:21,attempts:21,avgScore:88.8,avgCx:2.3,hol:{s:3,l:14,h:6,d:0},ind:{sc:2.4,sep:2.3,dci:2.3,ccc:2.3},status:"evaluated"},
+  {id:"G5.11",q:39,students:16,attempts:16,avgScore:68.8,avgCx:1.82,hol:{s:16,l:19,h:4,d:0},ind:{sc:1.8,sep:1.7,dci:2.2,ccc:1.6},status:"evaluated"},
+  {id:"G5.15",q:23,students:7,attempts:7,avgScore:82.6,avgCx:2.39,hol:{s:3,l:12,h:7,d:1},ind:{sc:2.8,sep:2.4,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G5.16",q:21,students:5,attempts:5,avgScore:86.4,avgCx:2.11,hol:{s:4,l:13,h:4,d:0},ind:{sc:2.3,sep:2.0,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G5.17",q:22,students:3,attempts:3,avgScore:75.7,avgCx:1.9,hol:{s:8,l:11,h:3,d:0},ind:{sc:2.0,sep:1.5,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G5.18",q:34,students:2,attempts:2,avgScore:89.3,avgCx:1.74,hol:{s:19,l:10,h:5,d:0},ind:{sc:1.8,sep:1.6,dci:2.1,ccc:1.5},status:"evaluated"},
+  {id:"G5.10",q:48,students:0,attempts:0,avgScore:0,avgCx:1.41,hol:{s:41,l:6,h:1,d:0},ind:{sc:1.2,sep:1.2,dci:2.1,ccc:1.1},status:"evaluated"},
+  {id:"G5.3",q:30,students:0,attempts:0,avgScore:0,avgCx:1.36,hol:{s:26,l:4,h:0,d:0},ind:{sc:1.2,sep:1.0,dci:2.0,ccc:1.2},status:"evaluated"},
+  {id:"G5.5",q:27,students:0,attempts:0,avgScore:0,avgCx:1.78,hol:{s:13,l:11,h:3,d:0},ind:{sc:1.9,sep:1.6,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G5.6",q:23,students:0,attempts:0,avgScore:0,avgCx:1.82,hol:{s:10,l:11,h:2,d:0},ind:{sc:2.0,sep:1.6,dci:2.0,ccc:1.6},status:"evaluated"},
+  {id:"G5.7",q:30,students:0,attempts:0,avgScore:0,avgCx:1.71,hol:{s:14,l:15,h:1,d:0},ind:{sc:1.8,sep:1.5,dci:2.1,ccc:1.4},status:"evaluated"},
+  {id:"G5.9",q:29,students:0,attempts:0,avgScore:0,avgCx:1.99,hol:{s:10,l:13,h:6,d:0},ind:{sc:2.0,sep:2.0,dci:2.3,ccc:1.7},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 6 TEST DATA
+// ============================================
+const GRADE6_TESTS = [
+  {id:"G6.9",q:20,students:112,attempts:112,avgScore:76.8,avgCx:2.24,hol:{s:4,l:12,h:2,d:2},ind:{sc:2.6,sep:1.9,dci:2.4,ccc:2.0},status:"evaluated"},
+  {id:"G6.1",q:18,students:74,attempts:74,avgScore:80.0,avgCx:1.9,hol:{s:7,l:9,h:1,d:1},ind:{sc:2.3,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G6.11",q:30,students:40,attempts:40,avgScore:73.6,avgCx:2.15,hol:{s:8,l:14,h:7,d:1},ind:{sc:2.1,sep:2.3,dci:2.2,ccc:2.1},status:"evaluated"},
+  {id:"G6.10",q:27,students:33,attempts:33,avgScore:83.6,avgCx:2.39,hol:{s:0,l:16,h:11,d:0},ind:{sc:2.7,sep:2.6,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G6.8",q:39,students:21,attempts:21,avgScore:78.6,avgCx:2.1,hol:{s:9,l:22,h:8,d:0},ind:{sc:2.1,sep:2.2,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G6.13",q:37,students:4,attempts:4,avgScore:79.3,avgCx:1.97,hol:{s:10,l:21,h:6,d:0},ind:{sc:2.2,sep:2.0,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G6.12",q:25,students:3,attempts:3,avgScore:89.3,avgCx:2.04,hol:{s:6,l:17,h:1,d:1},ind:{sc:2.1,sep:1.9,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G6.14",q:39,students:1,attempts:1,avgScore:87.5,avgCx:2.17,hol:{s:7,l:23,h:9,d:0},ind:{sc:2.3,sep:2.3,dci:2.1,ccc:2.0},status:"evaluated"},
+  {id:"G6.2",q:20,students:0,attempts:0,avgScore:0,avgCx:2.2,hol:{s:4,l:12,h:4,d:0},ind:{sc:2.3,sep:2.0,dci:2.3,ccc:2.2},status:"evaluated"},
+  {id:"G6.3",q:31,students:0,attempts:0,avgScore:0,avgCx:1.95,hol:{s:6,l:24,h:1,d:0},ind:{sc:2.0,sep:1.7,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G6.4",q:26,students:0,attempts:0,avgScore:0,avgCx:1.89,hol:{s:10,l:12,h:4,d:0},ind:{sc:2.0,sep:1.7,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G6.5",q:37,students:0,attempts:0,avgScore:0,avgCx:1.78,hol:{s:15,l:22,h:0,d:0},ind:{sc:1.7,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G6.6",q:36,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:19,l:17,h:0,d:0},ind:{sc:1.7,sep:1.3,dci:1.9,ccc:1.6},status:"evaluated"},
+  {id:"G6.7",q:35,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:21,l:12,h:2,d:0},ind:{sc:1.6,sep:1.5,dci:2.1,ccc:1.3},status:"evaluated"},
+  {id:"G6.15",q:26,students:0,attempts:0,avgScore:0,avgCx:1.62,hol:{s:18,l:6,h:2,d:0},ind:{sc:1.5,sep:1.4,dci:2.1,ccc:1.4},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 7 TEST DATA
+// ============================================
+const GRADE7_TESTS = [
+  {id:"G7.13",q:32,students:64,attempts:64,avgScore:80.3,avgCx:2.07,hol:{s:9,l:17,h:6,d:0},ind:{sc:2.2,sep:2.1,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.15",q:32,students:24,attempts:24,avgScore:85.1,avgCx:2.07,hol:{s:7,l:20,h:5,d:0},ind:{sc:2.2,sep:2.1,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.16",q:29,students:10,attempts:10,avgScore:84.3,avgCx:1.99,hol:{s:9,l:15,h:5,d:0},ind:{sc:2.1,sep:1.8,dci:2.1,ccc:2.0},status:"evaluated"},
+  {id:"G7.17",q:36,students:5,attempts:5,avgScore:87.6,avgCx:1.69,hol:{s:19,l:15,h:2,d:0},ind:{sc:1.8,sep:1.4,dci:2.1,ccc:1.5},status:"evaluated"},
+  {id:"G7.19",q:23,students:2,attempts:2,avgScore:89.2,avgCx:1.82,hol:{s:11,l:10,h:2,d:0},ind:{sc:2.0,sep:1.4,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G7.18",q:32,students:2,attempts:2,avgScore:76.7,avgCx:1.74,hol:{s:16,l:13,h:3,d:0},ind:{sc:1.8,sep:1.5,dci:2.1,ccc:1.6},status:"evaluated"},
+  {id:"G7.20",q:36,students:1,attempts:1,avgScore:58.2,avgCx:2.03,hol:{s:11,l:17,h:8,d:0},ind:{sc:2.1,sep:2.0,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.21",q:40,students:1,attempts:1,avgScore:94.3,avgCx:2.03,hol:{s:10,l:24,h:6,d:0},ind:{sc:2.2,sep:1.9,dci:2.3,ccc:1.7},status:"evaluated"},
+  {id:"G7.1",q:34,students:0,attempts:0,avgScore:0,avgCx:1.84,hol:{s:16,l:14,h:4,d:0},ind:{sc:2.0,sep:1.4,dci:2.1,ccc:1.9},status:"evaluated"},
+  {id:"G7.2",q:30,students:0,attempts:0,avgScore:0,avgCx:2.22,hol:{s:7,l:16,h:3,d:4},ind:{sc:2.4,sep:2.0,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G7.3",q:33,students:0,attempts:0,avgScore:0,avgCx:1.77,hol:{s:14,l:17,h:2,d:0},ind:{sc:1.9,sep:1.4,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G7.4",q:38,students:0,attempts:0,avgScore:0,avgCx:1.63,hol:{s:22,l:16,h:0,d:0},ind:{sc:1.6,sep:1.4,dci:1.9,ccc:1.6},status:"evaluated"},
+  {id:"G7.5",q:35,students:0,attempts:0,avgScore:0,avgCx:2.08,hol:{s:11,l:18,h:4,d:2},ind:{sc:2.2,sep:1.8,dci:2.3,ccc:2.0},status:"evaluated"},
+  {id:"G7.7",q:40,students:0,attempts:0,avgScore:0,avgCx:1.54,hol:{s:28,l:11,h:1,d:0},ind:{sc:1.4,sep:1.3,dci:2.0,ccc:1.4},status:"evaluated"},
+  {id:"G7.8",q:34,students:0,attempts:0,avgScore:0,avgCx:1.74,hol:{s:18,l:13,h:3,d:0},ind:{sc:1.8,sep:1.5,dci:2.2,ccc:1.5},status:"evaluated"},
+  {id:"G7.9",q:31,students:0,attempts:0,avgScore:0,avgCx:1.89,hol:{s:11,l:18,h:2,d:0},ind:{sc:2.0,sep:1.5,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G7.10",q:46,students:0,attempts:0,avgScore:0,avgCx:2.22,hol:{s:12,l:21,h:13,d:0},ind:{sc:2.3,sep:2.2,dci:2.3,ccc:2.0},status:"evaluated"},
+  {id:"G7.11",q:48,students:0,attempts:0,avgScore:0,avgCx:1.72,hol:{s:27,l:14,h:7,d:0},ind:{sc:1.7,sep:1.6,dci:2.2,ccc:1.4},status:"evaluated"},
+  {id:"G7.12",q:51,students:0,attempts:0,avgScore:0,avgCx:1.84,hol:{s:25,l:20,h:5,d:1},ind:{sc:1.9,sep:1.5,dci:2.3,ccc:1.6},status:"evaluated"},
+  {id:"G7.14",q:33,students:0,attempts:0,avgScore:0,avgCx:1.74,hol:{s:15,l:17,h:1,d:0},ind:{sc:2.0,sep:1.3,dci:2.1,ccc:1.6},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 8 TEST DATA
+// ============================================
+const GRADE8_TESTS = [
+  {id:"G8.11",q:34,students:68,attempts:68,avgScore:82.1,avgCx:2.07,hol:{s:7,l:17,h:10,d:0},ind:{sc:2.1,sep:1.9,dci:2.4,ccc:1.9},status:"evaluated"},
+  {id:"G8.12",q:30,students:47,attempts:47,avgScore:88.8,avgCx:2.05,hol:{s:2,l:25,h:3,d:0},ind:{sc:2.3,sep:1.9,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G8.10",q:50,students:23,attempts:23,avgScore:84.3,avgCx:2.0,hol:{s:22,l:16,h:11,d:1},ind:{sc:1.9,sep:1.9,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.13",q:30,students:15,attempts:15,avgScore:80.2,avgCx:2.27,hol:{s:4,l:19,h:7,d:0},ind:{sc:2.4,sep:2.4,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G8.14",q:30,students:8,attempts:8,avgScore:86.5,avgCx:1.99,hol:{s:10,l:17,h:3,d:0},ind:{sc:2.0,sep:1.8,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G8.15",q:29,students:3,attempts:3,avgScore:93.3,avgCx:2.14,hol:{s:3,l:22,h:4,d:0},ind:{sc:2.2,sep:2.2,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.16",q:39,students:1,attempts:1,avgScore:73.8,avgCx:2.28,hol:{s:3,l:28,h:8,d:0},ind:{sc:2.6,sep:2.1,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G8.1",q:27,students:0,attempts:0,avgScore:0,avgCx:2.25,hol:{s:5,l:15,h:6,d:1},ind:{sc:2.6,sep:1.9,dci:2.5,ccc:2.0},status:"evaluated"},
+  {id:"G8.2",q:34,students:0,attempts:0,avgScore:0,avgCx:2.06,hol:{s:9,l:21,h:4,d:0},ind:{sc:2.3,sep:1.8,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.3",q:42,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:25,l:17,h:0,d:0},ind:{sc:1.8,sep:1.2,dci:2.0,ccc:1.4},status:"evaluated"},
+  {id:"G8.4",q:42,students:0,attempts:0,avgScore:0,avgCx:1.9,hol:{s:16,l:21,h:5,d:0},ind:{sc:2.0,sep:1.5,dci:2.1,ccc:1.9},status:"evaluated"},
+  {id:"G8.5",q:36,students:0,attempts:0,avgScore:0,avgCx:1.6,hol:{s:25,l:8,h:3,d:0},ind:{sc:1.6,sep:1.3,dci:2.1,ccc:1.4},status:"evaluated"},
+  {id:"G8.6",q:32,students:0,attempts:0,avgScore:0,avgCx:2.36,hol:{s:7,l:11,h:13,d:1},ind:{sc:2.6,sep:2.2,dci:2.4,ccc:2.2},status:"evaluated"},
+  {id:"G8.7",q:38,students:0,attempts:0,avgScore:0,avgCx:1.51,hol:{s:25,l:12,h:1,d:0},ind:{sc:1.4,sep:1.3,dci:2.0,ccc:1.3},status:"evaluated"},
+  {id:"G8.8",q:39,students:0,attempts:0,avgScore:0,avgCx:2.27,hol:{s:6,l:20,h:10,d:3},ind:{sc:2.4,sep:2.2,dci:2.4,ccc:2.1},status:"evaluated"},
+  {id:"G8.9",q:46,students:0,attempts:0,avgScore:0,avgCx:1.53,hol:{s:34,l:10,h:2,d:0},ind:{sc:1.4,sep:1.4,dci:2.0,ccc:1.3},status:"evaluated"},
+];
+
+// ============================================
 // STATE
 // ============================================
 let currentGrade = 3;
@@ -167,11 +257,19 @@ let currentGrade = 3;
 // ============================================
 
 function getTests() {
-  return currentGrade === 3 ? GRADE3_TESTS : GRADE4_TESTS;
+  switch(currentGrade) {
+    case 3: return GRADE3_TESTS;
+    case 4: return GRADE4_TESTS;
+    case 5: return GRADE5_TESTS;
+    case 6: return GRADE6_TESTS;
+    case 7: return GRADE7_TESTS;
+    case 8: return GRADE8_TESTS;
+    default: return GRADE3_TESTS;
+  }
 }
 
 function getGradeDir() {
-  return currentGrade === 3 ? 'grade3' : 'grade4';
+  return 'grade' + currentGrade;
 }
 
 function switchGrade(grade) {
@@ -194,7 +292,7 @@ function renderSummaryStats() {
 
   // For Grade 4, show circulation status instead of student data
   const studentLabel = currentGrade === 4 ? 'In Circulation' : 'Total Test Attempts';
-  const studentValue = currentGrade === 4 ? TESTS.filter(t => t.circ).length + ' of ' + TESTS.length : totalAttempts.toLocaleString();
+  const studentValue = currentGrade === 4 ? TESTS.filter(t => t.circ).length + ' of ' + TESTS.length : totalAttempts > 0 ? totalAttempts.toLocaleString() : '—';
   const studentSub = currentGrade === 4 ? 'tests assigned to students' : 'from TimeBack data';
 
   const html = `

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G7.2 Evaluation Dashboard — Actual vs. Achieve Targets</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>Assessment Quality Dashboard</h1>
+  <div class="header-sub">Alpha Standardized Science G7.2 &mdash; 30 Questions &mdash; Evaluated Against Achieve/MAP Cognitive Complexity Framework</div>
+</div>
+
+<div class="container">
+
+  <a href="../index.html" class="back-link">&larr; Back to Grade 7 Overview</a>
+
+  <!-- Top stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--yellow);">23%</div>
+      <div class="stat-label">Scripted</div>
+      <div class="stat-sub">7 of 30 questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--yellow);">2.22</div>
+      <div class="stat-label">Avg Complexity</div>
+      <div class="stat-sub">out of 5.0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--green);">13%</div>
+      <div class="stat-label">Doing Science</div>
+      <div class="stat-sub">target: 5-10%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--green);">5</div>
+      <div class="stat-label">Strong Questions</div>
+      <div class="stat-sub">Q4: Use the information about changes in Ear...</div>
+    </div>
+  </div>
+
+  <!-- Achieve DOK callout -->
+  <div class="callout">
+    <h3>Achieve Standard: 0% DOK1 Items</h3>
+    <p>Achieve's criteria state that high-quality NGSS-aligned assessments should contain <strong>0% DOK Level 1 (recall) tasks</strong>. On this assessment, an estimated <strong>23% of items are at DOK1</strong> (7 Scripted items). This needs improvement.</p>
+  </div>
+
+  <!-- Complexity Level Key -->
+  <div class="key-box">
+    <h3>What Do the Complexity Levels Mean?</h3>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:12px;">From Achieve's <em>Framework to Evaluate the Cognitive Complexity of Science Assessment Tasks</em> (2019). Each question is classified based on how students are expected to think.</p>
+    <div class="key-grid two-col">
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--red);"></div>
+        <div><span class="key-label" style="color:var(--red);">Scripted (Recall)</span><br><span class="key-desc">Student recalls a fact, definition, or formula. No reasoning required. These are DOK Level 1 tasks. Achieve says NGSS-aligned tests should have <strong>0%</strong> of these.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--yellow);"></div>
+        <div><span class="key-label" style="color:var(--yellow);">Low Guided (Application)</span><br><span class="key-desc">Student applies a known concept to a familiar scenario. Some reasoning, but the path is clear. Target: 40-50% of assessment.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--blue);"></div>
+        <div><span class="key-label" style="color:var(--blue);">High Guided (Transfer)</span><br><span class="key-desc">Student applies understanding to a new or unfamiliar situation. Must integrate multiple ideas and make sense of data or evidence. Target: 20-30%.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--green);"></div>
+        <div><span class="key-label" style="color:var(--green);">Doing Science (Authentic)</span><br><span class="key-desc">Student engages in genuine scientific reasoning — analyzing novel data, constructing explanations, designing investigations. No single "right path." Target: 5-10%.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gap Analysis -->
+  <div class="card">
+    <h2>Gap Analysis: Actual vs. Target</h2>
+    <div class="card-subtitle">How far the assessment is from Achieve's recommended distribution</div>
+    <div class="gap-row" style="border-bottom:none; padding-bottom:0;">
+      <div class="gap-label" style="font-size:11px; color:var(--gray);">CATEGORY</div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      <div style="font-size:11px; color:var(--gray); text-align:center;">GAP</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--red);">Scripted</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual scripted" style="width:23%; background:var(--red);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:20%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div>
+      </div>
+      <div class="gap-delta ok">on target</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--yellow);">Low Guided</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:53%; background:var(--yellow);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:40%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:45%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 40-50%</div>
+      </div>
+      <div class="gap-delta over">+8% over</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--blue);">High Guided</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:10%; background:var(--blue);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:20%; width:10%;"></div>
+        <div style="position:absolute;top:-14px;left:25%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 20-30%</div>
+      </div>
+      <div class="gap-delta under">-15% under</div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-label" style="color:var(--green);">Doing Science</div>
+      <div class="gap-bar-container">
+        <div class="gap-bar-actual" style="width:13%; background:var(--green);border-radius:6px;"></div>
+        <div class="gap-bar-target" style="left:5%; width:5%;"></div>
+        <div style="position:absolute;top:-14px;left:7.5%;transform:translateX(-50%);font-size:10px;color:var(--gray);">target 5-10%</div>
+      </div>
+      <div class="gap-delta over">+6% over</div>
+    </div>
+  </div>
+
+  <!-- Indicator scores -->
+  <div class="card">
+    <h2>Indicator Scores (Average Across All 30 Questions)</h2>
+    <div class="card-subtitle">Achieve Cognitive Complexity Framework — Scale: 1 (Low) to 5 (High). Target for balanced assessment: ~3.0</div>
+    <div class="indicator-grid">
+      <div class="indicator-card">
+        <div class="indicator-name">Scenario</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--yellow) 0% 48%, var(--gray-light) 48% 100%);">
+          <div class="indicator-score" style="color:var(--yellow);">2.4</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">SEP (Practices)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--red) 0% 40%, var(--gray-light) 40% 100%);">
+          <div class="indicator-score" style="color:var(--red);">2.0</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">DCI (Core Ideas)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--yellow) 0% 46%, var(--gray-light) 46% 100%);">
+          <div class="indicator-score" style="color:var(--yellow);">2.3</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+      </div>
+      <div class="indicator-card">
+        <div class="indicator-name">CCC (Crosscutting)</div>
+        <div class="indicator-ring" style="background: conic-gradient(var(--yellow) 0% 42%, var(--gray-light) 42% 100%);">
+          <div class="indicator-score" style="color:var(--yellow);">2.1</div>
+        </div>
+        <div class="indicator-max">of 5.0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Criteria assessment summary -->
+  <div class="card">
+    <h2>Achieve Assessment Criteria Summary</h2>
+    <div class="card-subtitle">Criteria for Procuring and Evaluating High-Quality Science Assessments (2018)</div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;">
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--red-bg); border:1px solid var(--red);">
+        <div style="font-size:11px; font-weight:600; color:var(--red); margin-bottom:4px;">CRIT 2: Three-Dimensional</div>
+        <div style="font-size:24px; font-weight:800; color:var(--red);">5</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--yellow-bg); border:1px solid var(--yellow);">
+        <div style="font-size:11px; font-weight:600; color:var(--yellow); margin-bottom:4px;">CRIT 3: Phenomena</div>
+        <div style="font-size:24px; font-weight:800; color:var(--yellow);">12</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--yellow-bg); border:1px solid var(--yellow);">
+        <div style="font-size:11px; font-weight:600; color:var(--yellow); margin-bottom:4px;">CRIT 5: Complexity</div>
+        <div style="font-size:24px; font-weight:800; color:var(--yellow);">10</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet</div>
+      </div>
+      <div style="text-align:center; padding:16px; border-radius:8px; background:var(--yellow-bg); border:1px solid var(--yellow);">
+        <div style="font-size:11px; font-weight:600; color:var(--yellow); margin-bottom:4px;">CRIT 6: Technical Quality</div>
+        <div style="font-size:24px; font-weight:800; color:var(--yellow);">30</div>
+        <div style="font-size:11px; color:var(--gray);">of 30 meet or partially</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full question table -->
+  <div class="card">
+    <h2>All 30 Questions — Detailed Scores</h2>
+    <div class="card-subtitle">Color coding: <span style="color:var(--red);font-weight:600;">Red = Low (1-2)</span>, <span style="color:var(--yellow);font-weight:600;">Yellow = Medium (3)</span>, <span style="color:var(--green);font-weight:600;">Green = High (4-5)</span></div>
+    <div class="table-scroll">
+      <table class="q-table" id="qTable">
+        <thead>
+          <tr>
+            <th style="width:30px;">Q#</th>
+            <th>Stem</th>
+            <th style="width:40px;">Domain</th>
+            <th style="width:40px;">Scen</th>
+            <th style="width:40px;">SEP</th>
+            <th style="width:40px;">DCI</th>
+            <th style="width:40px;">CCC</th>
+            <th style="width:40px;">Avg</th>
+            <th style="width:100px;">Holistic</th>
+            <th style="width:90px;">Overall</th>
+          </tr>
+        </thead>
+        <tbody id="qTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {n:2,stem:"change as the marbles move through the track. Figure 1 shows",dom:"LS",sc:2,sep:1,dci:3,ccc:3,avg:2.25,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:3,stem:"E point 5 Part B The students determine that the total energ",dom:"LS",sc:2,sep:2,dci:2,ccc:3,avg:2.25,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:4,stem:"Use the information about changes in Earth\'s magnetic field ",dom:"LS",sc:4,sep:4,dci:3,ccc:3,avg:3.5,hol:"doing-science",holLabel:"Doing Science",ov:"strong",ovLabel:"Strong"}
+  {n:6,stem:"5 Use the information and your knowledge of science to answe",dom:"LS",sc:4,sep:4,dci:2,ccc:3,avg:3.25,hol:"high-guided",holLabel:"High Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:7,stem:"Which characteristic of living things does this picture best",dom:"LS",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:8,stem:"Choose the word below that makes this sentence correct. The ",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:9,stem:"Living things can be...",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:11,stem:"10 The image shows two slides A and B that were shown to a s",dom:"LS",sc:3,sep:1,dci:2,ccc:3,avg:2.25,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:12,stem:"Read the sentence below and then choose the answer that best",dom:"LS",sc:2,sep:1,dci:2,ccc:1,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:15,stem:"13 Multicellular organisms need ways for their different cel",dom:"LS",sc:3,sep:2,dci:3,ccc:3,avg:2.75,hol:"high-guided",holLabel:"High Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:16,stem:"What type of reaction is show in the drawing?",dom:"LS",sc:1,sep:1,dci:1,ccc:1,avg:1.0,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:18,stem:"17 Look at the diagram below. Drag the correct terms to make",dom:"LS",sc:2,sep:2,dci:2,ccc:3,avg:2.25,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:19,stem:"bowls was recorded. A different number of ice cubes were add",dom:"LS",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"low-guided",holLabel:"Low Guided Integration",ov:"weak",ovLabel:"Weak"}
+  {n:20,stem:"decrease in the temperature. When you strike a match does a ",dom:"LS",sc:1,sep:1,dci:2,ccc:1,avg:1.25,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:21,stem:"The mitochondria of the cell is important because it allows ",dom:"LS",sc:1,sep:1,dci:2,ccc:2,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:22,stem:"If mass is conserved during a chemical reaction, which of th",dom:"LS",sc:1,sep:1,dci:2,ccc:2,avg:1.5,hol:"scripted",holLabel:"Scripted",ov:"weak",ovLabel:"Weak"}
+  {n:24,stem:"23 Place the following in the correct order, from the most s",dom:"LS",sc:2,sep:1,dci:3,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:27,stem:"starched (removing all the stored starch from the leaves) by",dom:"LS",sc:4,sep:4,dci:3,ccc:3,avg:3.5,hol:"doing-science",holLabel:"Doing Science",ov:"strong",ovLabel:"Strong"}
+  {n:1,stem:"28 Based on the experiment, the student made a table to comp",dom:"LS",sc:4,sep:4,dci:3,ccc:3,avg:3.5,hol:"doing-science",holLabel:"Doing Science",ov:"strong",ovLabel:"Strong"}
+  {n:2,stem:"DRAG & DROP THE ANSWER Energy is not utilized to form starch",dom:"LS",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"low-guided",holLabel:"Low Guided Integration",ov:"weak",ovLabel:"Weak"}
+  {n:29,stem:"DRAG & DROP THE ANSWER Energy is not utilized to form starch",dom:"LS",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"low-guided",holLabel:"Low Guided Integration",ov:"weak",ovLabel:"Weak"}
+  {n:31,stem:"substance undergoes a change that does not affect its chemic",dom:"LS",sc:3,sep:4,dci:2,ccc:1,avg:2.5,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:32,stem:"are tubers that are a part of the root system. Potatoes or t",dom:"LS",sc:3,sep:1,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:33,stem:"Proteins are made up of amino acids that are linked together",dom:"LS",sc:3,sep:1,dci:3,ccc:2,avg:2.25,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:34,stem:"Answer the following questions after reading this passage. T",dom:"LS",sc:4,sep:4,dci:3,ccc:3,avg:3.5,hol:"doing-science",holLabel:"Doing Science",ov:"strong",ovLabel:"Strong"}
+  {n:35,stem:"Which of the following statements can be concluded based on ",dom:"LS",sc:4,sep:4,dci:3,ccc:2,avg:3.25,hol:"high-guided",holLabel:"High Guided Integration",ov:"strong",ovLabel:"Strong"}
+  {n:36,stem:"Which of the following graphs correctly shows the results gi",dom:"LS",sc:2,sep:2,dci:2,ccc:2,avg:2.0,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:37,stem:"A B C D Andrew makes a simple model of two transverse waves.",dom:"LS",sc:2,sep:2,dci:3,ccc:3,avg:2.5,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:38,stem:"What would happen to the plant in the picture if some of the",dom:"LS",sc:3,sep:3,dci:3,ccc:1,avg:2.5,hol:"low-guided",holLabel:"Low Guided Integration",ov:"needs-improvement",ovLabel:"Needs Improvement"}
+  {n:40,stem:"39 Gravitational forces are always . a attractive repulsive ",dom:"LS",sc:2,sep:1,dci:2,ccc:2,avg:1.75,hol:"low-guided",holLabel:"Low Guided Integration",ov:"weak",ovLabel:"Weak"}
+];
+
+const tbody = document.getElementById('qTableBody');
+const domColors = {LS:'#16a085', PS:'#5b6abf', ESS:'#d35400', ETS:'#8e44ad'};
+questions.forEach(q => {
+  const scoreClass = (v) => v <= 2 ? 'low' : v === 3 ? 'med' : 'high';
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td style="font-weight:700;">${q.n}</td>
+    <td class="stem-cell" title="${q.stem}">${q.stem}</td>
+    <td style="text-align:center;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;color:white;background:${domColors[q.dom]}">${q.dom}</span></td>
+    <td class="score-cell ${scoreClass(q.sc)}">${q.sc}</td>
+    <td class="score-cell ${scoreClass(q.sep)}">${q.sep}</td>
+    <td class="score-cell ${scoreClass(q.dci)}">${q.dci}</td>
+    <td class="score-cell ${scoreClass(q.ccc)}">${q.ccc}</td>
+    <td class="score-cell ${scoreClass(Math.round(q.avg))}">${q.avg.toFixed(1)}</td>
+    <td><span class="q-badge ${q.hol}">${q.holLabel}</span></td>
+    <td><span class="q-badge ${q.ov}">${q.ovLabel}</span></td>
+  `;
+  tbody.appendChild(row);
+});
+</script>
+</body>
+</html>
