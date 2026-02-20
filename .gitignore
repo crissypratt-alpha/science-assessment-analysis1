@@ -20,6 +20,8 @@
 !MAP_Readiness_Dashboard.html
 !MAP_Readiness_Dashboard_v2.html
 !MAP_Readiness_Action_Plan.md
+!MAP_Alpha_Correlation.html
+!map_alpha_correlation.csv
 
 # Allow grade directories and their contents
 !grade3/
