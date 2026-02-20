@@ -10,6 +10,8 @@
 !.gitignore
 !styles.css
 !index.html
+!test_quality_dashboard.html
+!Executive_Summary.md
 !Question_Evaluation_Prompt.md
 
 # Allow dashboard files

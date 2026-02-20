@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha Science Assessment Quality Analysis</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.site-nav { display:flex; gap:0; background:white; border:1px solid var(--gray-border); border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:24px; }
+.site-nav a { flex:1; padding:10px 12px; text-align:center; font-size:12px; font-weight:600; text-decoration:none; color:var(--gray); border-right:1px solid var(--gray-border); transition:all 0.2s; }
+.site-nav a:last-child { border-right:none; }
+.site-nav a:hover { background:var(--primary-light); color:var(--primary); }
+.site-nav a.active { background:var(--primary); color:white; }
+.site-nav .nav-label { display:block; font-size:10px; font-weight:400; opacity:0.8; margin-top:2px; }
+@media (max-width:768px) { .site-nav { flex-wrap:wrap; } .site-nav a { flex:none; width:33.33%; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Alpha Science Assessment Quality Analysis</h1>
+  <div class="header-sub">Evaluating test question quality against Achieve/MAP Cognitive Complexity Framework &mdash; Alpha School</div>
+</div>
+
+<div class="container">
+
+  <!-- Site Navigation -->
+  <nav class="site-nav">
+    <a href="index.html">Executive Summary<span class="nav-label">Gap Analysis</span></a>
+    <a href="test_quality_dashboard.html" class="active">Test Quality<span class="nav-label">Cognitive Complexity</span></a>
+    <a href="MAP_Readiness_Dashboard_v2.html">MAP Readiness<span class="nav-label">Standards &amp; Performance</span></a>
+    <a href="NGSS_Skills_Matrix.html">NGSS Matrix<span class="nav-label">228 Standards</span></a>
+  </nav>
+
+  <!-- Grade Navigation Tabs -->
+  <div class="grade-tabs">
+    <a class="grade-tab active" href="#" onclick="switchGrade(3);return false;" id="tab3">Grade 3<span class="tab-sub">18 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(4);return false;" id="tab4">Grade 4<span class="tab-sub">16 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(5);return false;" id="tab5">Grade 5<span class="tab-sub">15 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(6);return false;" id="tab6">Grade 6<span class="tab-sub">16 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(7);return false;" id="tab7">Grade 7<span class="tab-sub">20 tests</span></a>
+    <a class="grade-tab" href="#" onclick="switchGrade(8);return false;" id="tab8">Grade 8<span class="tab-sub">16 tests</span></a>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-row" id="summaryStats"></div>
+
+  <!-- Test Overview Table -->
+  <div class="card">
+    <h2 id="tableTitle">Grade 3 — All Tests</h2>
+    <div class="card-subtitle" id="tableSubtitle">Click any test name to view its full evaluation dashboard. Tests are ordered by student usage (most to fewest).</div>
+    <div class="table-scroll" style="max-height:none;">
+      <table class="test-table" id="testTable">
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Questions</th>
+            <th>Students</th>
+            <th>Attempts</th>
+            <th>Avg Score</th>
+            <th>Avg Complexity</th>
+            <th style="min-width:140px;">Complexity Distribution</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="testTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Indicator Heatmap -->
+  <div class="card" id="heatmapCard" style="display:none;">
+    <h2 id="heatmapTitle">Indicator Heatmap: All Grade 3 Tests</h2>
+    <div class="card-subtitle">Average indicator scores per test. Color scale: <span style="color:var(--red);font-weight:600;">1.0-1.9 (red)</span>, <span style="color:#d35400;font-weight:600;">2.0-2.4 (orange)</span>, <span style="color:var(--yellow);font-weight:600;">2.5-3.0 (yellow)</span>, <span style="color:#16a085;font-weight:600;">3.1-3.9 (teal)</span>, <span style="color:var(--green);font-weight:600;">4.0-5.0 (green)</span></div>
+    <div class="table-scroll" style="max-height:none;">
+      <table class="heatmap-table" id="heatmapTable">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Test</th>
+            <th>Scenario</th>
+            <th>SEP</th>
+            <th>DCI</th>
+            <th>CCC</th>
+            <th>Overall Avg</th>
+          </tr>
+        </thead>
+        <tbody id="heatmapBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Aggregate Complexity Distribution -->
+  <div class="card" id="aggDistCard" style="display:none;">
+    <h2 id="aggDistTitle">Aggregate Complexity Distribution: All Grade 3 Tests Combined</h2>
+    <div class="card-subtitle">How all questions compare to Achieve's recommended distribution</div>
+    <div id="aggDistContent"></div>
+  </div>
+
+  <!-- Complexity Level Key -->
+  <div class="key-box">
+    <h3>What Do the Complexity Levels Mean?</h3>
+    <p style="font-size:12px; color:var(--gray); margin-bottom:12px;">From Achieve's <em>Framework to Evaluate the Cognitive Complexity of Science Assessment Tasks</em> (2019). Each question is classified based on how students are expected to think.</p>
+    <div class="key-grid two-col">
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--red);"></div>
+        <div><span class="key-label" style="color:var(--red);">Scripted (Recall)</span><br><span class="key-desc">Student recalls a fact, definition, or formula. No reasoning required. These are DOK Level 1 tasks. Achieve says NGSS-aligned tests should have <strong>0%</strong> of these.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--yellow);"></div>
+        <div><span class="key-label" style="color:var(--yellow);">Low Guided (Application)</span><br><span class="key-desc">Student applies a known concept to a familiar scenario. Some reasoning, but the path is clear. Target: 40-50% of assessment.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--blue);"></div>
+        <div><span class="key-label" style="color:var(--blue);">High Guided (Transfer)</span><br><span class="key-desc">Student applies understanding to a new or unfamiliar situation. Must integrate multiple ideas and make sense of data or evidence. Target: 20-30%.</span></div>
+      </div>
+      <div class="key-item">
+        <div class="key-dot" style="background:var(--green);"></div>
+        <div><span class="key-label" style="color:var(--green);">Doing Science (Authentic)</span><br><span class="key-desc">Student engages in genuine scientific reasoning — analyzing novel data, constructing explanations, designing investigations. Target: 5-10%.</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// GRADE 3 TEST DATA
+// ============================================
+const GRADE3_TESTS = [
+  {id:"G3.12", q:20, students:516, attempts:535, avgScore:62.8, avgCx:1.86, hol:{s:12,l:8,h:0,d:0}, ind:{sc:1.9,sep:1.8,dci:2.2,ccc:1.6}, status:"evaluated"},
+  {id:"G3.13", q:22, students:282, attempts:282, avgScore:79.6, avgCx:2.17, hol:{s:8,l:11,h:3,d:0}, ind:{sc:2.3,sep:2.0,dci:2.4,ccc:2.0}, status:"evaluated"},
+  {id:"G3.14", q:22, students:132, attempts:132, avgScore:86.0, avgCx:2.24, hol:{s:7,l:12,h:3,d:0}, ind:{sc:2.4,sep:2.1,dci:2.5,ccc:2.0}, status:"evaluated"},
+  {id:"G3.1",  q:30, students:82,  attempts:86,  avgScore:79.8, avgCx:2.03, hol:{s:18,l:11,h:1,d:0}, ind:{sc:2.2,sep:2.0,dci:2.3,ccc:1.7}, status:"evaluated"},
+  {id:"G3.2",  q:30, students:59,  attempts:64,  avgScore:80.0, avgCx:2.25, hol:{s:12,l:9,h:9,d:0}, ind:{sc:2.4,sep:2.2,dci:2.4,ccc:2.0}, status:"evaluated"},
+  {id:"G3.11", q:30, students:51,  attempts:58,  avgScore:81.4, avgCx:1.90, hol:{s:12,l:14,h:4,d:0}, ind:{sc:2.1,sep:1.7,dci:2.1,ccc:1.8}, status:"evaluated"},
+  {id:"G3.3",  q:32, students:17,  attempts:19,  avgScore:89.5, avgCx:1.63, hol:{s:21,l:9,h:2,d:0}, ind:{sc:1.7,sep:1.4,dci:1.8,ccc:1.4}, status:"evaluated"},
+  {id:"G3.15", q:22, students:14,  attempts:14,  avgScore:86.7, avgCx:1.93, hol:{s:9,l:10,h:3,d:0}, ind:{sc:2.2,sep:1.8,dci:2.2,ccc:1.9}, status:"evaluated"},
+  {id:"G3.10", q:22, students:12,  attempts:12,  avgScore:67.1, avgCx:2.35, hol:{s:5,l:7,h:10,d:0}, ind:{sc:2.5,sep:2.3,dci:2.5,ccc:2.1}, status:"evaluated"},
+  {id:"G3.16", q:22, students:9,   attempts:9,   avgScore:86.9, avgCx:2.00, hol:{s:10,l:7,h:5,d:0}, ind:{sc:2.2,sep:1.9,dci:2.2,ccc:1.7}, status:"evaluated"},
+  {id:"G3.4",  q:32, students:8,   attempts:8,   avgScore:81.0, avgCx:2.04, hol:{s:18,l:7,h:7,d:0}, ind:{sc:2.2,sep:1.8,dci:2.2,ccc:1.7}, status:"evaluated"},
+  {id:"G3.5",  q:31, students:5,   attempts:7,   avgScore:89.1, avgCx:1.46, hol:{s:24,l:5,h:2,d:0}, ind:{sc:1.5,sep:1.3,dci:1.7,ccc:1.2}, status:"evaluated"},
+  {id:"G3.17", q:22, students:5,   attempts:5,   avgScore:89.0, avgCx:1.86, hol:{s:12,l:8,h:2,d:0}, ind:{sc:1.9,sep:1.6,dci:2.2,ccc:1.6}, status:"evaluated"},
+  {id:"G3.18", q:31, students:3,   attempts:3,   avgScore:91.7, avgCx:1.88, hol:{s:18,l:9,h:4,d:0}, ind:{sc:2.0,sep:1.7,dci:2.1,ccc:1.7}, status:"evaluated"},
+  {id:"G3.9",  q:34, students:1,   attempts:1,   avgScore:80.0, avgCx:2.13, hol:{s:11,l:16,h:7,d:0}, ind:{sc:2.5,sep:2.0,dci:2.2,ccc:1.8}, status:"evaluated"},
+  {id:"G3.6",  q:30, students:1,   attempts:1,   avgScore:80.0, avgCx:1.79, hol:{s:19,l:5,h:6,d:0}, ind:{sc:1.9,sep:1.6,dci:2.1,ccc:1.6}, status:"evaluated"},
+  {id:"G3.8",  q:31, students:1,   attempts:1,   avgScore:31.1, avgCx:2.15, hol:{s:11,l:10,h:10,d:0}, ind:{sc:2.3,sep:2.1,dci:2.3,ccc:1.9}, status:"evaluated"},
+  {id:"G3.7",  q:0,  students:1,   attempts:1,   avgScore:28.6, avgCx:0, hol:{s:0,l:0,h:0,d:0}, ind:{sc:0,sep:0,dci:0,ccc:0}, status:"no-pdf"},
+  {id:"G3.19", q:34, students:0,   attempts:0,   avgScore:0,    avgCx:1.99, hol:{s:17,l:9,h:8,d:0}, ind:{sc:2.1,sep:1.8,dci:2.3,ccc:1.8}, status:"evaluated"},
+];
+
+// ============================================
+// GRADE 4 TEST DATA
+// All tests have 0 students/attempts (not yet assigned)
+// Ordered by test number (in circulation first, then not in circulation)
+// ============================================
+const GRADE4_TESTS = [
+  {id:"G4.11", q:21, students:0, attempts:0, avgScore:0, avgCx:2.58, hol:{s:4,l:16,h:1,d:0}, ind:{sc:2.5,sep:2.6,dci:2.8,ccc:2.5}, status:"evaluated", circ:true},
+  {id:"G4.1",  q:31, students:0, attempts:0, avgScore:0, avgCx:2.30, hol:{s:13,l:16,h:2,d:0}, ind:{sc:2.5,sep:2.3,dci:2.6,ccc:1.9}, status:"evaluated", circ:true},
+  {id:"G4.12", q:22, students:0, attempts:0, avgScore:0, avgCx:2.43, hol:{s:7,l:14,h:0,d:1}, ind:{sc:2.5,sep:2.3,dci:2.7,ccc:2.2}, status:"evaluated", circ:true},
+  {id:"G4.13", q:22, students:0, attempts:0, avgScore:0, avgCx:2.74, hol:{s:3,l:16,h:3,d:0}, ind:{sc:2.9,sep:2.8,dci:2.8,ccc:2.6}, status:"evaluated", circ:true},
+  {id:"G4.14", q:22, students:0, attempts:0, avgScore:0, avgCx:2.97, hol:{s:3,l:11,h:3,d:5}, ind:{sc:3.1,sep:3.0,dci:3.0,ccc:2.6}, status:"evaluated", circ:true},
+  {id:"G4.15", q:22, students:0, attempts:0, avgScore:0, avgCx:2.90, hol:{s:2,l:14,h:2,d:4}, ind:{sc:3.1,sep:2.9,dci:3.0,ccc:2.5}, status:"evaluated", circ:true},
+  {id:"G4.10", q:30, students:0, attempts:0, avgScore:0, avgCx:2.24, hol:{s:16,l:13,h:1,d:0}, ind:{sc:2.5,sep:2.0,dci:2.4,ccc:2.0}, status:"evaluated", circ:true},
+  {id:"G4.16", q:22, students:0, attempts:0, avgScore:0, avgCx:2.24, hol:{s:11,l:9,h:1,d:1}, ind:{sc:2.4,sep:2.2,dci:2.4,ccc:2.0}, status:"evaluated", circ:true},
+  {id:"G4.17", q:22, students:0, attempts:0, avgScore:0, avgCx:2.92, hol:{s:4,l:11,h:2,d:5}, ind:{sc:3.1,sep:2.9,dci:2.9,ccc:2.8}, status:"evaluated", circ:true},
+  {id:"G4.2",  q:32, students:0, attempts:0, avgScore:0, avgCx:2.16, hol:{s:17,l:15,h:0,d:0}, ind:{sc:2.2,sep:2.1,dci:2.5,ccc:1.8}, status:"evaluated", circ:false},
+  {id:"G4.3",  q:32, students:0, attempts:0, avgScore:0, avgCx:1.51, hol:{s:29,l:3,h:0,d:0}, ind:{sc:1.4,sep:1.3,dci:1.9,ccc:1.3}, status:"evaluated", circ:false},
+  {id:"G4.4",  q:32, students:0, attempts:0, avgScore:0, avgCx:1.62, hol:{s:27,l:5,h:0,d:0}, ind:{sc:1.5,sep:1.5,dci:2.0,ccc:1.4}, status:"evaluated", circ:false},
+  {id:"G4.5",  q:32, students:0, attempts:0, avgScore:0, avgCx:1.52, hol:{s:30,l:2,h:0,d:0}, ind:{sc:1.6,sep:1.3,dci:1.9,ccc:1.2}, status:"evaluated", circ:false},
+  {id:"G4.6",  q:32, students:0, attempts:0, avgScore:0, avgCx:1.35, hol:{s:26,l:6,h:0,d:0}, ind:{sc:1.5,sep:1.3,dci:1.4,ccc:1.2}, status:"evaluated", circ:false},
+  {id:"G4.8",  q:30, students:0, attempts:0, avgScore:0, avgCx:2.54, hol:{s:6,l:24,h:0,d:0}, ind:{sc:2.7,sep:2.5,dci:2.8,ccc:2.3}, status:"evaluated", circ:false},
+  {id:"G4.9",  q:34, students:0, attempts:0, avgScore:0, avgCx:2.12, hol:{s:21,l:13,h:0,d:0}, ind:{sc:2.3,sep:2.0,dci:2.3,ccc:1.9}, status:"evaluated", circ:false},
+];
+
+// ============================================
+// GRADE 5 TEST DATA
+// ============================================
+const GRADE5_TESTS = [
+  {id:"G5.12",q:19,students:143,attempts:143,avgScore:80.5,avgCx:2.01,hol:{s:5,l:11,h:3,d:0},ind:{sc:2.1,sep:2.1,dci:2.3,ccc:1.7},status:"evaluated"},
+  {id:"G5.1",q:30,students:97,attempts:97,avgScore:87.0,avgCx:1.77,hol:{s:10,l:18,h:2,d:0},ind:{sc:1.7,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G5.13",q:23,students:69,attempts:69,avgScore:86.2,avgCx:2.0,hol:{s:6,l:14,h:2,d:1},ind:{sc:1.9,sep:2.0,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G5.14",q:23,students:21,attempts:21,avgScore:88.8,avgCx:2.3,hol:{s:3,l:14,h:6,d:0},ind:{sc:2.4,sep:2.3,dci:2.3,ccc:2.3},status:"evaluated"},
+  {id:"G5.11",q:39,students:16,attempts:16,avgScore:68.8,avgCx:1.82,hol:{s:16,l:19,h:4,d:0},ind:{sc:1.8,sep:1.7,dci:2.2,ccc:1.6},status:"evaluated"},
+  {id:"G5.15",q:23,students:7,attempts:7,avgScore:82.6,avgCx:2.39,hol:{s:3,l:12,h:7,d:1},ind:{sc:2.8,sep:2.4,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G5.16",q:21,students:5,attempts:5,avgScore:86.4,avgCx:2.11,hol:{s:4,l:13,h:4,d:0},ind:{sc:2.3,sep:2.0,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G5.17",q:22,students:3,attempts:3,avgScore:75.7,avgCx:1.9,hol:{s:8,l:11,h:3,d:0},ind:{sc:2.0,sep:1.5,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G5.18",q:34,students:2,attempts:2,avgScore:89.3,avgCx:1.74,hol:{s:19,l:10,h:5,d:0},ind:{sc:1.8,sep:1.6,dci:2.1,ccc:1.5},status:"evaluated"},
+  {id:"G5.10",q:48,students:0,attempts:0,avgScore:0,avgCx:1.41,hol:{s:41,l:6,h:1,d:0},ind:{sc:1.2,sep:1.2,dci:2.1,ccc:1.1},status:"evaluated"},
+  {id:"G5.3",q:30,students:0,attempts:0,avgScore:0,avgCx:1.36,hol:{s:26,l:4,h:0,d:0},ind:{sc:1.2,sep:1.0,dci:2.0,ccc:1.2},status:"evaluated"},
+  {id:"G5.5",q:27,students:0,attempts:0,avgScore:0,avgCx:1.78,hol:{s:13,l:11,h:3,d:0},ind:{sc:1.9,sep:1.6,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G5.6",q:23,students:0,attempts:0,avgScore:0,avgCx:1.82,hol:{s:10,l:11,h:2,d:0},ind:{sc:2.0,sep:1.6,dci:2.0,ccc:1.6},status:"evaluated"},
+  {id:"G5.7",q:30,students:0,attempts:0,avgScore:0,avgCx:1.71,hol:{s:14,l:15,h:1,d:0},ind:{sc:1.8,sep:1.5,dci:2.1,ccc:1.4},status:"evaluated"},
+  {id:"G5.9",q:29,students:0,attempts:0,avgScore:0,avgCx:1.99,hol:{s:10,l:13,h:6,d:0},ind:{sc:2.0,sep:2.0,dci:2.3,ccc:1.7},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 6 TEST DATA
+// ============================================
+const GRADE6_TESTS = [
+  {id:"G6.9",q:20,students:112,attempts:112,avgScore:76.8,avgCx:2.24,hol:{s:4,l:12,h:2,d:2},ind:{sc:2.6,sep:1.9,dci:2.4,ccc:2.0},status:"evaluated"},
+  {id:"G6.1",q:18,students:74,attempts:74,avgScore:80.0,avgCx:1.9,hol:{s:7,l:9,h:1,d:1},ind:{sc:2.3,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G6.11",q:30,students:40,attempts:40,avgScore:73.6,avgCx:2.15,hol:{s:8,l:14,h:7,d:1},ind:{sc:2.1,sep:2.3,dci:2.2,ccc:2.1},status:"evaluated"},
+  {id:"G6.10",q:27,students:33,attempts:33,avgScore:83.6,avgCx:2.39,hol:{s:0,l:16,h:11,d:0},ind:{sc:2.7,sep:2.6,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G6.8",q:39,students:21,attempts:21,avgScore:78.6,avgCx:2.1,hol:{s:9,l:22,h:8,d:0},ind:{sc:2.1,sep:2.2,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G6.13",q:37,students:4,attempts:4,avgScore:79.3,avgCx:1.97,hol:{s:10,l:21,h:6,d:0},ind:{sc:2.2,sep:2.0,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G6.12",q:25,students:3,attempts:3,avgScore:89.3,avgCx:2.04,hol:{s:6,l:17,h:1,d:1},ind:{sc:2.1,sep:1.9,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G6.14",q:39,students:1,attempts:1,avgScore:87.5,avgCx:2.17,hol:{s:7,l:23,h:9,d:0},ind:{sc:2.3,sep:2.3,dci:2.1,ccc:2.0},status:"evaluated"},
+  {id:"G6.2",q:20,students:0,attempts:0,avgScore:0,avgCx:2.2,hol:{s:4,l:12,h:4,d:0},ind:{sc:2.3,sep:2.0,dci:2.3,ccc:2.2},status:"evaluated"},
+  {id:"G6.3",q:31,students:0,attempts:0,avgScore:0,avgCx:1.95,hol:{s:6,l:24,h:1,d:0},ind:{sc:2.0,sep:1.7,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G6.4",q:26,students:0,attempts:0,avgScore:0,avgCx:1.89,hol:{s:10,l:12,h:4,d:0},ind:{sc:2.0,sep:1.7,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G6.5",q:37,students:0,attempts:0,avgScore:0,avgCx:1.78,hol:{s:15,l:22,h:0,d:0},ind:{sc:1.7,sep:1.6,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G6.6",q:36,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:19,l:17,h:0,d:0},ind:{sc:1.7,sep:1.3,dci:1.9,ccc:1.6},status:"evaluated"},
+  {id:"G6.7",q:35,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:21,l:12,h:2,d:0},ind:{sc:1.6,sep:1.5,dci:2.1,ccc:1.3},status:"evaluated"},
+  {id:"G6.15",q:26,students:0,attempts:0,avgScore:0,avgCx:1.62,hol:{s:18,l:6,h:2,d:0},ind:{sc:1.5,sep:1.4,dci:2.1,ccc:1.4},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 7 TEST DATA
+// ============================================
+const GRADE7_TESTS = [
+  {id:"G7.13",q:32,students:64,attempts:64,avgScore:80.3,avgCx:2.07,hol:{s:9,l:17,h:6,d:0},ind:{sc:2.2,sep:2.1,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.15",q:32,students:24,attempts:24,avgScore:85.1,avgCx:2.07,hol:{s:7,l:20,h:5,d:0},ind:{sc:2.2,sep:2.1,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.16",q:29,students:10,attempts:10,avgScore:84.3,avgCx:1.99,hol:{s:9,l:15,h:5,d:0},ind:{sc:2.1,sep:1.8,dci:2.1,ccc:2.0},status:"evaluated"},
+  {id:"G7.17",q:36,students:5,attempts:5,avgScore:87.6,avgCx:1.69,hol:{s:19,l:15,h:2,d:0},ind:{sc:1.8,sep:1.4,dci:2.1,ccc:1.5},status:"evaluated"},
+  {id:"G7.19",q:23,students:2,attempts:2,avgScore:89.2,avgCx:1.82,hol:{s:11,l:10,h:2,d:0},ind:{sc:2.0,sep:1.4,dci:2.1,ccc:1.7},status:"evaluated"},
+  {id:"G7.18",q:32,students:2,attempts:2,avgScore:76.7,avgCx:1.74,hol:{s:16,l:13,h:3,d:0},ind:{sc:1.8,sep:1.5,dci:2.1,ccc:1.6},status:"evaluated"},
+  {id:"G7.20",q:36,students:1,attempts:1,avgScore:58.2,avgCx:2.03,hol:{s:11,l:17,h:8,d:0},ind:{sc:2.1,sep:2.0,dci:2.2,ccc:1.8},status:"evaluated"},
+  {id:"G7.21",q:40,students:1,attempts:1,avgScore:94.3,avgCx:2.03,hol:{s:10,l:24,h:6,d:0},ind:{sc:2.2,sep:1.9,dci:2.3,ccc:1.7},status:"evaluated"},
+  {id:"G7.1",q:34,students:0,attempts:0,avgScore:0,avgCx:1.84,hol:{s:16,l:14,h:4,d:0},ind:{sc:2.0,sep:1.4,dci:2.1,ccc:1.9},status:"evaluated"},
+  {id:"G7.2",q:30,students:0,attempts:0,avgScore:0,avgCx:2.22,hol:{s:7,l:16,h:3,d:4},ind:{sc:2.4,sep:2.0,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G7.3",q:33,students:0,attempts:0,avgScore:0,avgCx:1.77,hol:{s:14,l:17,h:2,d:0},ind:{sc:1.9,sep:1.4,dci:2.0,ccc:1.7},status:"evaluated"},
+  {id:"G7.4",q:38,students:0,attempts:0,avgScore:0,avgCx:1.63,hol:{s:22,l:16,h:0,d:0},ind:{sc:1.6,sep:1.4,dci:1.9,ccc:1.6},status:"evaluated"},
+  {id:"G7.5",q:35,students:0,attempts:0,avgScore:0,avgCx:2.08,hol:{s:11,l:18,h:4,d:2},ind:{sc:2.2,sep:1.8,dci:2.3,ccc:2.0},status:"evaluated"},
+  {id:"G7.7",q:40,students:0,attempts:0,avgScore:0,avgCx:1.54,hol:{s:28,l:11,h:1,d:0},ind:{sc:1.4,sep:1.3,dci:2.0,ccc:1.4},status:"evaluated"},
+  {id:"G7.8",q:34,students:0,attempts:0,avgScore:0,avgCx:1.74,hol:{s:18,l:13,h:3,d:0},ind:{sc:1.8,sep:1.5,dci:2.2,ccc:1.5},status:"evaluated"},
+  {id:"G7.9",q:31,students:0,attempts:0,avgScore:0,avgCx:1.89,hol:{s:11,l:18,h:2,d:0},ind:{sc:2.0,sep:1.5,dci:2.2,ccc:1.9},status:"evaluated"},
+  {id:"G7.10",q:46,students:0,attempts:0,avgScore:0,avgCx:2.22,hol:{s:12,l:21,h:13,d:0},ind:{sc:2.3,sep:2.2,dci:2.3,ccc:2.0},status:"evaluated"},
+  {id:"G7.11",q:48,students:0,attempts:0,avgScore:0,avgCx:1.72,hol:{s:27,l:14,h:7,d:0},ind:{sc:1.7,sep:1.6,dci:2.2,ccc:1.4},status:"evaluated"},
+  {id:"G7.12",q:51,students:0,attempts:0,avgScore:0,avgCx:1.84,hol:{s:25,l:20,h:5,d:1},ind:{sc:1.9,sep:1.5,dci:2.3,ccc:1.6},status:"evaluated"},
+  {id:"G7.14",q:33,students:0,attempts:0,avgScore:0,avgCx:1.74,hol:{s:15,l:17,h:1,d:0},ind:{sc:2.0,sep:1.3,dci:2.1,ccc:1.6},status:"evaluated"},
+];
+
+// ============================================
+// GRADE 8 TEST DATA
+// ============================================
+const GRADE8_TESTS = [
+  {id:"G8.11",q:34,students:68,attempts:68,avgScore:82.1,avgCx:2.07,hol:{s:7,l:17,h:10,d:0},ind:{sc:2.1,sep:1.9,dci:2.4,ccc:1.9},status:"evaluated"},
+  {id:"G8.12",q:30,students:47,attempts:47,avgScore:88.8,avgCx:2.05,hol:{s:2,l:25,h:3,d:0},ind:{sc:2.3,sep:1.9,dci:2.3,ccc:1.8},status:"evaluated"},
+  {id:"G8.10",q:50,students:23,attempts:23,avgScore:84.3,avgCx:2.0,hol:{s:22,l:16,h:11,d:1},ind:{sc:1.9,sep:1.9,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.13",q:30,students:15,attempts:15,avgScore:80.2,avgCx:2.27,hol:{s:4,l:19,h:7,d:0},ind:{sc:2.4,sep:2.4,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G8.14",q:30,students:8,attempts:8,avgScore:86.5,avgCx:1.99,hol:{s:10,l:17,h:3,d:0},ind:{sc:2.0,sep:1.8,dci:2.3,ccc:1.9},status:"evaluated"},
+  {id:"G8.15",q:29,students:3,attempts:3,avgScore:93.3,avgCx:2.14,hol:{s:3,l:22,h:4,d:0},ind:{sc:2.2,sep:2.2,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.16",q:39,students:1,attempts:1,avgScore:73.8,avgCx:2.28,hol:{s:3,l:28,h:8,d:0},ind:{sc:2.6,sep:2.1,dci:2.3,ccc:2.1},status:"evaluated"},
+  {id:"G8.1",q:27,students:0,attempts:0,avgScore:0,avgCx:2.25,hol:{s:5,l:15,h:6,d:1},ind:{sc:2.6,sep:1.9,dci:2.5,ccc:2.0},status:"evaluated"},
+  {id:"G8.2",q:34,students:0,attempts:0,avgScore:0,avgCx:2.06,hol:{s:9,l:21,h:4,d:0},ind:{sc:2.3,sep:1.8,dci:2.4,ccc:1.8},status:"evaluated"},
+  {id:"G8.3",q:42,students:0,attempts:0,avgScore:0,avgCx:1.61,hol:{s:25,l:17,h:0,d:0},ind:{sc:1.8,sep:1.2,dci:2.0,ccc:1.4},status:"evaluated"},
+  {id:"G8.4",q:42,students:0,attempts:0,avgScore:0,avgCx:1.9,hol:{s:16,l:21,h:5,d:0},ind:{sc:2.0,sep:1.5,dci:2.1,ccc:1.9},status:"evaluated"},
+  {id:"G8.5",q:36,students:0,attempts:0,avgScore:0,avgCx:1.6,hol:{s:25,l:8,h:3,d:0},ind:{sc:1.6,sep:1.3,dci:2.1,ccc:1.4},status:"evaluated"},
+  {id:"G8.6",q:32,students:0,attempts:0,avgScore:0,avgCx:2.36,hol:{s:7,l:11,h:13,d:1},ind:{sc:2.6,sep:2.2,dci:2.4,ccc:2.2},status:"evaluated"},
+  {id:"G8.7",q:38,students:0,attempts:0,avgScore:0,avgCx:1.51,hol:{s:25,l:12,h:1,d:0},ind:{sc:1.4,sep:1.3,dci:2.0,ccc:1.3},status:"evaluated"},
+  {id:"G8.8",q:39,students:0,attempts:0,avgScore:0,avgCx:2.27,hol:{s:6,l:20,h:10,d:3},ind:{sc:2.4,sep:2.2,dci:2.4,ccc:2.1},status:"evaluated"},
+  {id:"G8.9",q:46,students:0,attempts:0,avgScore:0,avgCx:1.53,hol:{s:34,l:10,h:2,d:0},ind:{sc:1.4,sep:1.4,dci:2.0,ccc:1.3},status:"evaluated"},
+];
+
+// ============================================
+// STATE
+// ============================================
+let currentGrade = 3;
+
+// ============================================
+// RENDER FUNCTIONS
+// ============================================
+
+function getTests() {
+  switch(currentGrade) {
+    case 3: return GRADE3_TESTS;
+    case 4: return GRADE4_TESTS;
+    case 5: return GRADE5_TESTS;
+    case 6: return GRADE6_TESTS;
+    case 7: return GRADE7_TESTS;
+    case 8: return GRADE8_TESTS;
+    default: return GRADE3_TESTS;
+  }
+}
+
+function getGradeDir() {
+  return 'grade' + currentGrade;
+}
+
+function switchGrade(grade) {
+  currentGrade = grade;
+  document.querySelectorAll('.grade-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab' + grade).classList.add('active');
+  renderAll();
+}
+
+function renderSummaryStats() {
+  const TESTS = getTests();
+  const evaluated = TESTS.filter(t => t.status === 'evaluated');
+  const totalQ = TESTS.reduce((s,t) => s + t.q, 0);
+  let totalAttempts = 0;
+  TESTS.forEach(t => { totalAttempts += t.attempts; });
+  const evalCount = evaluated.length;
+  const pendingCount = TESTS.filter(t => t.status === 'pending').length;
+
+  const avgCxAll = evalCount > 0 ? (evaluated.reduce((s,t) => s + t.avgCx * t.q, 0) / evaluated.reduce((s,t) => s + t.q, 0)).toFixed(2) : '—';
+
+  // For Grade 4, show circulation status instead of student data
+  const studentLabel = currentGrade === 4 ? 'In Circulation' : 'Total Test Attempts';
+  const studentValue = currentGrade === 4 ? TESTS.filter(t => t.circ).length + ' of ' + TESTS.length : totalAttempts > 0 ? totalAttempts.toLocaleString() : '—';
+  const studentSub = currentGrade === 4 ? 'tests assigned to students' : 'from TimeBack data';
+
+  const html = `
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${TESTS.length}</div>
+      <div class="stat-label">Total Tests</div>
+      <div class="stat-sub">${evalCount} evaluated${pendingCount > 0 ? ', ' + pendingCount + ' pending' : ''}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${totalQ || '—'}</div>
+      <div class="stat-label">Questions Evaluated</div>
+      <div class="stat-sub">across ${evalCount} test${evalCount !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:var(--primary);">${studentValue}</div>
+      <div class="stat-label">${studentLabel}</div>
+      <div class="stat-sub">${studentSub}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:${avgCxAll !== '—' && parseFloat(avgCxAll) < 2.5 ? 'var(--red)' : 'var(--yellow)'};">${avgCxAll}</div>
+      <div class="stat-label">Avg Complexity</div>
+      <div class="stat-sub">across all evaluated questions (target ~3.0)</div>
+    </div>
+  `;
+  document.getElementById('summaryStats').innerHTML = html;
+}
+
+function renderTestTable() {
+  const TESTS = getTests();
+  const dir = getGradeDir();
+  document.getElementById('tableTitle').textContent = 'Grade ' + currentGrade + ' — All Tests';
+
+  if (currentGrade === 4) {
+    document.getElementById('tableSubtitle').textContent = 'Click any test name to view its full evaluation dashboard. In-circulation tests listed first, then remaining tests by number.';
+  } else {
+    document.getElementById('tableSubtitle').textContent = 'Click any test name to view its full evaluation dashboard. Tests are ordered by student usage (most to fewest).';
+  }
+
+  const tbody = document.getElementById('testTableBody');
+  tbody.innerHTML = '';
+  TESTS.forEach(t => {
+    const row = document.createElement('tr');
+    const totalH = t.hol.s + t.hol.l + t.hol.h + t.hol.d;
+    const pctS = totalH ? (t.hol.s/totalH*100).toFixed(0) : 0;
+    const pctL = totalH ? (t.hol.l/totalH*100).toFixed(0) : 0;
+    const pctH = totalH ? (t.hol.h/totalH*100).toFixed(0) : 0;
+    const pctD = totalH ? (t.hol.d/totalH*100).toFixed(0) : 0;
+
+    let nameCell, statusBadge, miniBar, cxCell;
+
+    if (t.status === 'evaluated') {
+      nameCell = `<a href="${dir}/${t.id}_Dashboard.html">${t.id}</a>`;
+      statusBadge = `<span class="q-badge strong">Evaluated</span>`;
+      miniBar = `<div class="mini-bar">
+        <div class="seg" style="width:${pctS}%;background:var(--red);" title="Scripted ${pctS}%">${pctS>8?pctS+'%':''}</div>
+        <div class="seg" style="width:${pctL}%;background:var(--yellow);" title="Low Guided ${pctL}%">${pctL>8?pctL+'%':''}</div>
+        <div class="seg" style="width:${pctH}%;background:var(--blue);" title="High Guided ${pctH}%">${pctH>8?pctH+'%':''}</div>
+        <div class="seg" style="width:${pctD}%;background:var(--green);" title="Doing Science ${pctD}%">${pctD>8?pctD+'%':''}</div>
+      </div>`;
+      const cxColor = t.avgCx < 2.0 ? 'var(--red)' : t.avgCx < 2.5 ? '#d35400' : t.avgCx < 3.0 ? 'var(--yellow)' : 'var(--green)';
+      cxCell = `<span style="color:${cxColor};font-weight:700;">${t.avgCx.toFixed(1)}</span>`;
+    } else if (t.status === 'no-pdf') {
+      nameCell = `<span style="color:var(--gray);">${t.id}</span>`;
+      statusBadge = `<span class="q-badge weak">No PDF</span>`;
+      miniBar = `<span style="color:var(--gray);font-size:11px;">—</span>`;
+      cxCell = `<span style="color:var(--gray);">—</span>`;
+    } else {
+      nameCell = `<span style="color:var(--gray);">${t.id}</span>`;
+      statusBadge = `<span class="q-badge needs-improvement">Pending</span>`;
+      miniBar = `<span style="color:var(--gray);font-size:11px;">—</span>`;
+      cxCell = `<span style="color:var(--gray);">—</span>`;
+    }
+
+    // For G4, show circulation badge instead of student count
+    const studentsCell = currentGrade === 4
+      ? (t.circ ? '<span style="color:#16a085;font-weight:600;">Yes</span>' : '<span style="color:var(--gray);">No</span>')
+      : (t.students > 0 ? t.students.toLocaleString() : '—');
+    const attemptsCell = currentGrade === 4 ? '—' : (t.attempts > 0 ? t.attempts.toLocaleString() : '—');
+    const scoreCell = t.avgScore > 0 ? t.avgScore.toFixed(1) + '%' : '—';
+
+    row.innerHTML = `
+      <td>${nameCell}</td>
+      <td style="text-align:center;">${t.q || '—'}</td>
+      <td style="text-align:center;">${studentsCell}</td>
+      <td style="text-align:center;">${attemptsCell}</td>
+      <td style="text-align:center;">${scoreCell}</td>
+      <td style="text-align:center;">${cxCell}</td>
+      <td>${miniBar}</td>
+      <td style="text-align:center;">${statusBadge}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Update column header for G4
+  const headers = document.querySelectorAll('#testTable thead th');
+  if (currentGrade === 4) {
+    headers[2].textContent = 'In Circ.';
+    headers[3].textContent = 'Attempts';
+  } else {
+    headers[2].textContent = 'Students';
+    headers[3].textContent = 'Attempts';
+  }
+}
+
+function renderHeatmap() {
+  const TESTS = getTests();
+  const dir = getGradeDir();
+  const evaluated = TESTS.filter(t => t.status === 'evaluated');
+  if (evaluated.length === 0) {
+    document.getElementById('heatmapCard').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('heatmapCard').style.display = '';
+  document.getElementById('heatmapTitle').textContent = 'Indicator Heatmap: All Grade ' + currentGrade + ' Tests';
+  const tbody = document.getElementById('heatmapBody');
+  tbody.innerHTML = '';
+
+  function heatClass(v) {
+    if (v < 2.0) return 'heat-1';
+    if (v < 2.5) return 'heat-2';
+    if (v <= 3.0) return 'heat-3';
+    if (v < 4.0) return 'heat-4';
+    return 'heat-5';
+  }
+
+  evaluated.forEach(t => {
+    const avg = ((t.ind.sc + t.ind.sep + t.ind.dci + t.ind.ccc) / 4).toFixed(1);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="test-link"><a href="${dir}/${t.id}_Dashboard.html">${t.id}</a></td>
+      <td class="${heatClass(t.ind.sc)}">${t.ind.sc.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.sep)}">${t.ind.sep.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.dci)}">${t.ind.dci.toFixed(1)}</td>
+      <td class="${heatClass(t.ind.ccc)}">${t.ind.ccc.toFixed(1)}</td>
+      <td class="${heatClass(parseFloat(avg))}">${avg}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderAggDist() {
+  const TESTS = getTests();
+  const evaluated = TESTS.filter(t => t.status === 'evaluated');
+  if (evaluated.length === 0) {
+    document.getElementById('aggDistCard').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('aggDistCard').style.display = '';
+  document.getElementById('aggDistTitle').textContent = 'Aggregate Complexity Distribution: All Grade ' + currentGrade + ' Tests Combined';
+
+  let totalS = 0, totalL = 0, totalH = 0, totalD = 0;
+  evaluated.forEach(t => {
+    totalS += t.hol.s; totalL += t.hol.l; totalH += t.hol.h; totalD += t.hol.d;
+  });
+  const totalQ = totalS + totalL + totalH + totalD;
+  if (totalQ === 0) return;
+
+  const pS = (totalS/totalQ*100).toFixed(0);
+  const pL = (totalL/totalQ*100).toFixed(0);
+  const pH = (totalH/totalQ*100).toFixed(0);
+  const pD = (totalD/totalQ*100).toFixed(0);
+
+  const html = `
+    <div style="margin-top:16px;">
+      <div class="gap-row" style="border-bottom:none; padding-bottom:0;">
+        <div class="gap-label" style="font-size:11px; color:var(--gray);">CATEGORY</div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray);"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-label"><span style="color:var(--red);font-weight:700;">Scripted</span><br><span style="font-size:11px;color:var(--gray);">Actual: ${pS}% (${totalS}) &middot; Target: 0%</span></div>
+        <div class="gap-bar-wrap"><div class="gap-bar" style="width:${pS}%; background:var(--red);"></div><div class="gap-target" style="left:0%;"></div></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-label"><span style="color:var(--yellow);font-weight:700;">Low Guided</span><br><span style="font-size:11px;color:var(--gray);">Actual: ${pL}% (${totalL}) &middot; Target: 40-50%</span></div>
+        <div class="gap-bar-wrap"><div class="gap-bar" style="width:${pL}%; background:var(--yellow);"></div><div class="gap-target" style="left:40%; width:10%; background:rgba(0,0,0,0.08);"></div></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-label"><span style="color:var(--blue);font-weight:700;">High Guided</span><br><span style="font-size:11px;color:var(--gray);">Actual: ${pH}% (${totalH}) &middot; Target: 20-30%</span></div>
+        <div class="gap-bar-wrap"><div class="gap-bar" style="width:${pH}%; background:var(--blue);"></div><div class="gap-target" style="left:20%; width:10%; background:rgba(0,0,0,0.08);"></div></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-label"><span style="color:var(--green);font-weight:700;">Doing Science</span><br><span style="font-size:11px;color:var(--gray);">Actual: ${pD}% (${totalD}) &middot; Target: 5-10%</span></div>
+        <div class="gap-bar-wrap"><div class="gap-bar" style="width:${Math.max(pD,1)}%; background:var(--green);"></div><div class="gap-target" style="left:5%; width:5%; background:rgba(0,0,0,0.08);"></div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('aggDistContent').innerHTML = html;
+}
+
+function renderAll() {
+  renderSummaryStats();
+  renderTestTable();
+  renderHeatmap();
+  renderAggDist();
+}
+
+// Initialize
+renderAll();
+</script>
+</body>
+</html>
