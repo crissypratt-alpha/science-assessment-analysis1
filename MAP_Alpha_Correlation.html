@@ -15,7 +15,7 @@
 .site-nav .nav-label { display:block; font-size:10px; font-weight:400; opacity:0.8; margin-top:2px; }
 
 /* Scatter plot */
-.scatter-container { position:relative; width:100%; max-width:700px; margin:0 auto; }
+.scatter-container { position:relative; width:100%; max-width:750px; margin:0 auto; }
 .scatter-svg { width:100%; height:auto; }
 .scatter-dot { cursor:pointer; transition:r 0.2s, opacity 0.2s; }
 .scatter-dot:hover { opacity:1 !important; }
@@ -43,9 +43,10 @@
 .mismatch-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; color:white; }
 .mismatch-badge.alpha-high { background:var(--blue); }
 .mismatch-badge.map-high { background:var(--green); }
+.mismatch-badge.consistent { background:var(--gray); }
 
 /* Grade breakdown */
-.grade-corr-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0; }
+.grade-corr-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
 .grade-corr-card { text-align:center; padding:16px 12px; border:1px solid var(--gray-border); border-radius:10px; }
 .grade-corr-label { font-size:13px; font-weight:700; color:var(--primary); }
 .grade-corr-r { font-size:24px; font-weight:800; margin:4px 0; }
@@ -58,6 +59,11 @@
 .why-box ul { margin:0; padding-left:20px; }
 .why-box li { font-size:14px; line-height:1.7; opacity:0.95; margin-bottom:8px; }
 .why-box li strong { color:white; }
+
+/* Legend row */
+.scatter-legend { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:10px; font-size:12px; }
+.scatter-legend-item { display:flex; align-items:center; gap:5px; }
+.scatter-legend-dot { width:10px; height:10px; border-radius:50%; }
 
 /* Responsive */
 @media (max-width:768px) {
@@ -90,234 +96,140 @@
 <!-- Stats row -->
 <div class="stats-row">
   <div class="stat-card">
-    <div class="stat-number" style="color:var(--yellow);">0.56</div>
-    <div class="stat-label">Pearson Correlation</div>
-    <div class="stat-sub">Moderate — not strong</div>
+    <div class="stat-number" style="color:var(--green);">0.81</div>
+    <div class="stat-label">Pearson Correlation (r)</div>
+    <div class="stat-sub">Strong positive correlation</div>
   </div>
   <div class="stat-card">
-    <div class="stat-number" style="color:var(--red);">32%</div>
-    <div class="stat-label">Variance Explained (R²)</div>
-    <div class="stat-sub">Alpha explains &lt;⅓ of MAP</div>
+    <div class="stat-number" style="color:var(--green);">65%</div>
+    <div class="stat-label">Variance Explained (R&sup2;)</div>
+    <div class="stat-sub">Alpha explains 65% of MAP variance</div>
   </div>
   <div class="stat-card">
-    <div class="stat-number" style="color:var(--primary);">29</div>
+    <div class="stat-number" style="color:var(--primary);">89</div>
     <div class="stat-label">Students Matched</div>
-    <div class="stat-sub">Grades 5–9, both datasets</div>
+    <div class="stat-sub">Grades 2&ndash;9, both datasets</div>
   </div>
   <div class="stat-card">
-    <div class="stat-number" style="color:var(--primary);">629</div>
+    <div class="stat-number" style="color:var(--primary);">768</div>
     <div class="stat-label">Alpha Tests Taken</div>
-    <div class="stat-sub">Avg 22 tests per student</div>
+    <div class="stat-sub">Avg 8.6 tests per student</div>
   </div>
 </div>
 
 <!-- THE BIG FINDING -->
 <div class="card">
-  <h2>The Finding: Alpha Tests Are Weak Predictors of MAP Performance</h2>
-  <div class="card-subtitle">29 students who took both MAP Science and Alpha mastery tests — how well do their Alpha scores predict MAP?</div>
+  <h2>The Finding: Alpha Tests Are Strong Predictors of MAP Performance</h2>
+  <div class="card-subtitle">89 students who took both MAP Science and Alpha mastery tests &mdash; Alpha scores reliably predict MAP outcomes</div>
 
-  <div class="callout" style="margin-top:12px;">
-    <h3>r = 0.56 means our tests are only moderately correlated with MAP</h3>
-    <p>A student's average Alpha test score explains just <strong>32% of the variance</strong> in their MAP Science RIT score. The remaining 68% is driven by skills our tests don't measure — multi-step reasoning, evidence evaluation, and scientific argumentation. A student scoring 85% on Alpha could land anywhere from the 84th to 99th percentile on MAP.</p>
+  <div class="callout" style="margin-top:12px;background:var(--green-bg);border-color:var(--green);">
+    <h3 style="color:var(--green);">r = 0.81 means Alpha tests are meaningfully correlated with MAP</h3>
+    <p>A student's average Alpha test score explains <strong>65% of the variance</strong> in their MAP Science RIT score. This is a strong relationship: students who perform well on Alpha mastery tests generally perform well on MAP, and students who struggle on Alpha generally score lower on MAP. The regression equation (Alpha = 1.001 &times; MAP RIT &minus; 153.7) shows a nearly 1:1 relationship between the two assessments.</p>
+  </div>
+
+  <div class="callout info" style="margin-top:12px;">
+    <h3>The nuance: Score compression at the top</h3>
+    <p>While the overall correlation is strong, Alpha tests <strong>compress the mid-to-high range</strong>. Students scoring 210&ndash;229 on MAP average 77.5% on Alpha, while students scoring 230+ average 83.5% &mdash; only a 6-point Alpha gap for a 20+ point MAP gap. The biggest differentiation happens at the bottom: students below MAP 210 average just 42.7% on Alpha, a dramatic separation from the rest of the cohort.</p>
   </div>
 
   <!-- SCATTER PLOT -->
   <h3 style="font-size:15px;font-weight:700;color:var(--primary);margin:20px 0 8px;">Alpha Avg Score vs MAP Science RIT</h3>
-  <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Each dot is a student. Hover for details. If Alpha perfectly predicted MAP, all dots would follow a tight diagonal line — they don't.</p>
+  <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Each dot is a student, colored by grade. Hover for details. The dashed line shows the linear regression trend.</p>
 
   <div class="scatter-container" id="scatterContainer">
     <div class="scatter-tooltip" id="scatterTooltip"></div>
-    <svg class="scatter-svg" viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg">
-      <!-- Axes -->
-      <line x1="80" y1="400" x2="680" y2="400" stroke="#dcdde1" stroke-width="1"/>
-      <line x1="80" y1="40" x2="80" y2="400" stroke="#dcdde1" stroke-width="1"/>
-
-      <!-- X axis labels (Alpha Avg %) -->
-      <text x="380" y="450" text-anchor="middle" font-size="13" font-weight="600" fill="#2c3e50">Alpha Average Score (%)</text>
-      <text x="120" y="420" text-anchor="middle" font-size="11" fill="#7f8c8d">50%</text>
-      <text x="240" y="420" text-anchor="middle" font-size="11" fill="#7f8c8d">60%</text>
-      <text x="360" y="420" text-anchor="middle" font-size="11" fill="#7f8c8d">70%</text>
-      <text x="480" y="420" text-anchor="middle" font-size="11" fill="#7f8c8d">80%</text>
-      <text x="600" y="420" text-anchor="middle" font-size="11" fill="#7f8c8d">90%</text>
-      <!-- X gridlines -->
-      <line x1="120" y1="40" x2="120" y2="400" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="240" y1="40" x2="240" y2="400" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="360" y1="40" x2="360" y2="400" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="480" y1="40" x2="480" y2="400" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="600" y1="40" x2="600" y2="400" stroke="#f5f6fa" stroke-width="1"/>
-
-      <!-- Y axis labels (MAP RIT) -->
-      <text x="30" y="230" text-anchor="middle" font-size="13" font-weight="600" fill="#2c3e50" transform="rotate(-90 30 230)">MAP Science RIT</text>
-      <text x="72" y="400" text-anchor="end" font-size="11" fill="#7f8c8d">205</text>
-      <text x="72" y="328" text-anchor="end" font-size="11" fill="#7f8c8d">215</text>
-      <text x="72" y="256" text-anchor="end" font-size="11" fill="#7f8c8d">225</text>
-      <text x="72" y="184" text-anchor="end" font-size="11" fill="#7f8c8d">235</text>
-      <text x="72" y="112" text-anchor="end" font-size="11" fill="#7f8c8d">245</text>
-      <text x="72" y="40" text-anchor="end" font-size="11" fill="#7f8c8d">255</text>
-      <!-- Y gridlines -->
-      <line x1="80" y1="328" x2="680" y2="328" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="80" y1="256" x2="680" y2="256" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="80" y1="184" x2="680" y2="184" stroke="#f5f6fa" stroke-width="1"/>
-      <line x1="80" y1="112" x2="680" y2="112" stroke="#f5f6fa" stroke-width="1"/>
-
-      <!-- Trend line (linear regression: RIT = 0.56 * (std_rit/std_alpha) * (alpha - mean_alpha) + mean_rit) -->
-      <!-- slope = r * (std_rit/std_alpha) = 0.56 * (10.4/8.4) = 0.693 -->
-      <!-- intercept = mean_rit - slope * mean_alpha = 232.1 - 0.693 * 79.6 = 176.9 -->
-      <!-- At alpha=50: rit=176.9+0.693*50=211.6, at alpha=90: rit=176.9+0.693*90=239.3 -->
-      <line x1="120" y1="347" x2="600" y2="168" stroke="var(--primary)" stroke-width="2" stroke-dasharray="6,4" opacity="0.4"/>
-      <text x="610" y="163" font-size="10" fill="var(--primary)" font-weight="600">trend line</text>
-
-      <!-- Data points — scaled: x = 80 + (alpha - 45) * 12, y = 400 - (rit - 205) * 7.2 -->
-      <!-- Grade 5 = green, Grade 6 = orange, Grade 7 = blue, Grade 8 = red, Grade 9 = purple -->
-      <!-- G5: Duke Ajouz (80.7, 229) -->
-      <circle class="scatter-dot" cx="509" cy="227" r="7" fill="#27ae60" opacity="0.8" data-name="Duke Ajouz" data-grade="5" data-alpha="80.7" data-rit="229" data-pct="97" data-tests="21"/>
-      <!-- G5: Elaina Robertson (75.8, 224) -->
-      <circle class="scatter-dot" cx="450" cy="263" r="7" fill="#27ae60" opacity="0.8" data-name="Elaina Robertson" data-grade="5" data-alpha="75.8" data-rit="224" data-pct="93" data-tests="23"/>
-      <!-- G5: Jaxon Siers (75.8, 232) -->
-      <circle class="scatter-dot" cx="450" cy="206" r="7" fill="#27ae60" opacity="0.8" data-name="Jaxon Siers" data-grade="5" data-alpha="75.8" data-rit="232" data-pct="98" data-tests="18"/>
-      <!-- G5: Tate Price (75.9, 234) -->
-      <circle class="scatter-dot" cx="451" cy="191" r="7" fill="#27ae60" opacity="0.8" data-name="Tate Price" data-grade="5" data-alpha="75.9" data-rit="234" data-pct="99" data-tests="24"/>
-
-      <!-- G6: David Sheldon (88.9, 225) -->
-      <circle class="scatter-dot" cx="607" cy="256" r="7" fill="#d35400" opacity="0.8" data-name="David Sheldon" data-grade="6" data-alpha="88.9" data-rit="225" data-pct="92" data-tests="12"/>
-      <!-- G6: Jacob Atamas (88.5, 242) -->
-      <circle class="scatter-dot" cx="602" cy="134" r="7" fill="#d35400" opacity="0.8" data-name="Jacob Atamas" data-grade="6" data-alpha="88.5" data-rit="242" data-pct="99" data-tests="20"/>
-      <!-- G6: Jason Dziuba (75.9, 229) -->
-      <circle class="scatter-dot" cx="451" cy="227" r="7" fill="#d35400" opacity="0.8" data-name="Jason Dziuba" data-grade="6" data-alpha="75.9" data-rit="229" data-pct="96" data-tests="6"/>
-      <!-- G6: Nadine Romman (75.2, 231) -->
-      <circle class="scatter-dot" cx="442" cy="213" r="7" fill="#d35400" opacity="0.8" data-name="Nadine Romman" data-grade="6" data-alpha="75.2" data-rit="231" data-pct="97" data-tests="28"/>
-      <!-- G6: Sol Felicevich (56.8, 209) -->
-      <circle class="scatter-dot" cx="222" cy="371" r="7" fill="#d35400" opacity="0.8" data-name="Sol Felicevich" data-grade="6" data-alpha="56.8" data-rit="209" data-pct="59" data-tests="4"/>
-
-      <!-- G7: Aila Wong (79.6, 226) -->
-      <circle class="scatter-dot" cx="495" cy="249" r="7" fill="#2980b9" opacity="0.8" data-name="Aila Wong" data-grade="7" data-alpha="79.6" data-rit="226" data-pct="90" data-tests="18"/>
-      <!-- G7: Benjamin Blake Flores — missing alpha, skip -->
-      <!-- G7: Byron Attridge (85.7, 236) -->
-      <circle class="scatter-dot" cx="568" cy="177" r="7" fill="#2980b9" opacity="0.8" data-name="Byron Attridge" data-grade="7" data-alpha="85.7" data-rit="236" data-pct="97" data-tests="24"/>
-      <!-- G7: Emma Correa (79.7, 213) -->
-      <circle class="scatter-dot" cx="497" cy="342" r="7" fill="#2980b9" opacity="0.8" data-name="Emma Correa" data-grade="7" data-alpha="79.7" data-rit="213" data-pct="62" data-tests="8"/>
-      <!-- G7: Felix Cole (79.8, 227) -->
-      <circle class="scatter-dot" cx="498" cy="242" r="7" fill="#2980b9" opacity="0.8" data-name="Felix Cole" data-grade="7" data-alpha="79.8" data-rit="227" data-pct="90" data-tests="17"/>
-      <!-- G7: Kai Sticker (85.0, 242) -->
-      <circle class="scatter-dot" cx="560" cy="134" r="7" fill="#2980b9" opacity="0.8" data-name="Kai Sticker" data-grade="7" data-alpha="85.0" data-rit="242" data-pct="99" data-tests="34"/>
-      <!-- G7: Lily Gray (80.8, 226) -->
-      <circle class="scatter-dot" cx="510" cy="249" r="7" fill="#2980b9" opacity="0.8" data-name="Lily Gray" data-grade="7" data-alpha="80.8" data-rit="226" data-pct="89" data-tests="23"/>
-      <!-- G7: Love Lalla-Pagan (85.8, 251) -->
-      <circle class="scatter-dot" cx="569" cy="69" r="7" fill="#2980b9" opacity="0.8" data-name="Love Lalla-Pagan" data-grade="7" data-alpha="85.8" data-rit="251" data-pct="99" data-tests="26"/>
-      <!-- G7: Rania Caberwal (83.0, 243) -->
-      <circle class="scatter-dot" cx="536" cy="127" r="7" fill="#2980b9" opacity="0.8" data-name="Rania Caberwal" data-grade="7" data-alpha="83.0" data-rit="243" data-pct="99" data-tests="20"/>
-      <!-- G7: Rhys Robertson (49.5, 224) -->
-      <circle class="scatter-dot" cx="134" cy="263" r="7" fill="#2980b9" opacity="0.8" data-name="Rhys Robertson" data-grade="7" data-alpha="49.5" data-rit="224" data-pct="86" data-tests="4"/>
-      <!-- G7: Shepperd Pfiester (79.6, 230) -->
-      <circle class="scatter-dot" cx="495" cy="220" r="7" fill="#2980b9" opacity="0.8" data-name="Shepperd Pfiester" data-grade="7" data-alpha="79.6" data-rit="230" data-pct="93" data-tests="38"/>
-
-      <!-- G8: Aileya Klinefelter (75.0, 226) -->
-      <circle class="scatter-dot" cx="440" cy="249" r="7" fill="#c0392b" opacity="0.8" data-name="Aileya Klinefelter" data-grade="8" data-alpha="75.0" data-rit="226" data-pct="84" data-tests="35"/>
-      <!-- G8: Bennett Morris (82.0, 230) -->
-      <circle class="scatter-dot" cx="524" cy="220" r="7" fill="#c0392b" opacity="0.8" data-name="Bennett Morris" data-grade="8" data-alpha="82.0" data-rit="230" data-pct="90" data-tests="17"/>
-      <!-- G8: Eva Mentgen (87.8, 250) -->
-      <circle class="scatter-dot" cx="593" cy="76" r="7" fill="#c0392b" opacity="0.8" data-name="Eva Mentgen" data-grade="8" data-alpha="87.8" data-rit="250" data-pct="99" data-tests="30"/>
-      <!-- G8: Gavyn Martinez (85.8, 237) -->
-      <circle class="scatter-dot" cx="569" cy="170" r="7" fill="#c0392b" opacity="0.8" data-name="Gavyn Martinez" data-grade="8" data-alpha="85.8" data-rit="237" data-pct="96" data-tests="19"/>
-      <!-- G8: Gwendolyn Meegan (80.3, 234) -->
-      <circle class="scatter-dot" cx="503" cy="191" r="7" fill="#c0392b" opacity="0.8" data-name="Gwendolyn Meegan" data-grade="8" data-alpha="80.3" data-rit="234" data-pct="94" data-tests="24"/>
-      <!-- G8: Jude Hock (85.6, 254) -->
-      <circle class="scatter-dot" cx="567" cy="47" r="7" fill="#c0392b" opacity="0.8" data-name="Jude Hock" data-grade="8" data-alpha="85.6" data-rit="254" data-pct="99" data-tests="28"/>
-      <!-- G8: Naomi Kocek (83.2, 240) -->
-      <circle class="scatter-dot" cx="538" cy="148" r="7" fill="#c0392b" opacity="0.8" data-name="Naomi Kocek" data-grade="8" data-alpha="83.2" data-rit="240" data-pct="97" data-tests="34"/>
-      <!-- G8: Olivia Hirsch (84.2, 226) -->
-      <circle class="scatter-dot" cx="550" cy="249" r="7" fill="#c0392b" opacity="0.8" data-name="Olivia Hirsch" data-grade="8" data-alpha="84.2" data-rit="226" data-pct="84" data-tests="16"/>
-      <!-- G8: Savannah Marrero (80.9, 240) -->
-      <circle class="scatter-dot" cx="511" cy="148" r="7" fill="#c0392b" opacity="0.8" data-name="Savannah Marrero" data-grade="8" data-alpha="80.9" data-rit="240" data-pct="97" data-tests="29"/>
-
-      <!-- G9: Sydney Barba (81.0, 222) -->
-      <circle class="scatter-dot" cx="512" cy="278" r="7" fill="#8e44ad" opacity="0.8" data-name="Sydney Barba" data-grade="9" data-alpha="81.0" data-rit="222" data-pct="75" data-tests="34"/>
-
-      <!-- Legend -->
-      <circle cx="100" cy="440" r="5" fill="#27ae60"/><text x="110" y="444" font-size="10" fill="#7f8c8d">Grade 5</text>
-      <circle cx="170" cy="440" r="5" fill="#d35400"/><text x="180" y="444" font-size="10" fill="#7f8c8d">Grade 6</text>
-      <circle cx="240" cy="440" r="5" fill="#2980b9"/><text x="250" y="444" font-size="10" fill="#7f8c8d">Grade 7</text>
-      <circle cx="310" cy="440" r="5" fill="#c0392b"/><text x="320" y="444" font-size="10" fill="#7f8c8d">Grade 8</text>
-      <circle cx="380" cy="440" r="5" fill="#8e44ad"/><text x="390" y="444" font-size="10" fill="#7f8c8d">Grade 9</text>
-    </svg>
+    <svg class="scatter-svg" id="scatterSVG" viewBox="0 0 750 500" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="scatter-legend" id="scatterLegend"></div>
   </div>
 </div>
 
 <!-- PERFORMANCE TIERS -->
 <div class="card">
   <h2>Performance by MAP Tier</h2>
-  <div class="card-subtitle">Students grouped by MAP Achievement percentile — Alpha scores differ, but not nearly as much as MAP scores</div>
+  <div class="card-subtitle">Students grouped by MAP RIT score &mdash; Alpha scores clearly separate low performers but compress the mid-to-high range</div>
 
   <div class="tier-grid">
     <div class="tier-card" style="border-color:var(--green);background:var(--green-bg);">
-      <div class="tier-title" style="color:var(--green);">Top Tier (95th+ percentile)</div>
-      <div class="tier-num" style="color:var(--green);">82.3%</div>
-      <div class="tier-sub">Alpha Avg (15 students)</div>
-      <div style="font-size:20px;font-weight:800;color:var(--green);margin-top:8px;">MAP Avg: 239</div>
+      <div class="tier-title" style="color:var(--green);">High Tier (RIT 230+)</div>
+      <div class="tier-num" style="color:var(--green);">83.5%</div>
+      <div class="tier-sub">Alpha Avg (28 students)</div>
+      <div style="font-size:20px;font-weight:800;color:var(--green);margin-top:8px;">MAP Avg: ~240</div>
     </div>
     <div class="tier-card" style="border-color:var(--yellow);background:var(--yellow-bg);">
-      <div class="tier-title" style="color:var(--yellow);">Mid Tier (80–94th percentile)</div>
-      <div class="tier-num" style="color:var(--yellow);">77.8%</div>
-      <div class="tier-sub">Alpha Avg (11 students)</div>
-      <div style="font-size:20px;font-weight:800;color:var(--yellow);margin-top:8px;">MAP Avg: 227</div>
+      <div class="tier-title" style="color:var(--yellow);">Mid Tier (RIT 210&ndash;229)</div>
+      <div class="tier-num" style="color:var(--yellow);">77.5%</div>
+      <div class="tier-sub">Alpha Avg (39 students)</div>
+      <div style="font-size:20px;font-weight:800;color:var(--yellow);margin-top:8px;">MAP Avg: ~220</div>
     </div>
     <div class="tier-card" style="border-color:var(--red);background:var(--red-bg);">
-      <div class="tier-title" style="color:var(--red);">Lower Tier (&lt;80th percentile)</div>
-      <div class="tier-num" style="color:var(--red);">72.5%</div>
-      <div class="tier-sub">Alpha Avg (3 students)</div>
-      <div style="font-size:20px;font-weight:800;color:var(--red);margin-top:8px;">MAP Avg: 215</div>
+      <div class="tier-title" style="color:var(--red);">Low Tier (RIT &lt;210)</div>
+      <div class="tier-num" style="color:var(--red);">42.7%</div>
+      <div class="tier-sub">Alpha Avg (22 students)</div>
+      <div style="font-size:20px;font-weight:800;color:var(--red);margin-top:8px;">MAP Avg: ~198</div>
     </div>
   </div>
 
   <div class="callout info">
-    <h3>The Compression Problem</h3>
-    <p>MAP scores spread from the 59th to 99th percentile across these students — a <strong>40-point percentile range</strong>. But their Alpha averages only spread from 73% to 89% — a <strong>16-point range</strong>. Our tests compress everyone into a narrow band because the questions are too easy. A student at the 59th MAP percentile and a student at the 99th percentile only differ by ~16 points on Alpha tests.</p>
+    <h3>The Differentiation Story</h3>
+    <p>Alpha tests excel at identifying students who are struggling: the Low Tier averages just <strong>42.7% on Alpha</strong>, a 35-point gap below the Mid Tier. That is powerful diagnostic information. However, Alpha compresses the difference between Mid and High performers &mdash; only a <strong>6-point gap</strong> (77.5% vs 83.5%) separates students whose MAP scores differ by ~20 RIT points. Adding more challenging, higher-complexity questions would help Alpha better differentiate within the upper half of the distribution.</p>
   </div>
 </div>
 
 <!-- GRADE BREAKDOWN -->
 <div class="card">
   <h2>Correlation by Grade</h2>
-  <div class="card-subtitle">How well does each grade's Alpha tests predict MAP? Grade 6 is best; Grade 5 is essentially random.</div>
+  <div class="card-subtitle">How well does each grade's Alpha tests predict MAP? Grade 5 is strongest; Grade 7 is the weakest predictor.</div>
 
   <div class="grade-corr-grid">
     <div class="grade-corr-card">
+      <div class="grade-corr-label">Grade 3</div>
+      <div class="grade-corr-r" style="color:var(--yellow);">0.69</div>
+      <div class="grade-corr-n">9 students</div>
+      <div class="grade-corr-interp" style="color:var(--yellow);">Moderate&ndash;Strong</div>
+    </div>
+    <div class="grade-corr-card">
+      <div class="grade-corr-label">Grade 4</div>
+      <div class="grade-corr-r" style="color:var(--green);">0.77</div>
+      <div class="grade-corr-n">14 students</div>
+      <div class="grade-corr-interp" style="color:var(--green);">Strong</div>
+    </div>
+    <div class="grade-corr-card">
       <div class="grade-corr-label">Grade 5</div>
-      <div class="grade-corr-r" style="color:var(--red);">-0.10</div>
-      <div class="grade-corr-n">4 students</div>
-      <div class="grade-corr-interp" style="color:var(--red);">No correlation</div>
+      <div class="grade-corr-r" style="color:var(--green);">0.96</div>
+      <div class="grade-corr-n">11 students</div>
+      <div class="grade-corr-interp" style="color:var(--green);">Very Strong</div>
     </div>
     <div class="grade-corr-card">
       <div class="grade-corr-label">Grade 6</div>
-      <div class="grade-corr-r" style="color:var(--green);">0.80</div>
-      <div class="grade-corr-n">5 students</div>
+      <div class="grade-corr-r" style="color:var(--green);">0.76</div>
+      <div class="grade-corr-n">17 students</div>
       <div class="grade-corr-interp" style="color:var(--green);">Strong</div>
     </div>
     <div class="grade-corr-card">
       <div class="grade-corr-label">Grade 7</div>
-      <div class="grade-corr-r" style="color:var(--yellow);">0.43</div>
-      <div class="grade-corr-n">10 students</div>
-      <div class="grade-corr-interp" style="color:var(--yellow);">Weak–Moderate</div>
+      <div class="grade-corr-r" style="color:var(--red);">0.41</div>
+      <div class="grade-corr-n">14 students</div>
+      <div class="grade-corr-interp" style="color:var(--red);">Weak&ndash;Moderate</div>
     </div>
     <div class="grade-corr-card">
       <div class="grade-corr-label">Grade 8</div>
-      <div class="grade-corr-r" style="color:var(--blue);">0.64</div>
-      <div class="grade-corr-n">9 students</div>
-      <div class="grade-corr-interp" style="color:var(--blue);">Moderate</div>
+      <div class="grade-corr-r" style="color:var(--green);">0.72</div>
+      <div class="grade-corr-n">21 students</div>
+      <div class="grade-corr-interp" style="color:var(--green);">Strong</div>
     </div>
   </div>
 
   <ul class="flag-list">
-    <li class="flag-item"><strong>Grade 5 is the most concerning</strong> — Alpha G5 test scores have essentially zero relationship with MAP performance. Students with 76% Alpha scores range from 93rd to 99th percentile on MAP.</li>
-    <li class="flag-item warn"><strong>Grade 6 is the best predictor</strong> (r=0.80) but this is based on only 5 students. The range of MAP scores in G6 is wide (209–242), which helps the correlation.</li>
-    <li class="flag-item warn"><strong>Grade 7 has the most students (10)</strong> and shows only a weak correlation (r=0.43). This is the most reliable grade-level estimate we have.</li>
+    <li class="flag-item"><strong>Grade 7 is the most concerning</strong> &mdash; with 14 students and r=0.41, Grade 7 Alpha tests are the weakest predictor of MAP performance. Students with similar Alpha scores land across a wide MAP range, suggesting G7 questions may not differentiate well.</li>
+    <li class="flag-item warn"><strong>Grade 5 is the standout</strong> (r=0.96) &mdash; an exceptionally tight correlation with 11 students. G5 Alpha tests capture nearly all of the variation in MAP scores, making them highly predictive.</li>
+    <li class="flag-item warn"><strong>Grades 2 &amp; 9 each have only 1 student</strong> &mdash; not enough data to compute a meaningful correlation. These grades are excluded from grade-level analysis.</li>
   </ul>
 </div>
 
 <!-- BIGGEST MISMATCHES -->
 <div class="card">
   <h2>Biggest Mismatches: Where Alpha and MAP Disagree</h2>
-  <div class="card-subtitle">Students ranked by both Alpha and MAP — the biggest rank gaps reveal what our tests are missing</div>
+  <div class="card-subtitle">Students where Alpha performance and MAP performance tell very different stories</div>
 
   <div class="table-scroll" style="max-height:none;">
     <table class="mismatch-table">
@@ -334,76 +246,76 @@
       </thead>
       <tbody>
         <tr>
-          <td><strong>David Sheldon</strong></td>
-          <td>6</td>
-          <td style="color:var(--green);font-weight:700;">88.9%</td>
-          <td>225</td>
-          <td>92nd</td>
-          <td><span class="mismatch-badge alpha-high">Alpha ≫ MAP</span></td>
-          <td style="font-size:12px;">Highest Alpha scorer but only 92nd on MAP. Aces recall questions; struggles with MAP's reasoning demands.</td>
-        </tr>
-        <tr>
-          <td><strong>Tate Price</strong></td>
-          <td>5</td>
-          <td style="color:var(--yellow);font-weight:700;">75.9%</td>
-          <td>234</td>
+          <td><strong>Conan Hogan</strong></td>
+          <td>2</td>
+          <td style="color:var(--red);font-weight:700;">37.2%</td>
+          <td style="color:var(--green);font-weight:700;">211</td>
           <td style="color:var(--green);font-weight:700;">99th</td>
-          <td><span class="mismatch-badge map-high">MAP ≫ Alpha</span></td>
-          <td style="font-size:12px;">Below-average Alpha scorer but top 1% on MAP. Strong scientific reasoning not captured by our Scripted questions.</td>
+          <td><span class="mismatch-badge map-high">MAP &gg; Alpha</span></td>
+          <td style="font-size:12px;">99th percentile on MAP but only 37% on Alpha. Strongest reasoning skills not captured by Alpha's recall-focused questions.</td>
         </tr>
         <tr>
-          <td><strong>Jaxon Siers</strong></td>
-          <td>5</td>
-          <td style="color:var(--yellow);font-weight:700;">75.8%</td>
-          <td>232</td>
-          <td style="color:var(--green);font-weight:700;">98th</td>
-          <td><span class="mismatch-badge map-high">MAP ≫ Alpha</span></td>
-          <td style="font-size:12px;">Same pattern as Tate — low Alpha, elite MAP. Our G5 tests can't distinguish him from average students.</td>
-        </tr>
-        <tr>
-          <td><strong>Nadine Romman</strong></td>
-          <td>6</td>
-          <td style="color:var(--yellow);font-weight:700;">75.2%</td>
-          <td>231</td>
-          <td style="color:var(--green);font-weight:700;">97th</td>
-          <td><span class="mismatch-badge map-high">MAP ≫ Alpha</span></td>
-          <td style="font-size:12px;">Low Alpha despite being 97th percentile on MAP. Alpha G6 tests miss her actual science ability.</td>
-        </tr>
-        <tr>
-          <td><strong>Olivia Hirsch</strong></td>
+          <td><strong>Colton Bellamy</strong></td>
           <td>8</td>
-          <td style="color:var(--green);font-weight:700;">84.2%</td>
-          <td>226</td>
-          <td>84th</td>
-          <td><span class="mismatch-badge alpha-high">Alpha ≫ MAP</span></td>
-          <td style="font-size:12px;">High Alpha scores mask a 15-percentile gap. Our easy questions don't reveal where she needs help.</td>
+          <td style="color:var(--green);font-weight:700;">79.9%</td>
+          <td>214</td>
+          <td style="color:var(--red);font-weight:700;">57th</td>
+          <td><span class="mismatch-badge alpha-high">Alpha &gg; MAP</span></td>
+          <td style="font-size:12px;">Nearly 80% on Alpha but only 57th percentile on MAP. Memorizes facts well but struggles with application and reasoning.</td>
+        </tr>
+        <tr>
+          <td><strong>Ozzie Lowe</strong></td>
+          <td>6</td>
+          <td style="color:var(--green);font-weight:700;">85.9%</td>
+          <td>214</td>
+          <td style="color:var(--yellow);font-weight:700;">73rd</td>
+          <td><span class="mismatch-badge alpha-high">Alpha &gg; MAP</span></td>
+          <td style="font-size:12px;">86% Alpha suggests mastery, but 73rd percentile MAP indicates gaps in deeper scientific reasoning.</td>
+        </tr>
+        <tr>
+          <td><strong>Tomi Fernandez</strong></td>
+          <td>6</td>
+          <td style="color:var(--green);font-weight:700;">82.9%</td>
+          <td>215</td>
+          <td style="color:var(--yellow);font-weight:700;">75th</td>
+          <td><span class="mismatch-badge alpha-high">Alpha &gg; MAP</span></td>
+          <td style="font-size:12px;">Strong Alpha scores mask a gap &mdash; 83% Alpha but 75th MAP. Alpha questions may be too easy for this student's grade level.</td>
         </tr>
         <tr>
           <td><strong>Emma Correa</strong></td>
           <td>7</td>
-          <td style="color:var(--yellow);font-weight:700;">79.7%</td>
+          <td style="color:var(--yellow);font-weight:700;">81.0%</td>
           <td>213</td>
           <td style="color:var(--red);font-weight:700;">62nd</td>
-          <td><span class="mismatch-badge alpha-high">Alpha ≫ MAP</span></td>
-          <td style="font-size:12px;">80% Alpha average hides that she's only 62nd on MAP. Our tests give her false confidence.</td>
+          <td><span class="mismatch-badge alpha-high">Alpha &gg; MAP</span></td>
+          <td style="font-size:12px;">81% Alpha hides that she is only at the 62nd percentile on MAP. Alpha gives false confidence here.</td>
         </tr>
         <tr>
-          <td><strong>Rania Caberwal</strong></td>
-          <td>7</td>
-          <td>83.0%</td>
-          <td>243</td>
-          <td style="color:var(--green);font-weight:700;">99th</td>
-          <td><span class="mismatch-badge map-high">MAP ≫ Alpha</span></td>
-          <td style="font-size:12px;">99th percentile MAP scorer looks merely average on Alpha. Tests can't differentiate her from mid-tier students.</td>
+          <td><strong>Griffin Farnham</strong></td>
+          <td>3</td>
+          <td style="color:var(--red);font-weight:700;">15.0%</td>
+          <td>202</td>
+          <td style="color:var(--yellow);font-weight:700;">80th</td>
+          <td><span class="mismatch-badge map-high">MAP &gg; Alpha</span></td>
+          <td style="font-size:12px;">80th percentile on MAP with just 15% on Alpha (only 2 tests). Extremely limited Alpha data paints a misleading picture.</td>
         </tr>
         <tr>
-          <td><strong>Love Lalla-Pagan</strong></td>
+          <td><strong>Rhys Robertson</strong></td>
           <td>7</td>
-          <td>85.8%</td>
-          <td>251</td>
+          <td style="color:var(--red);font-weight:700;">52.7%</td>
+          <td>224</td>
+          <td>86th</td>
+          <td><span class="mismatch-badge map-high">MAP &gg; Alpha</span></td>
+          <td style="font-size:12px;">86th percentile on MAP but only 53% on Alpha (3 tests). Strong scientific reasoning not reflected in limited Alpha attempts.</td>
+        </tr>
+        <tr>
+          <td><strong>Sander Gabler</strong></td>
+          <td>8</td>
+          <td style="color:var(--green);font-weight:700;">90.6%</td>
+          <td style="color:var(--green);font-weight:700;">259</td>
           <td style="color:var(--green);font-weight:700;">99th</td>
-          <td><span class="mismatch-badge map-high">MAP ≫ Alpha</span></td>
-          <td style="font-size:12px;">251 RIT (near top of scale) with only 86% Alpha — our ceiling is too low for elite students.</td>
+          <td><span class="mismatch-badge consistent">Consistent</span></td>
+          <td style="font-size:12px;">Top scorer on both measures &mdash; 91% Alpha and 259 RIT. Demonstrates the correlation working as expected at the top.</td>
         </tr>
       </tbody>
     </table>
@@ -412,51 +324,22 @@
 
 <!-- FULL STUDENT TABLE -->
 <div class="card">
-  <h2>Complete Dataset: All 29 Students</h2>
-  <div class="card-subtitle">Sorted by MAP RIT score (highest to lowest)</div>
+  <h2>Complete Dataset: All 89 Students</h2>
+  <div class="card-subtitle">Click any column header to sort. Heatmap coloring reflects relative performance.</div>
 
   <div class="table-scroll" style="max-height:500px;">
     <table class="heatmap-table" id="fullTable">
       <thead>
         <tr>
-          <th style="text-align:left;cursor:pointer;" onclick="sortTable(0)">Student</th>
-          <th style="cursor:pointer;" onclick="sortTable(1)">Grade</th>
-          <th style="cursor:pointer;" onclick="sortTable(2)">Alpha Avg</th>
-          <th style="cursor:pointer;" onclick="sortTable(3)">MAP RIT</th>
-          <th style="cursor:pointer;" onclick="sortTable(4)">MAP %ile</th>
-          <th style="cursor:pointer;" onclick="sortTable(5)"># Tests</th>
+          <th style="text-align:left;cursor:pointer;" onclick="sortTable(0)">Student &#x25B4;&#x25BE;</th>
+          <th style="cursor:pointer;" onclick="sortTable(1)">Grade &#x25B4;&#x25BE;</th>
+          <th style="cursor:pointer;" onclick="sortTable(2)">Alpha Avg &#x25B4;&#x25BE;</th>
+          <th style="cursor:pointer;" onclick="sortTable(3)">MAP RIT &#x25B4;&#x25BE;</th>
+          <th style="cursor:pointer;" onclick="sortTable(4)">MAP %ile &#x25B4;&#x25BE;</th>
+          <th style="cursor:pointer;" onclick="sortTable(5)"># Tests &#x25B4;&#x25BE;</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td class="test-link">Jude Hock</td><td>8</td><td class="heat-4">85.6%</td><td class="heat-5">254</td><td class="heat-5">99th</td><td>28</td></tr>
-        <tr><td class="test-link">Love Lalla-Pagan</td><td>7</td><td class="heat-4">85.8%</td><td class="heat-5">251</td><td class="heat-5">99th</td><td>26</td></tr>
-        <tr><td class="test-link">Eva Mentgen</td><td>8</td><td class="heat-5">87.8%</td><td class="heat-5">250</td><td class="heat-5">99th</td><td>30</td></tr>
-        <tr><td class="test-link">Rania Caberwal</td><td>7</td><td class="heat-3">83.0%</td><td class="heat-5">243</td><td class="heat-5">99th</td><td>20</td></tr>
-        <tr><td class="test-link">Jacob Atamas</td><td>6</td><td class="heat-5">88.5%</td><td class="heat-5">242</td><td class="heat-5">99th</td><td>20</td></tr>
-        <tr><td class="test-link">Kai Sticker</td><td>7</td><td class="heat-4">85.0%</td><td class="heat-5">242</td><td class="heat-5">99th</td><td>34</td></tr>
-        <tr><td class="test-link">Savannah Marrero</td><td>8</td><td class="heat-3">80.9%</td><td class="heat-4">240</td><td class="heat-5">97th</td><td>29</td></tr>
-        <tr><td class="test-link">Naomi Kocek</td><td>8</td><td class="heat-3">83.2%</td><td class="heat-4">240</td><td class="heat-5">97th</td><td>34</td></tr>
-        <tr><td class="test-link">Gavyn Martinez</td><td>8</td><td class="heat-4">85.8%</td><td class="heat-4">237</td><td class="heat-5">96th</td><td>19</td></tr>
-        <tr><td class="test-link">Byron Attridge</td><td>7</td><td class="heat-4">85.7%</td><td class="heat-4">236</td><td class="heat-5">97th</td><td>24</td></tr>
-        <tr><td class="test-link">Tate Price</td><td>5</td><td class="heat-2">75.9%</td><td class="heat-4">234</td><td class="heat-5">99th</td><td>24</td></tr>
-        <tr><td class="test-link">Gwendolyn Meegan</td><td>8</td><td class="heat-3">80.3%</td><td class="heat-4">234</td><td class="heat-5">94th</td><td>24</td></tr>
-        <tr><td class="test-link">Jaxon Siers</td><td>5</td><td class="heat-2">75.8%</td><td class="heat-3">232</td><td class="heat-5">98th</td><td>18</td></tr>
-        <tr><td class="test-link">Nadine Romman</td><td>6</td><td class="heat-2">75.2%</td><td class="heat-3">231</td><td class="heat-5">97th</td><td>28</td></tr>
-        <tr><td class="test-link">Bennett Morris</td><td>8</td><td class="heat-3">82.0%</td><td class="heat-3">230</td><td class="heat-4">90th</td><td>17</td></tr>
-        <tr><td class="test-link">Shepperd Pfiester</td><td>7</td><td class="heat-3">79.6%</td><td class="heat-3">230</td><td class="heat-4">93rd</td><td>38</td></tr>
-        <tr><td class="test-link">Duke Ajouz</td><td>5</td><td class="heat-3">80.7%</td><td class="heat-3">229</td><td class="heat-5">97th</td><td>21</td></tr>
-        <tr><td class="test-link">Jason Dziuba</td><td>6</td><td class="heat-2">75.9%</td><td class="heat-3">229</td><td class="heat-5">96th</td><td>6</td></tr>
-        <tr><td class="test-link">Felix Cole</td><td>7</td><td class="heat-3">79.8%</td><td class="heat-3">227</td><td class="heat-4">90th</td><td>17</td></tr>
-        <tr><td class="test-link">Aila Wong</td><td>7</td><td class="heat-3">79.6%</td><td class="heat-2">226</td><td class="heat-4">90th</td><td>18</td></tr>
-        <tr><td class="test-link">Aileya Klinefelter</td><td>8</td><td class="heat-2">75.0%</td><td class="heat-2">226</td><td class="heat-3">84th</td><td>35</td></tr>
-        <tr><td class="test-link">Lily Gray</td><td>7</td><td class="heat-3">80.8%</td><td class="heat-2">226</td><td class="heat-4">89th</td><td>23</td></tr>
-        <tr><td class="test-link">Olivia Hirsch</td><td>8</td><td class="heat-4">84.2%</td><td class="heat-2">226</td><td class="heat-3">84th</td><td>16</td></tr>
-        <tr><td class="test-link">David Sheldon</td><td>6</td><td class="heat-5">88.9%</td><td class="heat-2">225</td><td class="heat-4">92nd</td><td>12</td></tr>
-        <tr><td class="test-link">Elaina Robertson</td><td>5</td><td class="heat-2">75.8%</td><td class="heat-2">224</td><td class="heat-4">93rd</td><td>23</td></tr>
-        <tr><td class="test-link">Rhys Robertson</td><td>7</td><td class="heat-1">49.5%</td><td class="heat-2">224</td><td class="heat-3">86th</td><td>4</td></tr>
-        <tr><td class="test-link">Sydney Barba</td><td>9</td><td class="heat-3">81.0%</td><td class="heat-2">222</td><td class="heat-2">75th</td><td>34</td></tr>
-        <tr><td class="test-link">Emma Correa</td><td>7</td><td class="heat-3">79.7%</td><td class="heat-1">213</td><td class="heat-1">62nd</td><td>8</td></tr>
-        <tr><td class="test-link">Sol Felicevich</td><td>6</td><td class="heat-1">56.8%</td><td class="heat-1">209</td><td class="heat-1">59th</td><td>4</td></tr>
+      <tbody id="fullTableBody">
       </tbody>
     </table>
   </div>
@@ -466,22 +349,216 @@
 <div class="why-box">
   <h3>Why Does This Matter?</h3>
   <ul>
-    <li><strong>High Alpha scores give false confidence.</strong> Students scoring 80%+ on our tests may feel prepared, but our questions (avg complexity 1.96/5.0) don't test the multi-step reasoning, data analysis, and evidence-based argumentation MAP requires (3.0+).</li>
-    <li><strong>Low Alpha scores can be misleading.</strong> Students like Tate Price (76% Alpha, 99th MAP) have strong scientific reasoning that our recall-heavy questions don't measure. We risk underestimating their abilities.</li>
-    <li><strong>The tests measure different things.</strong> Alpha tests are 42% Scripted (basic recall) — MAP has essentially none. Our tests measure memorization; MAP measures thinking. The r=0.56 correlation quantifies exactly this mismatch.</li>
-    <li><strong>The fix is the same:</strong> Upgrade Alpha test questions to include scenarios, data interpretation, evidence-based reasoning, and crosscutting concepts. As question complexity rises toward MAP's level, the correlation should strengthen — and Alpha scores will become meaningful MAP predictors.</li>
+    <li><strong>Alpha tests are valid assessments.</strong> With r=0.81 across 89 students and 768 test attempts, Alpha mastery tests are strong predictors of MAP Science performance. Students who master Alpha content genuinely tend to perform well on the nationally-normed MAP assessment.</li>
+    <li><strong>Low Alpha scores are powerful warning signals.</strong> Students in the Low Tier (MAP &lt;210) average just 42.7% on Alpha &mdash; a 35-point gap below the Mid Tier. When a student is struggling on Alpha tests, they are almost certainly struggling on the skills MAP measures too.</li>
+    <li><strong>Mid-to-high compression is the growth area.</strong> Alpha compresses the 20-point MAP gap between Mid Tier (RIT 210&ndash;229) and High Tier (RIT 230+) into just a 6-point Alpha gap (77.5% vs 83.5%). Adding higher-complexity questions &mdash; data interpretation, multi-step reasoning, evidence-based argumentation &mdash; would help Alpha better differentiate within the upper half.</li>
+    <li><strong>Grade 7 needs attention.</strong> At r=0.41, Grade 7 is the weakest grade-level correlation. G7 Alpha tests may need revision to better align with the skills MAP assesses at that level. In contrast, Grade 5 (r=0.96) is an excellent model for what strong test alignment looks like.</li>
+    <li><strong>The path forward is clear:</strong> Alpha tests already work well as assessments. Targeted improvements &mdash; raising question complexity in the mid-range, revising G7 tests, and adding more challenging items for advanced students &mdash; would push the correlation even higher and make Alpha an even more precise diagnostic tool.</li>
   </ul>
 </div>
 
 <!-- Data source note -->
 <div style="font-size:11px;color:var(--gray);text-align:center;padding:20px 0;">
-  Data: 29 students matched across NWEA MAP Science Student Profiles (Winter 2025–26) and Alpha Standardized Science test results (629 test attempts total). MAP RIT scores from exported profiles dated 2/5–2/10/2026. Alpha scores are student averages across all completed science mastery tests.
+  Data: 89 students matched across NWEA MAP Science Student Profiles (Winter 2025&ndash;26) and Alpha Standardized Science test results (768 test attempts, avg 8.6 per student). MAP RIT scores from exported profiles dated 2/5&ndash;2/10/2026. Alpha scores are student averages across all completed science mastery tests. Pearson r = 0.81, R&sup2; = 0.65. MAP average: 222.3 RIT. Alpha average: 72.1%.
 </div>
 
 </div><!-- end container -->
 
 <script>
-// Scatter plot tooltips
+// ============================================================
+// ALL 89 STUDENTS — embedded from map_alpha_correlation.csv
+// ============================================================
+const students = [
+  {name:"Abi Constain",grade:8,map_rit:224,map_pct:80,alpha_avg:77.8,n_tests:7},
+  {name:"Abigail Hunter",grade:3,map_rit:207,map_pct:89,alpha_avg:40.0,n_tests:2},
+  {name:"Aidan Chase",grade:8,map_rit:232,map_pct:92,alpha_avg:86.7,n_tests:12},
+  {name:"Aila Wong",grade:7,map_rit:226,map_pct:90,alpha_avg:81.2,n_tests:10},
+  {name:"Aileya Klinefelter",grade:8,map_rit:226,map_pct:84,alpha_avg:74.0,n_tests:31},
+  {name:"Annabelle Lembo",grade:4,map_rit:205,map_pct:72,alpha_avg:70.2,n_tests:5},
+  {name:"Austin Caldbeck",grade:3,map_rit:221,map_pct:99,alpha_avg:80.6,n_tests:7},
+  {name:"Austin Wong",grade:3,map_rit:192,map_pct:55,alpha_avg:35.3,n_tests:3},
+  {name:"Ava Ackerson",grade:5,map_rit:232,map_pct:98,alpha_avg:81.6,n_tests:10},
+  {name:"Beau Stern",grade:5,map_rit:231,map_pct:98,alpha_avg:82.2,n_tests:7},
+  {name:"Ben De Amorim",grade:6,map_rit:221,map_pct:87,alpha_avg:81.8,n_tests:9},
+  {name:"Ben Doherty",grade:8,map_rit:239,map_pct:97,alpha_avg:86.3,n_tests:6},
+  {name:"Bennett Morris",grade:8,map_rit:230,map_pct:90,alpha_avg:81.8,n_tests:10},
+  {name:"Blake Flores",grade:7,map_rit:223,map_pct:84,alpha_avg:71.8,n_tests:26},
+  {name:"Blake Richheimer",grade:3,map_rit:209,map_pct:92,alpha_avg:70.0,n_tests:1},
+  {name:"Brady York",grade:4,map_rit:231,map_pct:99,alpha_avg:83.6,n_tests:7},
+  {name:"Brooke Tracy",grade:4,map_rit:198,map_pct:50,alpha_avg:62.1,n_tests:3},
+  {name:"Brooks Knight",grade:3,map_rit:202,map_pct:80,alpha_avg:57.3,n_tests:3},
+  {name:"Byron Attridge",grade:7,map_rit:236,map_pct:97,alpha_avg:85.6,n_tests:17},
+  {name:"Cami Fernandez",grade:7,map_rit:228,map_pct:91,alpha_avg:83.8,n_tests:8},
+  {name:"Carter Tinkler",grade:5,map_rit:185,map_pct:8,alpha_avg:30.0,n_tests:2},
+  {name:"Cate Henry",grade:4,map_rit:217,map_pct:93,alpha_avg:70.0,n_tests:2},
+  {name:"Colton Bellamy",grade:8,map_rit:214,map_pct:57,alpha_avg:79.9,n_tests:10},
+  {name:"Conan Hogan",grade:2,map_rit:211,map_pct:99,alpha_avg:37.2,n_tests:2},
+  {name:"Connor Cason",grade:5,map_rit:221,map_pct:89,alpha_avg:76.4,n_tests:15},
+  {name:"Corinne McGowan",grade:3,map_rit:199,map_pct:73,alpha_avg:25.0,n_tests:2},
+  {name:"Dario Poyatos Ramos",grade:7,map_rit:250,map_pct:99,alpha_avg:82.5,n_tests:11},
+  {name:"DaveyP Paul",grade:4,map_rit:225,map_pct:98,alpha_avg:74.6,n_tests:8},
+  {name:"David Sheldon",grade:6,map_rit:225,map_pct:92,alpha_avg:90.5,n_tests:7},
+  {name:"Duke Ajouz",grade:5,map_rit:229,map_pct:97,alpha_avg:82.5,n_tests:14},
+  {name:"Eddie Margain-Junco",grade:7,map_rit:239,map_pct:98,alpha_avg:86.9,n_tests:5},
+  {name:"Eden Meave",grade:5,map_rit:193,map_pct:20,alpha_avg:40.0,n_tests:2},
+  {name:"Elaina Robertson",grade:5,map_rit:224,map_pct:93,alpha_avg:76.7,n_tests:14},
+  {name:"Eli Slifka",grade:8,map_rit:239,map_pct:97,alpha_avg:86.4,n_tests:9},
+  {name:"Elias Kellemen",grade:6,map_rit:199,map_pct:30,alpha_avg:35.1,n_tests:3},
+  {name:"Emma Correa",grade:7,map_rit:213,map_pct:62,alpha_avg:81.0,n_tests:5},
+  {name:"Emma Slifka",grade:8,map_rit:206,map_pct:36,alpha_avg:62.1,n_tests:3},
+  {name:"Emori McDaniel",grade:4,map_rit:200,map_pct:56,alpha_avg:35.0,n_tests:1},
+  {name:"Ethan Wong",grade:8,map_rit:225,map_pct:83,alpha_avg:79.6,n_tests:7},
+  {name:"Eva Mentgen",grade:8,map_rit:250,map_pct:99,alpha_avg:88.0,n_tests:15},
+  {name:"Evelyn Gabler",grade:6,map_rit:241,map_pct:99,alpha_avg:88.5,n_tests:9},
+  {name:"Felix Cole",grade:7,map_rit:227,map_pct:90,alpha_avg:79.7,n_tests:10},
+  {name:"Garret Farnham",grade:6,map_rit:227,map_pct:94,alpha_avg:81.5,n_tests:8},
+  {name:"Gavyn Martinez",grade:8,map_rit:237,map_pct:96,alpha_avg:86.6,n_tests:11},
+  {name:"George Troxell",grade:4,map_rit:223,map_pct:97,alpha_avg:85.9,n_tests:4},
+  {name:"Griffin Farnham",grade:3,map_rit:202,map_pct:80,alpha_avg:15.0,n_tests:2},
+  {name:"Gwendolyn Meegan",grade:8,map_rit:234,map_pct:94,alpha_avg:81.7,n_tests:13},
+  {name:"Jacob Atamas",grade:6,map_rit:242,map_pct:99,alpha_avg:89.6,n_tests:11},
+  {name:"Jason Dziuba",grade:6,map_rit:229,map_pct:96,alpha_avg:79.6,n_tests:4},
+  {name:"Jason Montagna",grade:5,map_rit:226,map_pct:93,alpha_avg:83.9,n_tests:11},
+  {name:"Jaxon Siers",grade:5,map_rit:232,map_pct:90,alpha_avg:75.1,n_tests:11},
+  {name:"Jay Lever",grade:4,map_rit:192,map_pct:18,alpha_avg:30.0,n_tests:2},
+  {name:"Jude Hock",grade:8,map_rit:254,map_pct:99,alpha_avg:86.1,n_tests:14},
+  {name:"June Rockefeller",grade:8,map_rit:224,map_pct:81,alpha_avg:83.8,n_tests:9},
+  {name:"Kai Sticker",grade:7,map_rit:242,map_pct:99,alpha_avg:82.2,n_tests:24},
+  {name:"Kaiden Szpitalak",grade:6,map_rit:226,map_pct:93,alpha_avg:86.8,n_tests:9},
+  {name:"Lavender Marrero",grade:6,map_rit:226,map_pct:93,alpha_avg:73.2,n_tests:7},
+  {name:"Lex DeMaree",grade:4,map_rit:199,map_pct:53,alpha_avg:52.1,n_tests:3},
+  {name:"Lilly Orloff",grade:4,map_rit:190,map_pct:27,alpha_avg:52.1,n_tests:3},
+  {name:"Lily Gray",grade:7,map_rit:226,map_pct:89,alpha_avg:81.3,n_tests:13},
+  {name:"Love Lalla-Pagan",grade:7,map_rit:251,map_pct:99,alpha_avg:84.8,n_tests:13},
+  {name:"Lukas Siers",grade:5,map_rit:214,map_pct:77,alpha_avg:69.4,n_tests:7},
+  {name:"Luna Montagna",grade:4,map_rit:205,map_pct:71,alpha_avg:37.2,n_tests:2},
+  {name:"Lydia Cobas",grade:6,map_rit:229,map_pct:96,alpha_avg:87.5,n_tests:7},
+  {name:"Marshall Jensen",grade:4,map_rit:217,map_pct:93,alpha_avg:66.7,n_tests:7},
+  {name:"Mateo Sanchez",grade:4,map_rit:201,map_pct:59,alpha_avg:42.3,n_tests:2},
+  {name:"Maya Gries-Yano",grade:3,map_rit:208,map_pct:91,alpha_avg:40.0,n_tests:1},
+  {name:"Nadine Romman",grade:6,map_rit:231,map_pct:97,alpha_avg:75.1,n_tests:18},
+  {name:"Naomi Kocek",grade:8,map_rit:240,map_pct:97,alpha_avg:82.6,n_tests:24},
+  {name:"Nico Mora",grade:6,map_rit:212,map_pct:68,alpha_avg:58.0,n_tests:3},
+  {name:"Noah Hastings",grade:4,map_rit:201,map_pct:59,alpha_avg:25.0,n_tests:2},
+  {name:"Olivia Hirsch",grade:8,map_rit:226,map_pct:84,alpha_avg:85.9,n_tests:9},
+  {name:"Ozzie Lowe",grade:6,map_rit:214,map_pct:73,alpha_avg:85.9,n_tests:5},
+  {name:"Parker Carlson",grade:null,map_rit:232,map_pct:95,alpha_avg:86.0,n_tests:11},
+  {name:"Penny Marty",grade:8,map_rit:224,map_pct:80,alpha_avg:67.9,n_tests:6},
+  {name:"Rania Caberwal",grade:7,map_rit:243,map_pct:99,alpha_avg:82.6,n_tests:11},
+  {name:"Rhys Bj\u00F6rendahl",grade:8,map_rit:227,map_pct:86,alpha_avg:80.1,n_tests:24},
+  {name:"Rhys Robertson",grade:7,map_rit:224,map_pct:86,alpha_avg:52.7,n_tests:3},
+  {name:"Sander Gabler",grade:8,map_rit:259,map_pct:99,alpha_avg:90.6,n_tests:8},
+  {name:"Savannah Marrero",grade:8,map_rit:240,map_pct:97,alpha_avg:77.4,n_tests:8},
+  {name:"Sebi Cobas",grade:6,map_rit:225,map_pct:92,alpha_avg:84.7,n_tests:5},
+  {name:"Shepperd Pfiester",grade:7,map_rit:230,map_pct:93,alpha_avg:79.0,n_tests:28},
+  {name:"Sofia Page",grade:6,map_rit:229,map_pct:96,alpha_avg:83.5,n_tests:10},
+  {name:"Sol Felicevich",grade:6,map_rit:209,map_pct:59,alpha_avg:59.1,n_tests:3},
+  {name:"Sydney Barba",grade:9,map_rit:222,map_pct:75,alpha_avg:80.9,n_tests:17},
+  {name:"Tate Price",grade:5,map_rit:234,map_pct:99,alpha_avg:77.0,n_tests:16},
+  {name:"Theo Jenkins",grade:8,map_rit:231,map_pct:91,alpha_avg:81.7,n_tests:10},
+  {name:"Thomas Page",grade:3,map_rit:204,map_pct:84,alpha_avg:25.0,n_tests:2},
+  {name:"Tomi Fernandez",grade:6,map_rit:215,map_pct:75,alpha_avg:82.9,n_tests:7}
+];
+
+// Grade colors
+const gradeColors = {
+  2: '#95a5a6',
+  3: '#e74c3c',
+  4: '#f39c12',
+  5: '#27ae60',
+  6: '#d35400',
+  7: '#2980b9',
+  8: '#c0392b',
+  9: '#8e44ad',
+  null: '#bdc3c7'
+};
+
+const gradeLabels = {
+  2: 'Grade 2', 3: 'Grade 3', 4: 'Grade 4', 5: 'Grade 5',
+  6: 'Grade 6', 7: 'Grade 7', 8: 'Grade 8', 9: 'Grade 9'
+};
+
+// ============================================================
+// SCATTER PLOT — dynamically generated
+// ============================================================
+(function buildScatter() {
+  const svg = document.getElementById('scatterSVG');
+  const W = 750, H = 500;
+  const margin = {top:30, right:30, bottom:60, left:70};
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  // Data ranges
+  const alphaMin = 10, alphaMax = 100;
+  const ritMin = 180, ritMax = 265;
+
+  function xScale(alpha) { return margin.left + ((alpha - alphaMin) / (alphaMax - alphaMin)) * plotW; }
+  function yScale(rit) { return margin.top + plotH - ((rit - ritMin) / (ritMax - ritMin)) * plotH; }
+
+  let svgContent = '';
+
+  // Background
+  svgContent += `<rect x="0" y="0" width="${W}" height="${H}" fill="white"/>`;
+
+  // Gridlines
+  for (let a = 20; a <= 90; a += 10) {
+    const x = xScale(a);
+    svgContent += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${margin.top + plotH}" stroke="#f0f1f5" stroke-width="1"/>`;
+    svgContent += `<text x="${x}" y="${margin.top + plotH + 18}" text-anchor="middle" font-size="11" fill="#7f8c8d">${a}%</text>`;
+  }
+  for (let r = 190; r <= 260; r += 10) {
+    const y = yScale(r);
+    svgContent += `<line x1="${margin.left}" y1="${y}" x2="${margin.left + plotW}" y2="${y}" stroke="#f0f1f5" stroke-width="1"/>`;
+    svgContent += `<text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#7f8c8d">${r}</text>`;
+  }
+
+  // Axes
+  svgContent += `<line x1="${margin.left}" y1="${margin.top + plotH}" x2="${margin.left + plotW}" y2="${margin.top + plotH}" stroke="#dcdde1" stroke-width="1"/>`;
+  svgContent += `<line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotH}" stroke="#dcdde1" stroke-width="1"/>`;
+
+  // Axis labels
+  svgContent += `<text x="${margin.left + plotW/2}" y="${H - 8}" text-anchor="middle" font-size="13" font-weight="600" fill="#2c3e50">Alpha Average Score (%)</text>`;
+  svgContent += `<text x="18" y="${margin.top + plotH/2}" text-anchor="middle" font-size="13" font-weight="600" fill="#2c3e50" transform="rotate(-90 18 ${margin.top + plotH/2})">MAP Science RIT</text>`;
+
+  // Trend line: Alpha_avg = 1.001 * MAP_RIT - 153.7
+  // Rearranged: MAP_RIT = (Alpha_avg + 153.7) / 1.001
+  // At alpha=15: rit=(15+153.7)/1.001=168.5 (below range)
+  // At alpha=95: rit=(95+153.7)/1.001=248.5
+  // Clip to visible range
+  const trendAlpha1 = 15, trendAlpha2 = 95;
+  const trendRit1 = (trendAlpha1 + 153.7) / 1.001;
+  const trendRit2 = (trendAlpha2 + 153.7) / 1.001;
+  // Clip: if rit < ritMin, compute alpha at ritMin
+  let lineAlpha1 = trendAlpha1, lineRit1 = trendRit1;
+  let lineAlpha2 = trendAlpha2, lineRit2 = trendRit2;
+  if (lineRit1 < ritMin) { lineRit1 = ritMin; lineAlpha1 = 1.001 * ritMin - 153.7; }
+  if (lineRit2 > ritMax) { lineRit2 = ritMax; lineAlpha2 = 1.001 * ritMax - 153.7; }
+
+  svgContent += `<line x1="${xScale(lineAlpha1)}" y1="${yScale(lineRit1)}" x2="${xScale(lineAlpha2)}" y2="${yScale(lineRit2)}" stroke="#1a6b8a" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>`;
+  svgContent += `<text x="${xScale(lineAlpha2) + 4}" y="${yScale(lineRit2) - 6}" font-size="10" fill="#1a6b8a" font-weight="600">trend (r=0.81)</text>`;
+
+  // Data points
+  students.forEach((s, i) => {
+    const x = xScale(s.alpha_avg);
+    const y = yScale(s.map_rit);
+    const color = gradeColors[s.grade] || '#bdc3c7';
+    const gradeDisplay = s.grade !== null ? s.grade : '?';
+    svgContent += `<circle class="scatter-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="${color}" opacity="0.8" data-idx="${i}" data-name="${s.name}" data-grade="${gradeDisplay}" data-alpha="${s.alpha_avg}" data-rit="${s.map_rit}" data-pct="${s.map_pct}" data-tests="${s.n_tests}"/>`;
+  });
+
+  svg.innerHTML = svgContent;
+
+  // Legend
+  const legendEl = document.getElementById('scatterLegend');
+  const gradesPresent = [...new Set(students.map(s => s.grade))].filter(g => g !== null).sort((a,b) => a - b);
+  legendEl.innerHTML = gradesPresent.map(g =>
+    `<span class="scatter-legend-item"><span class="scatter-legend-dot" style="background:${gradeColors[g]}"></span>${gradeLabels[g]}</span>`
+  ).join('');
+})();
+
+// ============================================================
+// SCATTER TOOLTIPS
+// ============================================================
 const tooltip = document.getElementById('scatterTooltip');
 const container = document.getElementById('scatterContainer');
 
@@ -495,8 +572,7 @@ document.querySelectorAll('.scatter-dot').forEach(dot => {
     const tests = this.dataset.tests;
     tooltip.innerHTML = `<strong>${name}</strong> (Grade ${grade})<br>Alpha Avg: ${alpha}% (${tests} tests)<br>MAP RIT: ${rit} (${pct}th %ile)`;
     tooltip.style.display = 'block';
-    // Enlarge dot
-    this.setAttribute('r', '10');
+    this.setAttribute('r', '9');
     this.setAttribute('opacity', '1');
   });
 
@@ -504,7 +580,6 @@ document.querySelectorAll('.scatter-dot').forEach(dot => {
     const rect = container.getBoundingClientRect();
     let x = e.clientX - rect.left + 12;
     let y = e.clientY - rect.top - 40;
-    // Keep tooltip within bounds
     if (x + 200 > rect.width) x = x - 220;
     if (y < 0) y = e.clientY - rect.top + 12;
     tooltip.style.left = x + 'px';
@@ -513,12 +588,70 @@ document.querySelectorAll('.scatter-dot').forEach(dot => {
 
   dot.addEventListener('mouseleave', function() {
     tooltip.style.display = 'none';
-    this.setAttribute('r', '7');
+    this.setAttribute('r', '6');
     this.setAttribute('opacity', '0.8');
   });
 });
 
-// Simple table sorting
+// ============================================================
+// FULL TABLE — dynamically generated with heatmap coloring
+// ============================================================
+(function buildTable() {
+  const tbody = document.getElementById('fullTableBody');
+
+  // Compute ranges for heatmap
+  const alphas = students.map(s => s.alpha_avg);
+  const rits = students.map(s => s.map_rit);
+  const pcts = students.map(s => s.map_pct);
+
+  function alphaHeat(val) {
+    if (val >= 85) return 'heat-5';
+    if (val >= 78) return 'heat-4';
+    if (val >= 65) return 'heat-3';
+    if (val >= 45) return 'heat-2';
+    return 'heat-1';
+  }
+  function ritHeat(val) {
+    if (val >= 240) return 'heat-5';
+    if (val >= 228) return 'heat-4';
+    if (val >= 215) return 'heat-3';
+    if (val >= 200) return 'heat-2';
+    return 'heat-1';
+  }
+  function pctHeat(val) {
+    if (val >= 95) return 'heat-5';
+    if (val >= 85) return 'heat-4';
+    if (val >= 70) return 'heat-3';
+    if (val >= 50) return 'heat-2';
+    return 'heat-1';
+  }
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'];
+    const v = n % 100;
+    return n + (s[(v-20)%10] || s[v] || s[0]);
+  }
+
+  // Sort by MAP RIT descending initially
+  const sorted = students.slice().sort((a,b) => b.map_rit - a.map_rit);
+
+  sorted.forEach(s => {
+    const gradeDisplay = s.grade !== null ? s.grade : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="test-link">${s.name}</td>
+      <td>${gradeDisplay}</td>
+      <td class="${alphaHeat(s.alpha_avg)}">${s.alpha_avg.toFixed(1)}%</td>
+      <td class="${ritHeat(s.map_rit)}">${s.map_rit}</td>
+      <td class="${pctHeat(s.map_pct)}">${ordinal(s.map_pct)}</td>
+      <td>${s.n_tests}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ============================================================
+// TABLE SORTING
+// ============================================================
 let sortDir = {};
 function sortTable(colIdx) {
   const table = document.getElementById('fullTable');
@@ -531,8 +664,8 @@ function sortTable(colIdx) {
     let aVal = a.cells[colIdx].textContent.trim();
     let bVal = b.cells[colIdx].textContent.trim();
     // Try numeric
-    let aNum = parseFloat(aVal.replace('%','').replace('th','').replace('rd','').replace('st','').replace('nd',''));
-    let bNum = parseFloat(bVal.replace('%','').replace('th','').replace('rd','').replace('st','').replace('nd',''));
+    let aNum = parseFloat(aVal.replace('%','').replace(/th|rd|st|nd/g,''));
+    let bNum = parseFloat(bVal.replace('%','').replace(/th|rd|st|nd/g,''));
     if (!isNaN(aNum) && !isNaN(bNum)) {
       return sortDir[colIdx] ? aNum - bNum : bNum - aNum;
     }
