@@ -22,6 +22,15 @@
 !MAP_Readiness_Action_Plan.md
 !MAP_Alpha_Correlation.html
 !map_alpha_correlation.csv
+!student_deep_dives.html
+
+# Allow student deep dives directory (only site-facing files)
+!deep dives MS/
+!deep dives MS/deep_dive_*.docx
+!deep dives MS/deep_dive_*.md
+!deep dives MS/deep_dive_*.pdf
+!deep dives MS/deep_dive_app.html
+!deep dives MS/deep_dive_spec.md
 
 # Allow grade directories and their contents
 !grade3/

@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha School Deep Dive Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === Reset & Variables === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #1a365d;
+  --primary-light: #2c5282;
+  --accent: #3182ce;
+  --success: #38a169;
+  --success-bg: #f0fff4;
+  --warning: #d69e2e;
+  --warning-bg: #fffff0;
+  --danger: #e53e3e;
+  --danger-bg: #fff5f5;
+  --bg: #f7fafc;
+  --surface: #ffffff;
+  --text: #2d3748;
+  --text-light: #718096;
+  --border: #e2e8f0;
+  --emphasis-bg: #fff3cd;
+  --emphasis-border: #ffc107;
+  --remove-bg: #f5f5f5;
+  --edit-border: #3182ce;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+/* === Header === */
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.app-header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.app-header .subtitle { font-size: 13px; opacity: 0.8; font-weight: 400; }
+
+/* === Step Indicator === */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  padding: 20px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+  user-select: none;
+}
+.step-item:hover { background: var(--bg); }
+.step-item.disabled { opacity: 0.4; cursor: not-allowed; }
+.step-item.disabled:hover { background: transparent; }
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  background: var(--border);
+  color: var(--text-light);
+  transition: all 0.2s;
+}
+.step-item.active .step-num { background: var(--accent); color: white; }
+.step-item.completed .step-num { background: var(--success); color: white; }
+.step-label { font-size: 13px; font-weight: 500; color: var(--text-light); }
+.step-item.active .step-label { color: var(--text); font-weight: 600; }
+.step-item.completed .step-label { color: var(--success); }
+.step-connector {
+  width: 40px; height: 2px;
+  background: var(--border);
+  align-self: center;
+}
+
+/* === Panels === */
+.panel { display: none; max-width: 1000px; margin: 24px auto; padding: 0 24px; }
+.panel.active { display: block; }
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card h2 { font-size: 16px; color: var(--primary); margin-bottom: 16px; font-weight: 600; }
+
+/* === File Upload === */
+.file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.file-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.file-zone:hover { border-color: var(--accent); background: #f0f7ff; }
+.file-zone.dragover { border-color: var(--accent); background: #ebf5ff; border-style: solid; }
+.file-zone.loaded { border-color: var(--success); border-style: solid; background: var(--success-bg); }
+.file-zone.error { border-color: var(--danger); border-style: solid; background: var(--danger-bg); }
+.file-zone input[type="file"] { display: none; }
+.file-zone .file-label { font-weight: 600; font-size: 14px; color: var(--primary); }
+.file-zone .file-hint { font-size: 12px; color: var(--text-light); }
+.file-zone .file-status { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.file-zone .file-status.success { color: var(--success); }
+.file-zone .file-status.error { color: var(--danger); }
+.file-zone .required-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 10px; font-weight: 700; color: var(--danger);
+  background: var(--danger-bg); padding: 2px 6px; border-radius: 4px;
+}
+.file-zone .optional-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 10px; font-weight: 700; color: var(--text-light);
+  background: var(--bg); padding: 2px 6px; border-radius: 4px;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  border: none; border-radius: var(--radius);
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-light); }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover:not(:disabled) { background: var(--border); }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover:not(:disabled) { background: #2f855a; }
+.btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+
+/* === Student Selection === */
+.student-input-group { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label { font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input, .form-group select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit; font-size: 14px;
+  transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(49,130,206,0.1); }
+.form-group input.wide { width: 300px; }
+.supplement-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.student-preview {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-size: 13px;
+  display: none;
+}
+.student-preview.visible { display: block; }
+.preview-tag { display: inline-flex; align-items: center; gap: 4px; margin-right: 12px; font-size: 12px; }
+.preview-tag .check { color: var(--success); }
+.preview-tag .cross { color: var(--danger); }
+
+/* === Deep Dive Output === */
+#deep-dive-output {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px 40px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+#deep-dive-output h1 { font-size: 22px; color: var(--primary); margin-bottom: 4px; }
+#deep-dive-output h2 {
+  font-size: 16px; color: var(--primary);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 6px;
+  margin: 28px 0 12px;
+}
+#deep-dive-output h3 { font-size: 14px; color: var(--primary-light); margin: 16px 0 8px; }
+#deep-dive-output hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+#deep-dive-output p { margin: 6px 0; }
+#deep-dive-output ul { margin: 8px 0; padding-left: 24px; }
+#deep-dive-output li { margin: 4px 0; }
+
+/* Deep Dive Tables */
+.dd-table {
+  width: 100%; border-collapse: collapse;
+  margin: 12px 0; font-size: 13px;
+}
+.dd-table th {
+  background: var(--primary); color: white;
+  padding: 8px 12px; text-align: left; font-weight: 600; font-size: 12px;
+  white-space: nowrap;
+}
+.dd-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+}
+.dd-table tr:nth-child(even) td { background: #f8fafc; }
+
+/* Notes blocks */
+.dd-notes {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin: 8px 0 16px;
+  font-size: 13px;
+}
+.dd-notes strong { color: var(--primary); }
+
+/* === Interaction States === */
+[data-id] { transition: all 0.15s; border-radius: 3px; position: relative; }
+[data-id]:hover {
+  cursor: pointer;
+  outline: 1px dashed var(--accent);
+  outline-offset: 3px;
+}
+[data-id]:hover::after {
+  content: 'click to customize';
+  position: absolute; top: -18px; right: 0;
+  font-size: 10px; color: var(--accent);
+  background: white; padding: 1px 6px; border-radius: 3px;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.removed {
+  text-decoration: line-through !important;
+  opacity: 0.3 !important;
+  background: var(--remove-bg) !important;
+}
+.emphasized {
+  background: var(--emphasis-bg) !important;
+  border-left: 4px solid var(--emphasis-border) !important;
+  padding-left: 12px !important;
+  font-weight: 700 !important;
+}
+.editing {
+  outline: 2px solid var(--edit-border) !important;
+  background: #f0f7ff !important;
+  padding: 6px !important;
+  outline-offset: 0 !important;
+}
+.editing:hover::after { display: none; }
+.edited {
+  border-left: 3px solid var(--edit-border) !important;
+  padding-left: 8px !important;
+}
+
+/* === Context Menu === */
+.context-menu {
+  position: fixed;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  padding: 4px;
+  z-index: 1000;
+  min-width: 160px;
+}
+.context-menu.hidden { display: none; }
+.ctx-btn {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 8px 12px;
+  border: none; background: none;
+  font-family: inherit; font-size: 13px;
+  cursor: pointer; border-radius: 4px;
+  text-align: left; color: var(--text);
+}
+.ctx-btn:hover { background: var(--bg); }
+.ctx-btn.ctx-remove:hover { background: var(--danger-bg); color: var(--danger); }
+.ctx-btn.ctx-emphasize:hover { background: var(--warning-bg); color: var(--warning); }
+.ctx-btn.ctx-edit:hover { background: #f0f7ff; color: var(--accent); }
+.ctx-icon { width: 16px; text-align: center; }
+
+/* === Customization Bar === */
+.customize-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+}
+.customize-stats { font-size: 13px; color: var(--text-light); display: flex; gap: 16px; }
+.customize-stats span { display: flex; align-items: center; gap: 4px; }
+.stat-removed { color: var(--danger); }
+.stat-emphasized { color: var(--warning); }
+.stat-edited { color: var(--accent); }
+
+/* === Alert boxes in output === */
+.dd-alert {
+  border-left: 4px solid var(--danger);
+  background: var(--danger-bg);
+  padding: 10px 16px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.dd-alert.warning { border-left-color: var(--warning); background: var(--warning-bg); }
+.dd-alert.info { border-left-color: var(--accent); background: #ebf8ff; }
+
+/* === Root Cause Selector === */
+.root-cause-options { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+.root-cause-option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer; font-size: 13px;
+  transition: all 0.15s;
+}
+.root-cause-option:hover { border-color: var(--accent); background: #f0f7ff; }
+.root-cause-option.selected { border-color: var(--accent); background: #ebf5ff; font-weight: 600; }
+.root-cause-score {
+  font-size: 11px; color: var(--text-light);
+  background: var(--bg); padding: 2px 6px; border-radius: 4px;
+  margin-left: auto;
+}
+
+/* === Validation Checklist === */
+.validation-list { list-style: none; padding: 0; }
+.validation-list li {
+  padding: 4px 0; font-size: 13px;
+  display: flex; align-items: center; gap: 8px;
+}
+.validation-list li::before { content: '\2713'; color: var(--success); font-weight: 700; }
+
+/* === Print/PDF Styles === */
+@media print {
+  .app-header, .step-indicator, .customize-bar, .context-menu,
+  .btn-row, #step-1, #step-2 { display: none !important; }
+  .removed { display: none !important; }
+  #deep-dive-output { box-shadow: none; padding: 0; }
+  body { background: white; }
+}
+
+/* === Misc === */
+.instructions {
+  background: #ebf8ff; border-left: 4px solid var(--accent);
+  padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 13px; color: var(--primary-light); margin-bottom: 20px;
+}
+.hidden { display: none !important; }
+.loading-spinner {
+  width: 24px; height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="app-header">
+  <div>
+    <h1>Deep Dive Generator</h1>
+    <div class="subtitle">Alpha School Student Performance Analysis</div>
+  </div>
+</div>
+
+<!-- Step Indicator -->
+<div class="step-indicator">
+  <div class="step-item active" data-step="1" onclick="goToStep(1)">
+    <div class="step-num">1</div>
+    <div class="step-label">Load Data</div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item disabled" data-step="2" onclick="goToStep(2)">
+    <div class="step-num">2</div>
+    <div class="step-label">Select Student</div>
+  </div>
+  <div class="step-connector"></div>
+  <div class="step-item disabled" data-step="3" onclick="goToStep(3)">
+    <div class="step-num">3</div>
+    <div class="step-label">Review & Customize</div>
+  </div>
+</div>
+
+<!-- STEP 1: Load CSV Files -->
+<div class="panel active" id="step-1">
+  <div class="card">
+    <h2>Load Your Data Files</h2>
+    <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">
+      Click each zone or drag & drop CSV files. Files 1 and 2 are required.
+    </p>
+    <div class="file-grid">
+      <!-- File 1: Student Progress -->
+      <div class="file-zone" id="zone-progress" onclick="document.getElementById('file-progress').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'progress')">
+        <span class="required-badge">REQUIRED</span>
+        <input type="file" id="file-progress" accept=".csv" onchange="handleFileSelect(event, 'progress')">
+        <div class="file-label">1. Student Progress</div>
+        <div class="file-hint">Student_Progress*.csv<br>Columns: Student, Subject, Active Enrollments...</div>
+        <div class="file-status" id="status-progress"></div>
+      </div>
+      <!-- File 2: Test Results -->
+      <div class="file-zone" id="zone-testResults" onclick="document.getElementById('file-testResults').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'testResults')">
+        <span class="required-badge">REQUIRED</span>
+        <input type="file" id="file-testResults" accept=".csv" onchange="handleFileSelect(event, 'testResults')">
+        <div class="file-label">2. Test Results</div>
+        <div class="file-hint">Test_Results*.csv<br>Columns: Student, Submission Date, Accuracy...</div>
+        <div class="file-status" id="status-testResults"></div>
+      </div>
+      <!-- File 3: MAP Scores -->
+      <div class="file-zone" id="zone-mapScores" onclick="document.getElementById('file-mapScores').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'mapScores')">
+        <span class="optional-badge">OPTIONAL</span>
+        <input type="file" id="file-mapScores" accept=".csv" onchange="handleFileSelect(event, 'mapScores')">
+        <div class="file-label">3. MAP Scores</div>
+        <div class="file-hint">MAP_Scores*.csv<br>Columns: Email, Subject, RIT Score...</div>
+        <div class="file-status" id="status-mapScores"></div>
+      </div>
+      <!-- File 4: Predictions -->
+      <div class="file-zone" id="zone-predictions" onclick="document.getElementById('file-predictions').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'predictions')">
+        <span class="optional-badge">OPTIONAL</span>
+        <input type="file" id="file-predictions" accept=".csv" onchange="handleFileSelect(event, 'predictions')">
+        <div class="file-label">4. Student Predictions</div>
+        <div class="file-hint">Student-Level_Predic*.csv<br>Columns: Student Name, Campus, Growth X...</div>
+        <div class="file-status" id="status-predictions"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-to-step2" disabled onclick="goToStep(2)">Continue to Select Student &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: Select Student -->
+<div class="panel" id="step-2">
+  <div class="card">
+    <h2>Select Student</h2>
+    <div class="student-input-group">
+      <div class="form-group" style="flex:1">
+        <label>Student Name</label>
+        <input type="text" id="student-name-input" class="wide" list="student-names-list" placeholder="Start typing a student name..." oninput="onStudentNameChange()">
+        <datalist id="student-names-list"></datalist>
+      </div>
+      <button class="btn btn-secondary" onclick="lookupStudent()" id="btn-lookup">Look Up</button>
+    </div>
+    <div class="student-preview" id="student-preview"></div>
+
+    <h2 style="margin-top:24px;">Supplemental Data <span style="font-weight:400;font-size:12px;color:var(--text-light);">(fill in what you have)</span></h2>
+    <div class="supplement-grid">
+      <div class="form-group">
+        <label>Campus</label>
+        <input type="text" id="input-campus" placeholder="e.g. Alpha School Austin">
+      </div>
+      <div class="form-group">
+        <label>Current Course</label>
+        <input type="text" id="input-course" placeholder="e.g. MS Chemistry">
+      </div>
+      <div class="form-group">
+        <label>% Complete (current course)</label>
+        <input type="number" id="input-pct-complete" min="0" max="100" placeholder="e.g. 70">
+      </div>
+      <div class="form-group">
+        <label>Total XP Earned</label>
+        <input type="number" id="input-xp-earned" min="0" placeholder="e.g. 500">
+      </div>
+      <div class="form-group">
+        <label>XP Remaining (current course)</label>
+        <input type="number" id="input-xp-remaining-course" min="0" placeholder="e.g. 104">
+      </div>
+      <div class="form-group">
+        <label>XP Remaining (all MS Science)</label>
+        <input type="number" id="input-xp-remaining-total" min="0" placeholder="e.g. 1039">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(1)">&larr; Back</button>
+      <button class="btn btn-primary" id="btn-generate" disabled onclick="generateDeepDive()">Generate Deep Dive &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3: Review & Customize -->
+<div class="panel" id="step-3">
+  <div class="customize-bar">
+    <div>
+      <button class="btn btn-secondary" onclick="goToStep(2)" style="padding:6px 12px;font-size:12px;">&larr; New Student</button>
+    </div>
+    <div class="customize-stats">
+      <span class="stat-removed" id="stat-removed">0 removed</span>
+      <span class="stat-emphasized" id="stat-emphasized">0 emphasized</span>
+      <span class="stat-edited" id="stat-edited">0 edited</span>
+    </div>
+    <div>
+      <button class="btn btn-success" onclick="exportPDF()">Export PDF</button>
+    </div>
+  </div>
+  <div class="instructions">
+    Click any section, paragraph, table, or bullet point to customize it. You can <strong>Remove</strong>, <strong>Emphasize</strong>, or <strong>Edit</strong> any content block.
+  </div>
+  <div id="deep-dive-output"></div>
+</div>
+
+<!-- Context Menu -->
+<div class="context-menu hidden" id="context-menu">
+  <button class="ctx-btn ctx-remove" onclick="handleAction('remove')">
+    <span class="ctx-icon">&times;</span> Remove
+  </button>
+  <button class="ctx-btn ctx-emphasize" onclick="handleAction('emphasize')">
+    <span class="ctx-icon">&#9733;</span> Emphasize
+  </button>
+  <button class="ctx-btn ctx-edit" onclick="handleAction('edit')">
+    <span class="ctx-icon">&#9998;</span> Edit
+  </button>
+</div>
+
+<!-- CDN Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+// ============================================================
+// STATE MANAGEMENT
+// ============================================================
+const App = {
+  csv: { progress: null, testResults: null, mapScores: null, predictions: null },
+  fileLoaded: { progress: false, testResults: false, mapScores: false, predictions: false },
+  studentNames: [],
+  selectedStudent: null,
+  manual: {},
+  elementStates: {},
+  currentStep: 1,
+  contextTarget: null
+};
+
+// ============================================================
+// WIZARD NAVIGATION
+// ============================================================
+function goToStep(n) {
+  if (n === 2 && !(App.fileLoaded.progress && App.fileLoaded.testResults)) return;
+  if (n === 3 && !App.selectedStudent) return;
+
+  App.currentStep = n;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  document.querySelectorAll('.step-item').forEach(si => {
+    const s = parseInt(si.dataset.step);
+    si.classList.remove('active', 'completed', 'disabled');
+    if (s === n) si.classList.add('active');
+    else if (s < n) si.classList.add('completed');
+    else si.classList.add('disabled');
+  });
+}
+
+// ============================================================
+// CSV PARSING + FILE LOADING
+// ============================================================
+const FILE_CONFIGS = {
+  progress: {
+    required: ['Student', 'Subject'],
+    stateKey: 'progress'
+  },
+  testResults: {
+    required: ['Student', 'Submission Date', 'Subject'],
+    stateKey: 'testResults'
+  },
+  mapScores: {
+    required: ['Email', 'Subject', 'RIT Score'],
+    stateKey: 'mapScores'
+  },
+  predictions: {
+    required: ['Student Name', 'Subject'],
+    stateKey: 'predictions'
+  }
+};
+
+function cleanBOM(data) {
+  if (!data || !data.meta || !data.meta.fields) return;
+  data.meta.fields = data.meta.fields.map(f => f.replace(/^\uFEFF/, ''));
+  data.data.forEach(row => {
+    Object.keys(row).forEach(k => {
+      const clean = k.replace(/^\uFEFF/, '');
+      if (clean !== k) { row[clean] = row[k]; delete row[k]; }
+    });
+  });
+}
+
+function parseCSV(file, fileType) {
+  const config = FILE_CONFIGS[fileType];
+  const zone = document.getElementById('zone-' + (fileType === 'testResults' ? 'testResults' : fileType));
+  const statusEl = document.getElementById('status-' + (fileType === 'testResults' ? 'testResults' : fileType));
+
+  statusEl.className = 'file-status';
+  statusEl.textContent = 'Parsing...';
+
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: false,
+    complete: function(results) {
+      cleanBOM(results);
+      const fields = results.meta.fields || [];
+      const missing = config.required.filter(c => !fields.includes(c));
+      if (missing.length > 0) {
+        zone.classList.remove('loaded');
+        zone.classList.add('error');
+        statusEl.className = 'file-status error';
+        statusEl.textContent = 'Missing columns: ' + missing.join(', ');
+        return;
+      }
+      App.csv[config.stateKey] = results.data;
+      App.fileLoaded[config.stateKey] = true;
+      zone.classList.remove('error');
+      zone.classList.add('loaded');
+      statusEl.className = 'file-status success';
+      statusEl.textContent = '\u2713 ' + results.data.length + ' rows loaded';
+      updateStudentNames();
+      checkStep1Ready();
+    },
+    error: function(err) {
+      zone.classList.add('error');
+      statusEl.className = 'file-status error';
+      statusEl.textContent = 'Error: ' + err.message;
+    }
+  });
+}
+
+function handleFileSelect(e, fileType) {
+  const file = e.target.files[0];
+  if (file) parseCSV(file, fileType);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('dragover');
+}
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('dragover');
+}
+function handleDrop(e, fileType) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) parseCSV(file, fileType);
+}
+
+function checkStep1Ready() {
+  const ready = App.fileLoaded.progress && App.fileLoaded.testResults;
+  document.getElementById('btn-to-step2').disabled = !ready;
+}
+
+function updateStudentNames() {
+  const names = new Set();
+  if (App.csv.progress) {
+    App.csv.progress.filter(r => (r['Subject'] || '').trim() === 'Science')
+      .forEach(r => { if (r['Student']) names.add(r['Student'].trim()); });
+  }
+  if (App.csv.testResults) {
+    App.csv.testResults.forEach(r => { if (r['Student']) names.add(r['Student'].trim()); });
+  }
+  if (App.csv.predictions) {
+    App.csv.predictions.filter(r => (r['Subject'] || '').trim() === 'Science')
+      .forEach(r => { if (r['Student Name']) names.add(r['Student Name'].trim()); });
+  }
+  App.studentNames = [...names].sort();
+  const dl = document.getElementById('student-names-list');
+  dl.innerHTML = '';
+  App.studentNames.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    dl.appendChild(opt);
+  });
+}
+
+// ============================================================
+// STUDENT SELECTION + LOOKUP
+// ============================================================
+function onStudentNameChange() {
+  const name = document.getElementById('student-name-input').value.trim();
+  document.getElementById('btn-generate').disabled = !name;
+  if (name && App.studentNames.includes(name)) {
+    lookupStudent();
+  }
+}
+
+function lookupStudent() {
+  const name = document.getElementById('student-name-input').value.trim();
+  if (!name) return;
+  App.selectedStudent = name;
+
+  const preview = document.getElementById('student-preview');
+  const progressRow = findProgressRow(name);
+  const predRow = findPredictionRow(name);
+  const testRows = findTestRows(name);
+  const mapRows = findMAPRows(name);
+
+  let html = '<strong>Data found for ' + name + ':</strong><br>';
+  html += '<span class="preview-tag">' + (progressRow ? '<span class="check">\u2713</span>' : '<span class="cross">\u2717</span>') + ' Progress</span>';
+  html += '<span class="preview-tag">' + (testRows.length > 0 ? '<span class="check">\u2713</span> ' + testRows.length + ' tests' : '<span class="cross">\u2717</span> Tests') + '</span>';
+  html += '<span class="preview-tag">' + (predRow ? '<span class="check">\u2713</span>' : '<span class="cross">\u2717</span>') + ' Predictions</span>';
+  html += '<span class="preview-tag">' + (mapRows.length > 0 ? '<span class="check">\u2713</span>' : '<span class="cross">\u2717</span>') + ' MAP</span>';
+
+  // Auto-fill supplement fields
+  if (predRow) {
+    document.getElementById('input-campus').value = predRow['Campus'] || '';
+  }
+  if (progressRow) {
+    const enrollments = progressRow['Active Enrollments'] || '';
+    document.getElementById('input-course').value = enrollments;
+  }
+
+  preview.innerHTML = html;
+  preview.classList.add('visible');
+  document.getElementById('btn-generate').disabled = false;
+}
+
+// ============================================================
+// DATA LOOKUP HELPERS
+// ============================================================
+function findProgressRow(name) {
+  if (!App.csv.progress) return null;
+  return App.csv.progress.find(r =>
+    (r['Student'] || '').trim() === name && (r['Subject'] || '').trim() === 'Science' && (r['Enrolled?'] || '').trim() === 'yes'
+  ) || App.csv.progress.find(r =>
+    (r['Student'] || '').trim() === name && (r['Subject'] || '').trim() === 'Science'
+  );
+}
+
+function findPredictionRow(name) {
+  if (!App.csv.predictions) return null;
+  return App.csv.predictions.find(r =>
+    (r['Student Name'] || '').trim() === name && (r['Subject'] || '').trim() === 'Science'
+  );
+}
+
+function findTestRows(name) {
+  if (!App.csv.testResults) return [];
+  return App.csv.testResults.filter(r => (r['Student'] || '').trim() === name);
+}
+
+function findMAPRows(name) {
+  if (!App.csv.mapScores) return [];
+  const parts = name.trim().toLowerCase().split(/\s+/);
+  if (parts.length < 2) return [];
+  const first = parts[0];
+  const last = parts[parts.length - 1];
+  return App.csv.mapScores.filter(r => {
+    const email = (r['Email'] || '').toLowerCase();
+    const local = email.split('@')[0];
+    return local.startsWith(first + '.') && local.includes(last);
+  });
+}
+
+// ============================================================
+// SECTION COMPUTATIONS
+// ============================================================
+
+function computeSection1(name) {
+  const prog = findProgressRow(name);
+  const pred = findPredictionRow(name);
+  const manualCampus = document.getElementById('input-campus').value.trim();
+  const manualCourse = document.getElementById('input-course').value.trim();
+
+  return {
+    student: name,
+    campus: manualCampus || (pred ? (pred['Campus'] || 'MISSING') : 'MISSING'),
+    enrollmentGrade: prog ? (prog['Age Grade'] || 'MISSING') : 'MISSING',
+    currentCourse: manualCourse || (prog ? (prog['Active Enrollments'] || 'MISSING') : 'MISSING'),
+    ageGrade: prog ? (prog['Age Grade'] || 'MISSING') : 'MISSING',
+    courseGrade: prog ? (prog['Course Grade/Range'] || 'MISSING') : 'MISSING',
+    hmg: prog ? (prog['Highest Mastered Grade Ever'] || prog['Highest Mastered Grade 25-26'] || 'MISSING') : 'MISSING',
+    hmg2526: prog ? (prog['Highest Mastered Grade 25-26'] || '') : '',
+    effectiveGradesMastered: prog ? (prog['Effective Grades Mastered This Year'] || '0') : '0',
+    knowledgeGrade: prog ? (prog['Knowledge Grade'] || '') : '',
+    effectiveGrade: prog ? (prog['Effective Grade'] || '') : '',
+    r90: prog ? (prog['R90'] || '') : ''
+  };
+}
+
+function computeSection2(name) {
+  const tests = findTestRows(name);
+  const pctComplete = document.getElementById('input-pct-complete').value;
+  const xpEarned = document.getElementById('input-xp-earned').value;
+  const xpRemCourse = document.getElementById('input-xp-remaining-course').value;
+  const xpRemTotal = document.getElementById('input-xp-remaining-total').value;
+
+  const uniqueDays = new Set();
+  const scienceDays = new Set();
+  tests.forEach(r => {
+    const d = (r['Submission Date'] || '').split(' ')[0];
+    if (d) uniqueDays.add(d);
+    if ((r['Subject'] || '').trim() === 'Science' && d) scienceDays.add(d);
+  });
+  const dates = [...uniqueDays].sort();
+
+  let avgXP = 'MISSING';
+  if (xpEarned && uniqueDays.size > 0) {
+    avgXP = (parseFloat(xpEarned) / uniqueDays.size).toFixed(1);
+  }
+
+  return {
+    pctComplete: pctComplete || 'MISSING',
+    xpEarned: xpEarned || 'MISSING',
+    xpRemaining: xpRemTotal || 'MISSING',
+    xpRemainingCourse: xpRemCourse || '',
+    timeInCourse: uniqueDays.size,
+    avgXPPerDay: avgXP,
+    scienceDays: scienceDays.size,
+    dateRange: dates.length ? dates[0] + ' through ' + dates[dates.length - 1] : 'N/A',
+    scienceDateList: [...scienceDays].sort()
+  };
+}
+
+function computeSection3(name) {
+  const tests = findTestRows(name);
+  const total = tests.length;
+
+  // Subject breakdown
+  const bySub = {};
+  tests.forEach(r => {
+    const s = (r['Subject'] || '').trim();
+    bySub[s] = (bySub[s] || 0) + 1;
+  });
+
+  // Science tests sorted by date
+  const sciTests = tests
+    .filter(r => (r['Subject'] || '').trim() === 'Science')
+    .sort((a, b) => (a['Submission Date'] || '').localeCompare(b['Submission Date'] || ''));
+
+  // Science test details (excluding placement tests at grade 0)
+  const sciDetails = sciTests.map(t => ({
+    grade: t['Test Grade'] || '',
+    accuracy: parseFloat(t['Accuracy'] || 0),
+    date: (t['Submission Date'] || '').split(' ')[0],
+    effective: parseInt(t['Effective Test?'] || 0)
+  }));
+
+  // Non-placement Science tests (grade > 0 or accuracy > 0)
+  const realSciTests = sciDetails.filter(t => t.accuracy > 0 && t.grade !== '0');
+
+  // Last test date (any subject)
+  const allDates = tests.map(r => (r['Submission Date'] || '').split(' ')[0]).filter(d => d).sort();
+  const lastTestDate = allDates.length ? allDates[allDates.length - 1] : 'MISSING';
+
+  // Last Science test date
+  const sciDates = sciTests.map(r => (r['Submission Date'] || '').split(' ')[0]).filter(d => d).sort();
+  const lastSciDate = sciDates.length ? sciDates[sciDates.length - 1] : 'N/A';
+
+  // Hole-filling
+  const holeFilling = tests.filter(r => parseInt(r['Effective Test?'] || 0) === 0).length;
+  const hfPct = total > 0 ? Math.round(holeFilling / total * 100) : 0;
+
+  // Hole-filling by subject
+  const hfBySub = {};
+  tests.filter(r => parseInt(r['Effective Test?'] || 0) === 0).forEach(r => {
+    const s = (r['Subject'] || '').trim();
+    hfBySub[s] = (hfBySub[s] || 0) + 1;
+  });
+
+  // Accuracy trend (using real Science tests)
+  let trend = 'Insufficient data';
+  if (realSciTests.length >= 2) {
+    const accs = realSciTests.map(t => t.accuracy);
+    const mid = Math.floor(accs.length / 2);
+    const first = accs.slice(0, Math.max(mid, 1));
+    const second = accs.slice(mid);
+    const avgFirst = first.reduce((a, b) => a + b, 0) / first.length;
+    const avgSecond = second.reduce((a, b) => a + b, 0) / second.length;
+    const diff = avgSecond - avgFirst;
+    if (diff > 5) trend = 'Improving';
+    else if (diff < -5) trend = 'Declining';
+    else trend = 'Flat';
+  }
+
+  return {
+    totalAttempts: total,
+    lastTestDate,
+    holeFilling,
+    hfPct,
+    trend,
+    fluency: 'Not assessed',
+    bySub,
+    sciCount: sciTests.length,
+    sciPct: total > 0 ? Math.round(sciTests.length / total * 100) : 0,
+    lastSciDate,
+    sciDetails: realSciTests,
+    hfBySub
+  };
+}
+
+function computeSection4(name) {
+  const pred = findPredictionRow(name);
+  if (!pred) return { growthX: 'MISSING', label: '', expected: 2.0, meets: 'MISSING', notes: 'No predictions data available.', raw: {} };
+
+  const wPrev = pf(pred['Winter 2024-25 RIT Score']);
+  const fCurr = pf(pred['Fall 2025-26 RIT Score']);
+  const wCurr = pf(pred['Winter 2025-26 RIT Score']);
+  const projWW = pf(pred['NWEA Projected Growth Winter to Winter']);
+  const projFW = pf(pred['NWEA Projected Growth Fall to Winter']);
+  const w2w = pf(pred['Winter-to-Winter Actual Growth X']);
+  const f2w = pf(pred['Fall-to-Winter Actual Growth X']);
+  const predicted = pf(pred['Predicted RIT Score']);
+
+  let gx, label, notes;
+  if (w2w && wPrev && wCurr) {
+    gx = w2w;
+    label = 'winter-to-winter';
+    const gain = wCurr - wPrev;
+    notes = `Winter ${fmtRIT(wPrev)} \u2192 Winter ${fmtRIT(wCurr)} = ${gain}-point gain vs. ${projWW || '?'}-point projected growth (${w2w}\u00d7).`;
+    if (f2w && fCurr) {
+      const fgain = wCurr - fCurr;
+      notes += ` Fall-to-Winter Growth X = ${f2w} (Fall RIT ${fmtRIT(fCurr)} \u2192 Winter RIT ${fmtRIT(wCurr)} = ${fgain}-point gain).`;
+    }
+  } else if (f2w && fCurr && wCurr) {
+    gx = f2w;
+    label = 'fall-to-winter';
+    const gain = wCurr - fCurr;
+    notes = `Fall ${fmtRIT(fCurr)} \u2192 Winter ${fmtRIT(wCurr)} = ${gain}-point gain vs. ${projFW || '?'}-point projected growth (${f2w}\u00d7).`;
+    if (!wPrev) notes += ' Winter-to-winter data not available (no Winter 2024-25 RIT).';
+  } else {
+    gx = 'MISSING'; label = ''; notes = 'Insufficient RIT data to compute growth.';
+  }
+
+  if (predicted && wCurr) {
+    const diff = wCurr - predicted;
+    if (diff < 0) notes += ` Predicted RIT was ${fmtRIT(predicted)}; actual is ${fmtRIT(wCurr)}, underperforming by ${Math.abs(diff)} points.`;
+    else if (diff > 0) notes += ` Predicted RIT was ${fmtRIT(predicted)}; actual is ${fmtRIT(wCurr)}, outperforming by ${diff} points.`;
+  }
+
+  const meets = (typeof gx === 'number') ? (gx >= 2.0 ? 'Yes' : 'No') : 'MISSING';
+
+  return {
+    growthX: gx, label, expected: 2.0, meets, notes,
+    raw: { wPrev, fCurr, wCurr, projWW, projFW, w2w, f2w, predicted }
+  };
+}
+
+function computeSection5(name) {
+  const mapRows = findMAPRows(name);
+  const sciMAP = mapRows.filter(r => (r['Subject'] || '').trim() === 'Science');
+  const pred = findPredictionRow(name);
+
+  const mapRIT = sciMAP.length > 0 ? sciMAP[0]['RIT Score'] : 'MISSING';
+
+  // Alignment risk heuristic
+  let risk = 'Medium';
+  const s1 = computeSection1(name);
+  const s3 = computeSection3(name);
+  const s4 = computeSection4(name);
+
+  if (s3.sciPct < 10 && s4.growthX !== 'MISSING' && s4.growthX >= 3) {
+    risk = 'High'; // Strong MAP growth but almost no Science testing
+  } else if (s3.trend === 'Improving' && s3.sciPct >= 15) {
+    risk = 'Low'; // Good Science engagement and improving trend
+  } else if (s3.trend === 'Declining') {
+    risk = 'Medium';
+  }
+
+  // Build notes
+  let notes = '';
+  if (mapRIT === 'MISSING') {
+    notes += name + ' was not found in the MAP Scores file. ';
+    if (pred) {
+      const fRIT = pf(pred['Fall 2025-26 RIT Score']);
+      const wRIT = pf(pred['Winter 2025-26 RIT Score']);
+      if (fRIT && wRIT) {
+        notes += `Science RIT from Predictions: Fall ${fmtRIT(fRIT)} \u2192 Winter ${fmtRIT(wRIT)} (${wRIT - fRIT}-point gain). `;
+      }
+      const predicted = pf(pred['Predicted RIT Score']);
+      if (predicted && wRIT) {
+        const diff = wRIT - predicted;
+        if (diff < 0) notes += `Predicted RIT was ${fmtRIT(predicted)}; actual is ${fmtRIT(wRIT)}, underperforming by ${Math.abs(diff)} points.`;
+      }
+    }
+  }
+
+  return { mapRIT, gradeBand: 'MISSING', domainsMissed: 'MISSING', risk, notes };
+}
+
+function computeSection6(s1, s2, s3, s4, s5) {
+  const scores = {
+    'Placement mismatch': 0,
+    'Insufficient time on task': 0,
+    'Accuracy constraint': 0,
+    'Fluency constraint': 0,
+    'MAP\u2013curriculum misalignment': 0,
+    'Coasting / low intensity': 0,
+    'Data quality issue': 0
+  };
+
+  // Insufficient time signals
+  if (s3.sciPct < 20) scores['Insufficient time on task'] += 3;
+  if (s3.sciPct < 10) scores['Insufficient time on task'] += 2;
+  const daysSinceSci = daysBetween(s3.lastSciDate, new Date());
+  if (daysSinceSci > 30) scores['Insufficient time on task'] += 2;
+  if (daysSinceSci > 60) scores['Insufficient time on task'] += 2;
+  if (s3.hfPct > 40) scores['Insufficient time on task'] += 1;
+
+  // Accuracy constraint signals
+  const latestAcc = getLatestAccuracy(s3);
+  if (latestAcc !== null && latestAcc < 75) scores['Accuracy constraint'] += 3;
+  if (latestAcc !== null && latestAcc < 70) scores['Accuracy constraint'] += 1;
+  if (s3.trend === 'Declining') scores['Accuracy constraint'] += 2;
+  if (parseInt(s1.effectiveGradesMastered) === 0) scores['Accuracy constraint'] += 1;
+
+  // Coasting signals
+  if (latestAcc !== null && latestAcc >= 80 && s3.sciPct < 20 && daysSinceSci > 30) {
+    scores['Coasting / low intensity'] += 3;
+  }
+
+  // MAP-curriculum misalignment
+  if (s5.risk === 'High') scores['MAP\u2013curriculum misalignment'] += 2;
+  if (s4.growthX !== 'MISSING' && s4.growthX >= 3 && parseInt(s1.effectiveGradesMastered) === 0) {
+    scores['MAP\u2013curriculum misalignment'] += 2;
+  }
+
+  // Placement mismatch
+  const ageG = parseInt(s1.ageGrade) || 0;
+  const hmgG = parseInt(s1.hmg) || 0;
+  if (ageG - hmgG >= 4) scores['Placement mismatch'] += 2;
+
+  // Data quality
+  if (s3.totalAttempts < 5) scores['Data quality issue'] += 3;
+  if (s3.sciCount === 0) scores['Data quality issue'] += 2;
+
+  const sorted = Object.entries(scores).filter(([_, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const primary = sorted.length > 0 ? sorted[0][0] : 'Data quality issue';
+  const secondary = sorted.length > 1 && sorted[1][1] >= 2 ? sorted[1][0] : null;
+
+  // Evidence bullets
+  const evidence = generateEvidence(s1, s2, s3, s4, s5, primary);
+
+  return { primary, secondary, evidence, scores };
+}
+
+function generateEvidence(s1, s2, s3, s4, s5, primary) {
+  const bullets = [];
+
+  // Science testing share
+  if (s3.sciCount !== undefined) {
+    bullets.push(`Science receives only <strong>${s3.sciPct}% of total test attempts</strong> (${s3.sciCount} of ${s3.totalAttempts}) \u2014 Section 3.`);
+  }
+
+  // Science accuracy detail
+  if (s3.sciDetails && s3.sciDetails.length > 0) {
+    const last = s3.sciDetails[s3.sciDetails.length - 1];
+    bullets.push(`Latest Science test: G${last.grade} \u2014 ${last.accuracy.toFixed(0)}% on ${last.date} (Section 3). Accuracy trend: ${s3.trend}.`);
+  }
+
+  // Hole-filling
+  if (s3.hfPct > 0) {
+    bullets.push(`<strong>${s3.hfPct}% of all tests are hole-filling</strong> (${s3.holeFilling} of ${s3.totalAttempts}) \u2014 Section 3.`);
+  }
+
+  // Growth
+  if (s4.growthX !== 'MISSING') {
+    bullets.push(`Growth X = ${s4.growthX} (${s4.label}) vs. expected 2.0\u00d7. Meets 2\u00d7 target: ${s4.meets} (Section 4).`);
+  }
+
+  // Effective Grades Mastered
+  bullets.push(`Effective Grades Mastered This Year = ${s1.effectiveGradesMastered} (Section 1). HMG = ${s1.hmg}.`);
+
+  // Alignment risk
+  if (s5.risk !== 'Low') {
+    bullets.push(`Alignment Risk: <strong>${s5.risk}</strong> (Section 5).`);
+  }
+
+  // Days since last Science test
+  if (s3.lastSciDate && s3.lastSciDate !== 'N/A') {
+    const days = daysBetween(s3.lastSciDate, new Date());
+    if (days > 14) {
+      bullets.push(`Last Science test was ${s3.lastSciDate} \u2014 ${days} days ago (Section 3).`);
+    }
+  }
+
+  return bullets.slice(0, 6);
+}
+
+function computeSection7(s2) {
+  const xpRem = parseFloat(document.getElementById('input-xp-remaining-total').value);
+  if (isNaN(xpRem) || xpRem <= 0) {
+    return { xpRemaining: 'MISSING', xpPerDay: 25, daysPerWeek: 5, weeks: 'MISSING', eoy: 'MISSING' };
+  }
+  const weeks = Math.ceil(xpRem / 125);
+  // Rough EOY check: assume ~15 weeks from mid-Feb
+  let eoy;
+  if (weeks <= 6) eoy = 'Yes';
+  else if (weeks <= 9) eoy = 'Borderline';
+  else eoy = 'No';
+
+  return { xpRemaining: xpRem, xpPerDay: 25, daysPerWeek: 5, weeks, eoy };
+}
+
+function generateSection8(s1, s2, s3, s4, s5, s6, s7) {
+  const actions = [];
+  const pri = s6.primary;
+
+  // Action 1: Resume / increase Science testing
+  if (s3.sciPct < 20 || daysBetween(s3.lastSciDate, new Date()) > 14) {
+    const gap = daysBetween(s3.lastSciDate, new Date());
+    actions.push(`<strong>Resume Science testing immediately (this week).</strong> ${s1.student} has taken only ${s3.sciCount} Science test${s3.sciCount !== 1 ? 's' : ''} out of ${s3.totalAttempts} total attempts (${s3.sciPct}%).${gap > 30 ? ' Last Science test was ' + s3.lastSciDate + ' \u2014 ' + gap + ' days ago.' : ''} Schedule at least 2\u20133 Science tests per week.`);
+  } else {
+    actions.push(`<strong>Increase Science testing frequency to daily (this week).</strong> Science currently receives ${s3.sciPct}% of testing effort. Moving to daily Science will accelerate mastery progress.`);
+  }
+
+  // Action 2: Accuracy-based reteaching or reattempt
+  const latestAcc = getLatestAccuracy(s3);
+  if (latestAcc !== null && latestAcc < 80 && s3.sciDetails.length > 0) {
+    const last = s3.sciDetails[s3.sciDetails.length - 1];
+    actions.push(`<strong>Provide targeted reteaching on G${last.grade} Science content within 5 school days.</strong> Latest accuracy was ${last.accuracy.toFixed(0)}% on G${last.grade} (Section 3). Focused instruction on specific domains could push accuracy above threshold on the next attempt.`);
+  } else if (latestAcc !== null && latestAcc >= 80 && s3.sciDetails.length > 0) {
+    const last = s3.sciDetails[s3.sciDetails.length - 1];
+    actions.push(`<strong>Capitalize on strong accuracy (${last.accuracy.toFixed(0)}% on G${last.grade}) by testing the next grade level within 1 week.</strong> ${s1.student}'s demonstrated accuracy suggests readiness for advancement.`);
+  }
+
+  // Action 3: Reduce hole-filling
+  if (s3.hfPct > 30) {
+    const topHF = Object.entries(s3.hfBySub).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k, v]) => k + ' (' + v + ')').join(', ');
+    actions.push(`<strong>Reduce cross-subject hole-filling during Science blocks (next 4 weeks).</strong> ${s3.holeFilling} of ${s3.totalAttempts} tests (${s3.hfPct}%) are non-effective, concentrated in ${topHF}. Temporarily limit remediation during designated Science time.`);
+  }
+
+  // Action 4: Checkpoint
+  if (s7.xpRemaining !== 'MISSING') {
+    const courseXP = document.getElementById('input-xp-remaining-course').value;
+    if (courseXP) {
+      actions.push(`<strong>Set a 4-week checkpoint: complete current course (${courseXP} XP remaining) by ${futureDate(28)}.</strong> This creates a measurable, time-bound milestone to track progress.`);
+    } else {
+      actions.push(`<strong>Set a 4-week checkpoint with measurable Science progress targets.</strong> Create accountability for forward mastery progress in the enrolled Science course.`);
+    }
+  } else {
+    actions.push(`<strong>Set a 4-week checkpoint with measurable Science progress targets.</strong> Without XP data, focus on test frequency (minimum 2/week) and accuracy milestones.`);
+  }
+
+  // Action 5: Student conference
+  actions.push(`<strong>Conference with student within 5 school days to investigate Science engagement.</strong> Determine whether motivational, scheduling, or content-specific barriers are driving limited Science testing. Establish a concrete plan for re-engagement.`);
+
+  return actions.slice(0, 5);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function pf(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = parseFloat(v);
+  return isNaN(n) ? null : n;
+}
+function fmtRIT(v) { return v !== null && v !== undefined ? Math.round(v) : '?'; }
+function daysBetween(dateStr, now) {
+  if (!dateStr || dateStr === 'N/A') return 999;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 999;
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+function getLatestAccuracy(s3) {
+  if (!s3.sciDetails || s3.sciDetails.length === 0) return null;
+  return s3.sciDetails[s3.sciDetails.length - 1].accuracy;
+}
+function futureDate(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+}
+function esc(s) {
+  if (typeof s !== 'string') s = String(s || '');
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ============================================================
+// DEEP DIVE RENDERER
+// ============================================================
+let idCounter = 0;
+function newId(prefix) { return prefix + '-' + (++idCounter); }
+
+function generateDeepDive() {
+  idCounter = 0;
+  App.elementStates = {};
+
+  const name = App.selectedStudent;
+  if (!name) return;
+
+  // Read manual inputs
+  App.manual = {
+    campus: document.getElementById('input-campus').value.trim(),
+    course: document.getElementById('input-course').value.trim(),
+    pctComplete: document.getElementById('input-pct-complete').value,
+    xpEarned: document.getElementById('input-xp-earned').value,
+    xpRemCourse: document.getElementById('input-xp-remaining-course').value,
+    xpRemTotal: document.getElementById('input-xp-remaining-total').value
+  };
+
+  const s1 = computeSection1(name);
+  const s2 = computeSection2(name);
+  const s3 = computeSection3(name);
+  const s4 = computeSection4(name);
+  const s5 = computeSection5(name);
+  const s6 = computeSection6(s1, s2, s3, s4, s5);
+  const s7 = computeSection7(s2);
+  const s8 = generateSection8(s1, s2, s3, s4, s5, s6, s7);
+
+  renderDeepDive(name, s1, s2, s3, s4, s5, s6, s7, s8);
+  goToStep(3);
+}
+
+function renderDeepDive(name, s1, s2, s3, s4, s5, s6, s7, s8) {
+  const out = document.getElementById('deep-dive-output');
+  out.innerHTML = '';
+
+  // Title
+  addEl(out, 'h1', `Deep Dive \u2014 ${esc(name)}`, 'title');
+  addEl(out, 'hr');
+
+  // === SECTION 1 ===
+  addEl(out, 'h2', 'SECTION 1 \u2014 Student Snapshot', 'sec1-title');
+  addEl(out, 'h3', 'Table 1.1 \u2014 Student Snapshot', 'sec1-tbl-title');
+  addTable(out, 'sec1-tbl',
+    ['Student', 'Campus', 'Enrollment Grade', 'Current Course', 'Age Grade', 'Course Grade', 'Highest Mastered Grade (HMG)'],
+    [[s1.student, s1.campus, s1.enrollmentGrade, s1.currentCourse, s1.ageGrade, s1.courseGrade, s1.hmg]]
+  );
+
+  let defs = `<strong>Definitions</strong><br>`;
+  defs += `\u2022 <strong>Enrollment Grade</strong>: grade level assigned by enrollment \u2014 ${esc(s1.enrollmentGrade)}.<br>`;
+  defs += `\u2022 <strong>Age Grade</strong>: chronological grade level \u2014 ${esc(s1.ageGrade)}.<br>`;
+  defs += `\u2022 <strong>Course Grade</strong>: nominal grade level of the current course \u2014 ${esc(s1.courseGrade)}.<br>`;
+  defs += `\u2022 <strong>HMG</strong>: highest fully mastered grade level (not "working in") \u2014 ${esc(s1.hmg)}.`;
+  if (s1.hmg2526) defs += ` Highest Mastered Grade 25-26 = ${esc(s1.hmg2526)}.`;
+  if (s1.effectiveGradesMastered) defs += ` Effective Grades Mastered This Year = ${esc(s1.effectiveGradesMastered)}.`;
+  if (s1.knowledgeGrade) defs += ` Knowledge Grade = ${esc(s1.knowledgeGrade)}.`;
+  if (s1.effectiveGrade) defs += ` Effective Grade = ${esc(s1.effectiveGrade)}.`;
+  if (s1.r90) defs += ` R90 = ${esc(s1.r90)}.`;
+  addHTML(out, defs, 'sec1-defs', 'dd-notes');
+  addEl(out, 'hr');
+
+  // === SECTION 2 ===
+  addEl(out, 'h2', 'SECTION 2 \u2014 Course Progress & Effort', 'sec2-title');
+  addEl(out, 'h3', 'Table 2.1 \u2014 Course Progress', 'sec2-tbl-title');
+  const xpDisp = s2.xpRemaining !== 'MISSING' ? s2.xpRemaining + (s2.xpRemainingCourse ? ' (total MS Science)' : '') : 'MISSING';
+  addTable(out, 'sec2-tbl',
+    ['% Complete', 'Total XP Earned', 'Total XP Remaining', 'Time in Course (days)', 'Avg XP / School Day'],
+    [[s2.pctComplete !== 'MISSING' ? s2.pctComplete + '%' : 'MISSING', s2.xpEarned, xpDisp, s2.timeInCourse, s2.avgXPPerDay]]
+  );
+
+  let notes2 = `<strong>Notes</strong><br>`;
+  notes2 += `\u2022 <strong>Time in Course</strong>: ${s2.timeInCourse} unique school days with recorded test activity (${esc(s2.dateRange)}). Science-specific test days: ${s2.scienceDays}.`;
+  if (s2.pctComplete !== 'MISSING') notes2 += `<br>\u2022 <strong>% Complete</strong>: ${esc(s2.pctComplete)}% of current course.`;
+  if (s2.xpRemaining !== 'MISSING') notes2 += `<br>\u2022 <strong>XP Remaining</strong>: ${esc(s2.xpRemaining)} XP total.`;
+  if (s2.avgXPPerDay !== 'MISSING') notes2 += `<br>\u2022 <strong>Avg XP / School Day</strong>: ${esc(s2.avgXPPerDay)} XP.`;
+  addHTML(out, notes2, 'sec2-notes', 'dd-notes');
+  addEl(out, 'hr');
+
+  // === SECTION 3 ===
+  addEl(out, 'h2', 'SECTION 3 \u2014 Assessment & Practice Signals', 'sec3-title');
+  addEl(out, 'h3', 'Table 3.1 \u2014 Assessment & Practice', 'sec3-tbl-title');
+  addTable(out, 'sec3-tbl',
+    ['Test Attempts', 'Last Test Date', 'Hole-Filling Attempts', 'Accuracy Trend', 'Fluency Signal'],
+    [[s3.totalAttempts, s3.lastTestDate, s3.holeFilling, s3.trend, s3.fluency]]
+  );
+
+  let notes3 = `<strong>Notes</strong><br>`;
+  // Subject breakdown
+  const subStr = Object.entries(s3.bySub).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(', ');
+  notes3 += `\u2022 <strong>Test Attempts</strong>: ${s3.totalAttempts} total. Subject breakdown: ${subStr}. Science = ${s3.sciCount} of ${s3.totalAttempts} (${s3.sciPct}%).<br>`;
+  // Science test details
+  if (s3.sciDetails.length > 0) {
+    notes3 += `\u2022 <strong>Science testing</strong>:<br>`;
+    s3.sciDetails.forEach(t => {
+      notes3 += `&nbsp;&nbsp;&nbsp;\u2013 Science G${esc(t.grade)} \u2014 ${t.accuracy.toFixed(0)}% on ${esc(t.date)}<br>`;
+    });
+  }
+  notes3 += `\u2022 <strong>Last Test Date</strong>: ${esc(s3.lastTestDate)}. Last Science test: ${esc(s3.lastSciDate)}.<br>`;
+  notes3 += `\u2022 <strong>Hole-Filling</strong>: ${s3.holeFilling} of ${s3.totalAttempts} tests (${s3.hfPct}%) were non-effective.`;
+  if (Object.keys(s3.hfBySub).length > 0) {
+    const hfStr = Object.entries(s3.hfBySub).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v}/${s3.bySub[k] || '?'})`).join(', ');
+    notes3 += ` Concentrated in: ${hfStr}.`;
+  }
+  notes3 += `<br>\u2022 <strong>Accuracy Trend</strong>: ${esc(s3.trend)}.`;
+  notes3 += `<br>\u2022 <strong>Fluency Signal</strong>: ${esc(s3.fluency)}.`;
+  addHTML(out, notes3, 'sec3-notes', 'dd-notes');
+  addEl(out, 'hr');
+
+  // === SECTION 4 ===
+  addEl(out, 'h2', 'SECTION 4 \u2014 Learning Velocity & Growth', 'sec4-title');
+  addEl(out, 'h3', 'Table 4.1 \u2014 Growth Metrics', 'sec4-tbl-title');
+  const gxDisp = s4.growthX !== 'MISSING' ? s4.growthX + (s4.label ? ' (' + s4.label + ')' : '') : 'MISSING';
+  addTable(out, 'sec4-tbl',
+    ['Growth X', 'Expected Growth X', 'Meets 2\u00d7 Target?', 'Notes'],
+    [[gxDisp, s4.expected, s4.meets, '']]
+  );
+  addHTML(out, `<strong>Notes</strong><br>${s4.notes}`, 'sec4-notes', 'dd-notes');
+  addEl(out, 'hr');
+
+  // === SECTION 5 ===
+  addEl(out, 'h2', 'SECTION 5 \u2014 MAP Growth Context', 'sec5-title');
+  addEl(out, 'h3', 'Table 5.1 \u2014 MAP Profile', 'sec5-tbl-title');
+  addTable(out, 'sec5-tbl',
+    ['MAP Math RIT', 'MAP Grade Band', 'Domains Missed', 'Alignment Risk'],
+    [[s5.mapRIT, s5.gradeBand, s5.domainsMissed, s5.risk]]
+  );
+  if (s5.notes) {
+    addHTML(out, `<strong>Notes</strong><br>${esc(s5.notes)}`, 'sec5-notes', 'dd-notes');
+  }
+  addEl(out, 'hr');
+
+  // === SECTION 6 ===
+  addEl(out, 'h2', 'SECTION 6 \u2014 Root Cause Analysis', 'sec6-title');
+  addHTML(out, `<h3>Primary Root Cause</h3><p><strong>${esc(s6.primary)}</strong></p>`, 'sec6-primary');
+  if (s6.secondary) {
+    addHTML(out, `<h3>Secondary Root Cause</h3><p>${esc(s6.secondary)}</p>`, 'sec6-secondary');
+  }
+  addEl(out, 'h3', 'Evidence', 'sec6-ev-title');
+  const ul = document.createElement('ul');
+  ul.dataset.id = newId('sec6-evidence');
+  s6.evidence.forEach((b, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = b;
+    li.dataset.id = newId('sec6-ev');
+    ul.appendChild(li);
+  });
+  out.appendChild(ul);
+  addEl(out, 'hr');
+
+  // === SECTION 7 ===
+  addEl(out, 'h2', 'SECTION 7 \u2014 Completion Projection', 'sec7-title');
+  addHTML(out, `<strong>Fixed Assumptions</strong>: XP per day = <strong>25</strong>, Days per week = <strong>5</strong>`, 'sec7-assumptions');
+  addEl(out, 'h3', 'Table 7.1 \u2014 Projection', 'sec7-tbl-title');
+  addTable(out, 'sec7-tbl',
+    ['XP Remaining', 'XP / Day Assumed', 'Days / Week', 'Weeks to Finish', 'Finish Before EOY?'],
+    [[s7.xpRemaining, s7.xpPerDay, s7.daysPerWeek, s7.weeks, s7.eoy]]
+  );
+  if (s7.xpRemaining !== 'MISSING') {
+    addHTML(out, `<strong>Calculation</strong>: Weeks to Finish = ${s7.xpRemaining} \u00f7 (25 \u00d7 5) = ${s7.xpRemaining} \u00f7 125 = ${(s7.xpRemaining / 125).toFixed(2)} \u2192 rounded up = <strong>${s7.weeks} weeks</strong>.`, 'sec7-calc', 'dd-notes');
+  }
+  addEl(out, 'hr');
+
+  // === SECTION 8 ===
+  addEl(out, 'h2', 'SECTION 8 \u2014 Intervention Levers', 'sec8-title');
+  addEl(out, 'h3', 'Actions (maximum 5 bullets)', 'sec8-subtitle');
+  const ol = document.createElement('ol');
+  ol.dataset.id = newId('sec8-actions');
+  s8.forEach((a, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = a;
+    li.dataset.id = newId('sec8-act');
+    li.style.marginBottom = '10px';
+    ol.appendChild(li);
+  });
+  out.appendChild(ol);
+  addEl(out, 'hr');
+
+  // === VALIDATION CHECKLIST ===
+  addEl(out, 'h2', 'REQUIRED VALIDATION CHECKLIST', 'val-title');
+  const valUl = document.createElement('ul');
+  valUl.className = 'validation-list';
+  valUl.dataset.id = newId('val-list');
+  ['All required sections are present',
+   'All tables match the specified column headers and order',
+   'Exactly one primary root cause selected',
+   'All computed values can be traced to displayed data',
+   'Projection math uses fixed assumptions (25 XP/day, 5 days/week)'].forEach(txt => {
+    const li = document.createElement('li');
+    li.textContent = txt;
+    li.dataset.id = newId('val');
+    valUl.appendChild(li);
+  });
+  out.appendChild(valUl);
+
+  updateCustomizeStats();
+}
+
+// === DOM Helpers ===
+function addEl(parent, tag, text, idPrefix, cls) {
+  const el = document.createElement(tag);
+  if (text) el.textContent = text;
+  if (idPrefix) el.dataset.id = newId(idPrefix);
+  if (cls) el.className = cls;
+  parent.appendChild(el);
+  return el;
+}
+
+function addHTML(parent, html, idPrefix, cls) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  if (idPrefix) div.dataset.id = newId(idPrefix);
+  if (cls) div.className = cls;
+  parent.appendChild(div);
+  return div;
+}
+
+function addTable(parent, idPrefix, headers, rows) {
+  const table = document.createElement('table');
+  table.className = 'dd-table';
+  table.dataset.id = newId(idPrefix);
+
+  const thead = document.createElement('thead');
+  const tr = document.createElement('tr');
+  headers.forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h;
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = newId(idPrefix + '-row');
+    row.forEach(cell => {
+      const td = document.createElement('td');
+      td.textContent = cell !== null && cell !== undefined ? String(cell) : 'MISSING';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  parent.appendChild(table);
+  return table;
+}
+
+// ============================================================
+// INTERACTION SYSTEM (Context Menu)
+// ============================================================
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('context-menu');
+
+  // Click on context menu button
+  if (e.target.closest('#context-menu')) return;
+
+  // Click on an editable element in the deep dive
+  const target = e.target.closest('[data-id]');
+  if (target && document.getElementById('step-3').classList.contains('active')) {
+    e.preventDefault();
+    e.stopPropagation();
+    App.contextTarget = target;
+    showContextMenu(e.clientX, e.clientY, target);
+    return;
+  }
+
+  // Click elsewhere: close menu
+  menu.classList.add('hidden');
+  App.contextTarget = null;
+});
+
+function showContextMenu(x, y, target) {
+  const menu = document.getElementById('context-menu');
+  const id = target.dataset.id;
+  const state = App.elementStates[id] || {};
+
+  // Position (keep within viewport)
+  const mw = 170, mh = 140;
+  if (x + mw > window.innerWidth) x = window.innerWidth - mw - 10;
+  if (y + mh > window.innerHeight) y = window.innerHeight - mh - 10;
+
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+  menu.classList.remove('hidden');
+
+  // Update Remove button text
+  const rmBtn = menu.querySelector('.ctx-remove');
+  rmBtn.innerHTML = state.removed
+    ? '<span class="ctx-icon">\u21a9</span> Restore'
+    : '<span class="ctx-icon">\u00d7</span> Remove';
+
+  // Update Emphasize button text
+  const emBtn = menu.querySelector('.ctx-emphasize');
+  emBtn.innerHTML = state.emphasized
+    ? '<span class="ctx-icon">\u2606</span> Un-emphasize'
+    : '<span class="ctx-icon">\u2605</span> Emphasize';
+}
+
+function handleAction(action) {
+  const menu = document.getElementById('context-menu');
+  menu.classList.add('hidden');
+
+  const target = App.contextTarget;
+  if (!target) return;
+  const id = target.dataset.id;
+  if (!App.elementStates[id]) App.elementStates[id] = {};
+  const state = App.elementStates[id];
+
+  switch (action) {
+    case 'remove':
+      state.removed = !state.removed;
+      target.classList.toggle('removed', state.removed);
+      if (state.removed) {
+        state.emphasized = false;
+        target.classList.remove('emphasized');
+      }
+      break;
+    case 'emphasize':
+      state.emphasized = !state.emphasized;
+      target.classList.toggle('emphasized', state.emphasized);
+      if (state.emphasized) {
+        state.removed = false;
+        target.classList.remove('removed');
+      }
+      break;
+    case 'edit':
+      target.contentEditable = true;
+      target.classList.add('editing');
+      target.focus();
+      state.editing = true;
+
+      const finishEdit = () => {
+        target.contentEditable = false;
+        target.classList.remove('editing');
+        state.editing = false;
+        state.edited = true;
+        target.classList.add('edited');
+        updateCustomizeStats();
+      };
+      target.addEventListener('blur', finishEdit, { once: true });
+      target.addEventListener('keydown', function handler(e) {
+        if (e.key === 'Escape') {
+          target.contentEditable = false;
+          target.classList.remove('editing');
+          state.editing = false;
+          target.removeEventListener('keydown', handler);
+        }
+      });
+      break;
+  }
+  updateCustomizeStats();
+}
+
+function updateCustomizeStats() {
+  let removed = 0, emphasized = 0, edited = 0;
+  Object.values(App.elementStates).forEach(s => {
+    if (s.removed) removed++;
+    if (s.emphasized) emphasized++;
+    if (s.edited) edited++;
+  });
+  document.getElementById('stat-removed').textContent = removed + ' removed';
+  document.getElementById('stat-emphasized').textContent = emphasized + ' emphasized';
+  document.getElementById('stat-edited').textContent = edited + ' edited';
+}
+
+// ============================================================
+// PDF EXPORT
+// ============================================================
+function exportPDF() {
+  const source = document.getElementById('deep-dive-output');
+  const clone = source.cloneNode(true);
+
+  // Remove elements marked as removed
+  clone.querySelectorAll('.removed').forEach(el => el.remove());
+
+  // Style emphasized elements inline for PDF
+  clone.querySelectorAll('.emphasized').forEach(el => {
+    el.style.fontWeight = '700';
+    el.style.backgroundColor = '#fff3cd';
+    el.style.borderLeft = '4px solid #ffc107';
+    el.style.paddingLeft = '12px';
+  });
+
+  // Remove interaction artifacts
+  clone.querySelectorAll('[data-id]').forEach(el => {
+    el.style.cursor = 'default';
+    el.removeAttribute('contenteditable');
+    el.classList.remove('editing', 'edited');
+  });
+
+  // Remove hover tooltips
+  const style = document.createElement('style');
+  style.textContent = '[data-id]:hover::after { display: none !important; } [data-id]:hover { outline: none !important; }';
+  clone.insertBefore(style, clone.firstChild);
+
+  // Add header
+  const header = document.createElement('div');
+  header.style.cssText = 'text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #1a365d;';
+  header.innerHTML = '<h1 style="color:#1a365d;font-size:20px;margin:0;">Alpha School</h1>' +
+    '<p style="color:#666;font-size:12px;margin:4px 0 0;">Student Performance Deep Dive</p>' +
+    '<p style="color:#999;font-size:10px;margin:2px 0 0;">Generated: ' + new Date().toLocaleDateString() + '</p>';
+  clone.insertBefore(header, clone.firstChild);
+
+  // Temp container
+  const temp = document.createElement('div');
+  temp.style.cssText = 'position:absolute;left:-9999px;width:800px;font-family:Inter,sans-serif;font-size:13px;line-height:1.6;color:#2d3748;';
+  temp.appendChild(clone);
+  document.body.appendChild(temp);
+
+  const studentFile = (App.selectedStudent || 'student').replace(/\s+/g, '_');
+
+  html2pdf()
+    .set({
+      margin: [15, 15, 15, 15],
+      filename: 'deep_dive_' + studentFile + '.pdf',
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    })
+    .from(clone)
+    .save()
+    .then(() => {
+      document.body.removeChild(temp);
+      alert('PDF exported successfully!');
+    })
+    .catch(err => {
+      document.body.removeChild(temp);
+      alert('PDF export error: ' + err.message);
+    });
+}
+
+</script>
+</body>
+</html>

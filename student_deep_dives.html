@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Deep Dives &mdash; Alpha School</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ============================================
+   Student Deep Dives Directory Styles
+   ============================================ */
+
+/* Navigation bar (same as index.html) */
+.site-nav { display:flex; gap:0; background:white; border:1px solid var(--gray-border); border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:24px; }
+.site-nav a { flex:1; padding:10px 12px; text-align:center; font-size:12px; font-weight:600; text-decoration:none; color:var(--gray); border-right:1px solid var(--gray-border); transition:all 0.2s; }
+.site-nav a:last-child { border-right:none; }
+.site-nav a:hover { background:var(--primary-light); color:var(--primary); }
+.site-nav a.active { background:var(--primary); color:white; }
+.site-nav .nav-label { display:block; font-size:10px; font-weight:400; opacity:0.8; margin-top:2px; }
+
+/* Search & filter controls */
+.controls { margin-bottom:24px; }
+.search-box { width:100%; padding:12px 16px; font-size:14px; border:1px solid var(--gray-border); border-radius:10px; background:white; box-shadow:0 1px 3px rgba(0,0,0,0.06); outline:none; transition:border-color 0.2s; }
+.search-box:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,107,138,0.12); }
+.search-box::placeholder { color:#b0b8bf; }
+
+.grade-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.grade-pill { padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--gray-border); background:white; color:var(--gray); cursor:pointer; transition:all 0.2s; user-select:none; }
+.grade-pill:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-light); }
+.grade-pill.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+/* Student directory table */
+.dir-table { width:100%; border-collapse:collapse; font-size:13px; }
+.dir-table th { background:var(--primary); color:white; padding:10px 12px; text-align:left; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; position:sticky; top:0; z-index:2; }
+.dir-table td { padding:10px 12px; border-bottom:1px solid var(--gray-light); vertical-align:middle; }
+.dir-table tr:hover { background:var(--primary-light); }
+.dir-table .student-name { font-weight:600; color:var(--text); }
+.dir-table .grade-cell { font-weight:600; text-align:center; min-width:50px; }
+
+/* Format badges */
+.format-badge { display:inline-block; padding:2px 10px; border-radius:10px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+.format-badge.docx { background:var(--blue-bg); color:var(--blue); }
+.format-badge.md { background:#e0f2f1; color:#00897b; }
+
+/* Download link */
+.dl-link { display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; color:var(--primary); border:1px solid var(--primary); transition:all 0.2s; }
+.dl-link:hover { background:var(--primary); color:white; }
+.dl-link svg { width:14px; height:14px; flex-shrink:0; }
+
+/* Results count */
+.results-count { font-size:13px; color:var(--gray); margin-bottom:12px; font-weight:500; }
+
+/* Table scroll wrapper */
+.table-wrap { border:1px solid var(--gray-border); border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.table-scroll { max-height:700px; overflow-y:auto; }
+
+/* No results message */
+.no-results { text-align:center; padding:40px 20px; color:var(--gray); font-size:14px; display:none; }
+
+/* Footer note */
+.footer-note { font-size:12px; color:var(--gray); text-align:center; padding:20px 0 8px; line-height:1.6; }
+
+/* Print */
+@media print {
+  .site-nav, .controls { display:none; }
+  .table-scroll { max-height:none; overflow:visible; }
+}
+
+/* Mobile responsive */
+@media (max-width:768px) {
+  .site-nav { flex-wrap:wrap; }
+  .site-nav a { flex:none; width:33.33%; }
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .dir-table { font-size:12px; }
+  .dir-table th, .dir-table td { padding:8px 6px; }
+  .dl-link { padding:4px 10px; font-size:11px; }
+  .dl-link span.dl-text { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Student Deep Dives</h1>
+  <div class="header-sub">Individual academic profiles for Alpha School students &mdash; progress, assessments, MAP alignment, and action plans</div>
+</div>
+
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SITE NAVIGATION -->
+<!-- ============================================ -->
+<nav class="site-nav">
+  <a href="index.html">Executive Summary<span class="nav-label">Gap Analysis</span></a>
+  <a href="test_quality_dashboard.html">Test Quality<span class="nav-label">Cognitive Complexity</span></a>
+  <a href="MAP_Readiness_Dashboard_v2.html">MAP Readiness<span class="nav-label">Standards &amp; Performance</span></a>
+  <a href="NGSS_Skills_Matrix.html">NGSS Matrix<span class="nav-label">228 Standards</span></a>
+  <a href="MAP_Alpha_Correlation.html">MAP vs Alpha<span class="nav-label">Correlation</span></a>
+  <a href="student_deep_dives.html" class="active">Student Deep Dives<span class="nav-label">99 Profiles</span></a>
+</nav>
+
+<!-- ============================================ -->
+<!-- STATS ROW -->
+<!-- ============================================ -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-number" style="color:var(--primary);">99</div>
+    <div class="stat-label">Student Profiles</div>
+    <div class="stat-sub">91 DOCX + 8 MD-only</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color:var(--blue);">2&ndash;9</div>
+    <div class="stat-label">Grades Covered</div>
+    <div class="stat-sub">Full middle school span</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color:var(--green);">8</div>
+    <div class="stat-label">Sections per Profile</div>
+    <div class="stat-sub">Snapshot through Appendix</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="color:var(--yellow);">Feb</div>
+    <div class="stat-label">Last Updated</div>
+    <div class="stat-sub">February 2026</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- WHAT DEEP DIVES CONTAIN -->
+<!-- ============================================ -->
+<div class="callout info">
+  <h3>What Each Deep Dive Contains</h3>
+  <p>Each deep dive is a comprehensive academic profile covering: student snapshot and placement, course progress and effort metrics, assessment and practice signals, learning velocity and growth analysis, MAP Science alignment, evidence quality notes, specific recommendations, and supporting data appendix.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- SEARCH & FILTER -->
+<!-- ============================================ -->
+<div class="controls">
+  <input type="text" class="search-box" id="searchInput" placeholder="Search by student name...">
+  <div class="grade-pills" id="gradePills">
+    <span class="grade-pill active" data-grade="all">All</span>
+    <span class="grade-pill" data-grade="2">G2</span>
+    <span class="grade-pill" data-grade="3">G3</span>
+    <span class="grade-pill" data-grade="4">G4</span>
+    <span class="grade-pill" data-grade="5">G5</span>
+    <span class="grade-pill" data-grade="6">G6</span>
+    <span class="grade-pill" data-grade="7">G7</span>
+    <span class="grade-pill" data-grade="8">G8</span>
+    <span class="grade-pill" data-grade="9">G9</span>
+    <span class="grade-pill" data-grade="unknown">Unknown</span>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- STUDENT DIRECTORY -->
+<!-- ============================================ -->
+<div class="card" style="padding:0;">
+  <div style="padding:16px 24px 8px;">
+    <h2 style="margin-bottom:0;">Student Directory</h2>
+    <div class="results-count" id="resultsCount">Showing 99 of 99 students</div>
+  </div>
+  <div class="table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+    <div class="table-scroll" id="tableScroll">
+      <table class="dir-table" id="studentTable">
+        <thead>
+          <tr>
+            <th style="width:40%;">Student Name</th>
+            <th style="width:12%; text-align:center;">Grade</th>
+            <th style="width:14%; text-align:center;">Format</th>
+            <th style="width:34%;">Download</th>
+          </tr>
+        </thead>
+        <tbody id="studentBody"></tbody>
+      </table>
+    </div>
+    <div class="no-results" id="noResults">No students match your search.</div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- FORMAT NOTE -->
+<!-- ============================================ -->
+<div class="key-box" style="margin-top:4px;">
+  <h3>Download Formats</h3>
+  <div class="key-grid two-col">
+    <div class="key-item">
+      <div class="key-dot" style="background:var(--blue);"></div>
+      <div><span class="key-label">DOCX</span> &mdash; <span class="key-desc">Microsoft Word format. Open in Microsoft Word, Google Docs, or any compatible word processor.</span></div>
+    </div>
+    <div class="key-item">
+      <div class="key-dot" style="background:#00897b;"></div>
+      <div><span class="key-label">MD</span> &mdash; <span class="key-desc">Markdown format. Open in any text editor, VS Code, or view on GitHub.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Deep dives are available as .docx (Microsoft Word) or .md (Markdown) files.<br>
+  Open .docx files in Microsoft Word, Google Docs, or any compatible word processor.
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================
+// Student Data Array (99 students)
+// ============================================
+// Each entry: [first, last, grade (number or null), format ("docx" or "md")]
+// Sorted alphabetically by last name in the array below.
+
+const students = [
+  { first:"Ava", last:"Ackerson", grade:5, format:"docx" },
+  { first:"Jacob", last:"Atamas", grade:6, format:"docx" },
+  { first:"Byron", last:"Attridge", grade:7, format:"docx" },
+  { first:"Sydney", last:"Barba", grade:9, format:"docx" },
+  { first:"Colton", last:"Bellamy", grade:8, format:"docx" },
+  { first:"Rhys", last:"Bjorendahl", grade:8, format:"docx" },
+  { first:"Greyson", last:"Boyle", grade:null, format:"docx" },
+  { first:"Rania", last:"Caberwal", grade:7, format:"docx" },
+  { first:"Austin", last:"Caldbeck", grade:3, format:"docx" },
+  { first:"Parker", last:"Carlson", grade:null, format:"docx" },
+  { first:"Connor", last:"Cason", grade:5, format:"docx" },
+  { first:"Aidan", last:"Chase", grade:8, format:"docx" },
+  { first:"Lydia", last:"Cobas", grade:6, format:"docx" },
+  { first:"Sebastian", last:"Cobas", grade:6, format:"docx" },
+  { first:"Felix", last:"Cole", grade:7, format:"docx" },
+  { first:"Abigail", last:"Constain", grade:8, format:"docx" },
+  { first:"Emma", last:"Correa", grade:7, format:"docx" },
+  { first:"Alexandria", last:"DeMaree", grade:null, format:"docx" },
+  { first:"Ben", last:"Deamorim", grade:6, format:"docx" },
+  { first:"Benjamin", last:"Doherty", grade:8, format:"docx" },
+  { first:"Jason", last:"Dziuba", grade:6, format:"docx" },
+  { first:"Garret", last:"Farnham", grade:6, format:"docx" },
+  { first:"Griffin", last:"Farnham", grade:3, format:"docx" },
+  { first:"Sol", last:"Felicevich", grade:6, format:"docx" },
+  { first:"Camila", last:"Fernandez", grade:7, format:"docx" },
+  { first:"Tomas", last:"Fernandez", grade:6, format:"docx" },
+  { first:"Blake", last:"Flores", grade:7, format:"docx" },
+  { first:"Evelyn", last:"Gabler", grade:6, format:"docx" },
+  { first:"Sander", last:"Gabler", grade:8, format:"docx" },
+  { first:"Lily", last:"Gray", grade:7, format:"docx" },
+  { first:"Maya", last:"Gries-Yano", grade:3, format:"docx" },
+  { first:"Noah", last:"Hastings", grade:4, format:"docx" },
+  { first:"Vayda", last:"Hendle", grade:null, format:"docx" },
+  { first:"Catherine", last:"Henry", grade:4, format:"docx" },
+  { first:"Jacob", last:"Hinojosa", grade:null, format:"docx" },
+  { first:"Olivia", last:"Hirsch", grade:8, format:"docx" },
+  { first:"Jude", last:"Hock", grade:8, format:"docx" },
+  { first:"Conan", last:"Hogan", grade:2, format:"docx" },
+  { first:"Abigail", last:"Hunter", grade:3, format:"docx" },
+  { first:"Theo", last:"Jenkins", grade:8, format:"docx" },
+  { first:"Marshall", last:"Jensen", grade:4, format:"docx" },
+  { first:"Elias", last:"Kellemen", grade:6, format:"docx" },
+  { first:"Aileya", last:"Klinefelter", grade:8, format:"docx" },
+  { first:"Brooks", last:"Knight", grade:3, format:"docx" },
+  { first:"Naomi", last:"Kocek", grade:8, format:"docx" },
+  { first:"Love", last:"Lalla-Pagan", grade:7, format:"docx" },
+  { first:"Adrienne", last:"Laswell", grade:null, format:"docx" },
+  { first:"Annabelle", last:"Lembo", grade:4, format:"docx" },
+  { first:"Jay", last:"Lever", grade:4, format:"docx" },
+  { first:"Ozzie", last:"Lowe", grade:6, format:"docx" },
+  { first:"Eddie", last:"Margain-Junco", grade:7, format:"docx" },
+  { first:"Ross", last:"Margraves", grade:null, format:"docx" },
+  { first:"Gavyn", last:"Martinez", grade:8, format:"docx" },
+  { first:"Penelope", last:"Marty", grade:8, format:"docx" },
+  { first:"Emori", last:"McDaniel", grade:4, format:"docx" },
+  { first:"Corinne", last:"Mcgowan", grade:3, format:"docx" },
+  { first:"Eden", last:"Meave", grade:5, format:"docx" },
+  { first:"Eva", last:"Mentgen", grade:8, format:"docx" },
+  { first:"Jason", last:"Montagna", grade:5, format:"docx" },
+  { first:"Luna", last:"Montagna", grade:4, format:"docx" },
+  { first:"Nicholas", last:"Mora", grade:6, format:"docx" },
+  { first:"Bennett", last:"Morris", grade:8, format:"docx" },
+  { first:"Sofia", last:"Page", grade:6, format:"docx" },
+  { first:"Thomas", last:"Page", grade:3, format:"docx" },
+  { first:"David", last:"Paul", grade:4, format:"docx" },
+  { first:"Shepperd", last:"Pfiester", grade:7, format:"docx" },
+  { first:"Tate", last:"Price", grade:5, format:"docx" },
+  { first:"Dario", last:"Ramos", grade:7, format:"docx" },
+  { first:"Blake", last:"Richheimer", grade:3, format:"docx" },
+  { first:"Elaina", last:"Robertson", grade:5, format:"docx" },
+  { first:"Rhys", last:"Robertson", grade:7, format:"docx" },
+  { first:"June", last:"Rockefeller", grade:8, format:"docx" },
+  { first:"Nadine", last:"Romman", grade:6, format:"docx" },
+  { first:"Mateo", last:"Sanchez", grade:4, format:"docx" },
+  { first:"David", last:"Sheldon", grade:6, format:"docx" },
+  { first:"Jaxon", last:"Siers", grade:5, format:"docx" },
+  { first:"Lukas", last:"Siers", grade:5, format:"docx" },
+  { first:"Eli", last:"Slifka", grade:8, format:"docx" },
+  { first:"Emma", last:"Slifka", grade:8, format:"docx" },
+  { first:"Beau", last:"Stern", grade:5, format:"docx" },
+  { first:"Kai", last:"Sticker", grade:7, format:"docx" },
+  { first:"Kaiden", last:"Szpitalak", grade:6, format:"docx" },
+  { first:"Carter", last:"Tinkler", grade:5, format:"docx" },
+  { first:"Brooke", last:"Tracy", grade:4, format:"docx" },
+  { first:"George", last:"Troxell", grade:4, format:"docx" },
+  { first:"Cameron", last:"White", grade:null, format:"docx" },
+  { first:"Aila", last:"Wong", grade:7, format:"docx" },
+  { first:"Austin", last:"Wong", grade:3, format:"docx" },
+  { first:"Ethan", last:"Wong", grade:8, format:"docx" },
+  { first:"Rivers", last:"Yong", grade:null, format:"docx" },
+  { first:"Brady", last:"York", grade:4, format:"docx" },
+  // MD-only students (8)
+  { first:"Savannah", last:"Marrero", grade:8, format:"md" },
+  { first:"Gwendolyn", last:"Meegan", grade:8, format:"md" },
+  { first:"Valentina", last:"Melendez", grade:null, format:"md" },
+  { first:"Aoife", last:"Moore", grade:null, format:"md" },
+  { first:"Olivia", last:"Orloff", grade:4, format:"md" },
+  { first:"Parker", last:"Pesek", grade:null, format:"md" },
+  { first:"Roarke", last:"Radia", grade:null, format:"md" },
+  { first:"Kanhai", last:"Shah", grade:null, format:"md" }
+];
+
+// Sort alphabetically by last name, then first name
+students.sort((a, b) => {
+  const lastCmp = a.last.localeCompare(b.last, undefined, { sensitivity:'base' });
+  if (lastCmp !== 0) return lastCmp;
+  return a.first.localeCompare(b.first, undefined, { sensitivity:'base' });
+});
+
+// Download icon SVG
+const dlIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+// Build file URL
+function fileUrl(last, first, format) {
+  return 'deep%20dives%20MS/deep_dive_' + encodeURIComponent(last) + '_' + encodeURIComponent(first) + '.' + format;
+}
+
+// Render table
+const tbody = document.getElementById('studentBody');
+const resultsCount = document.getElementById('resultsCount');
+const noResults = document.getElementById('noResults');
+const searchInput = document.getElementById('searchInput');
+const gradePills = document.querySelectorAll('.grade-pill');
+let activeGrade = 'all';
+
+function renderTable() {
+  const query = searchInput.value.trim().toLowerCase();
+  let filtered = students.filter(s => {
+    // Grade filter
+    if (activeGrade !== 'all') {
+      if (activeGrade === 'unknown') {
+        if (s.grade !== null) return false;
+      } else {
+        if (s.grade !== parseInt(activeGrade)) return false;
+      }
+    }
+    // Search filter
+    if (query) {
+      const fullName = (s.first + ' ' + s.last).toLowerCase();
+      const reverseName = (s.last + ' ' + s.first).toLowerCase();
+      if (!fullName.includes(query) && !reverseName.includes(query)) return false;
+    }
+    return true;
+  });
+
+  let html = '';
+  filtered.forEach(s => {
+    const gradeDisplay = s.grade !== null ? s.grade : '&mdash;';
+    const badgeClass = s.format === 'docx' ? 'docx' : 'md';
+    const url = fileUrl(s.last, s.first, s.format);
+    const ext = s.format.toUpperCase();
+    html += '<tr data-grade="' + (s.grade !== null ? s.grade : 'unknown') + '">'
+      + '<td class="student-name">' + s.first + ' ' + s.last + '</td>'
+      + '<td class="grade-cell">' + gradeDisplay + '</td>'
+      + '<td style="text-align:center;"><span class="format-badge ' + badgeClass + '">' + ext + '</span></td>'
+      + '<td><a class="dl-link" href="' + url + '" download>' + dlIcon + '<span class="dl-text">Download ' + ext + '</span></a></td>'
+      + '</tr>';
+  });
+
+  tbody.innerHTML = html;
+  resultsCount.textContent = 'Showing ' + filtered.length + ' of ' + students.length + ' students';
+  noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+}
+
+// Grade pill click
+gradePills.forEach(pill => {
+  pill.addEventListener('click', function() {
+    gradePills.forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+    activeGrade = this.getAttribute('data-grade');
+    renderTable();
+  });
+});
+
+// Search input
+searchInput.addEventListener('input', renderTable);
+
+// Initial render
+renderTable();
+</script>
+
+</body>
+</html>
