@@ -12,7 +12,7 @@
 .site-nav a:hover { background:var(--primary-light); color:var(--primary); }
 .site-nav a.active { background:var(--primary); color:white; }
 .site-nav .nav-label { display:block; font-size:10px; font-weight:400; opacity:0.8; margin-top:2px; }
-@media (max-width:768px) { .site-nav { flex-wrap:wrap; } .site-nav a { flex:none; width:33.33%; } }
+@media (max-width:768px) { .site-nav { flex-wrap:wrap; } .site-nav a { flex:none; width:33.33%; } #gradeResources { flex-wrap:wrap; } #gradeResources span:last-child { display:none; } }
 </style>
 </head>
 <body>
@@ -41,6 +41,14 @@
     <a class="grade-tab" href="#" onclick="switchGrade(6);return false;" id="tab6">Grade 6<span class="tab-sub">16 tests</span></a>
     <a class="grade-tab" href="#" onclick="switchGrade(7);return false;" id="tab7">Grade 7<span class="tab-sub">20 tests</span></a>
     <a class="grade-tab" href="#" onclick="switchGrade(8);return false;" id="tab8">Grade 8<span class="tab-sub">16 tests</span></a>
+  </div>
+
+  <!-- Grade Deep Dive Links -->
+  <div id="gradeResources" style="display:flex;gap:12px;align-items:center;margin-bottom:16px;padding:12px 16px;background:var(--primary-light);border:1px solid var(--primary);border-radius:10px;">
+    <span style="font-size:13px;font-weight:700;color:var(--primary);" id="gradeResourceLabel">Grade 3 Deep Dives:</span>
+    <a id="coverageLink" href="grade3/G3_Coverage_Comparison.html" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--primary);color:white;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">&#x1F9E9; Standards Coverage Matrix</a>
+    <a href="#testTable" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:white;color:var(--primary);border:1px solid var(--primary);border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='white'">&#x1F50D; Individual Test Dashboards</a>
+    <span style="font-size:11px;color:var(--gray);margin-left:auto;">Click any test name below for its full evaluation</span>
   </div>
 
   <!-- Summary Stats -->
@@ -294,6 +302,9 @@ function switchGrade(grade) {
   currentGrade = grade;
   document.querySelectorAll('.grade-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab' + grade).classList.add('active');
+  // Update grade resource links
+  document.getElementById('gradeResourceLabel').textContent = 'Grade ' + grade + ' Deep Dives:';
+  document.getElementById('coverageLink').href = 'grade' + grade + '/G' + grade + '_Coverage_Comparison.html';
   renderAll();
 }
 
