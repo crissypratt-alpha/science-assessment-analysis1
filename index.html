@@ -95,14 +95,6 @@
 .timeline-content { font-size:13px; line-height:1.6; }
 .timeline-content strong { color:var(--text); }
 
-/* Navigation cards grid */
-.nav-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.nav-card { background:white; border:1px solid var(--gray-border); border-radius:12px; padding:20px; text-decoration:none; color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,0.06); transition:all 0.2s; display:block; }
-.nav-card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.12); transform:translateY(-2px); border-color:var(--primary); }
-.nav-card-icon { font-size:28px; margin-bottom:8px; }
-.nav-card-title { font-size:15px; font-weight:700; color:var(--primary); margin-bottom:4px; }
-.nav-card-desc { font-size:12px; color:var(--gray); line-height:1.5; }
-
 /* Collapsible sections */
 .collapsible-header { cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
 .collapsible-header::after { content:'+ Expand'; font-size:11px; color:var(--primary); font-weight:600; background:var(--primary-light); padding:3px 10px; border-radius:10px; }
@@ -133,7 +125,6 @@
 @media (max-width:768px) {
   .big-stats { grid-template-columns:repeat(2,1fr); }
   .hero-three { grid-template-columns:1fr; }
-  .nav-grid { grid-template-columns:repeat(2,1fr); }
   .site-nav { flex-wrap:wrap; }
   .site-nav a { flex:none; width:33.33%; }
   .grade-bar-row { grid-template-columns:60px 1fr 50px; }
@@ -944,44 +935,13 @@
   </ul>
 </div>
 
-<!-- ============================================ -->
-<!-- EXPLORE THE DATA -->
-<!-- ============================================ -->
-<div class="card">
-  <h2>Explore the Detailed Data</h2>
-  <div class="card-subtitle">Drill into the analysis behind this summary</div>
-  <div class="nav-grid">
-    <a class="nav-card" href="test_quality_dashboard.html">
-      <div class="nav-card-icon">&#x1F50D;</div>
-      <div class="nav-card-title">Test Quality Dashboard</div>
-      <div class="nav-card-desc">Cognitive complexity scores for all 100 tests across G3&ndash;G8, with individual test deep dives and per-grade standards coverage matrices.</div>
-    </a>
-    <a class="nav-card" href="MAP_Readiness_Dashboard_v2.html">
-      <div class="nav-card-icon">&#x1F4CA;</div>
-      <div class="nav-card-title">MAP Readiness Dashboard</div>
-      <div class="nav-card-desc">Test inventory, question-level performance data, and per-standard student accuracy across all grade levels.</div>
-    </a>
-    <a class="nav-card" href="NGSS_Skills_Matrix.html">
-      <div class="nav-card-icon">&#x1F9E9;</div>
-      <div class="nav-card-title">NGSS Skills Matrix</div>
-      <div class="nav-card-desc">All 228 NGSS standards in one view. See testing status, curriculum coverage, and accuracy for every standard at every grade.</div>
-    </a>
-    <a class="nav-card" href="MAP_Alpha_Correlation.html">
-      <div class="nav-card-icon">&#x1F4C8;</div>
-      <div class="nav-card-title">MAP vs Alpha Correlation</div>
-      <div class="nav-card-desc">How well do Alpha test scores predict MAP Science performance? 89-student scatter plot, per-grade correlations, and performance tier analysis.</div>
-    </a>
-    <a class="nav-card" href="student_deep_dives.html">
-      <div class="nav-card-icon">&#x1F393;</div>
-      <div class="nav-card-title">Student Deep Dives</div>
-      <div class="nav-card-desc">Individual academic profiles for 98 students: progress, assessments, MAP alignment, growth metrics, and action plans.</div>
-    </a>
-  </div>
-</div>
-
 <p style="font-size:11px;color:var(--gray);text-align:center;padding:16px 0;margin-top:8px;">
   Generated from Alpha School's test question database (100 tests, 3,093 questions evaluated), 91 student MAP Science profiles (Winter 2025&ndash;26), 768 individual Alpha test results across 89 matched students, curriculum skill plans (MobyMax G3&ndash;5, Nice Academy G6&ndash;8), and cognitive complexity evaluation using the Achieve Assessment Framework (2018/2019) with four indicators: Scenario Quality, Science &amp; Engineering Practices, Disciplinary Core Ideas, and Crosscutting Concepts.
 </p>
+
+<div style="text-align:center;padding:20px 0 8px;">
+  <a href="index.html" style="font-size:12px;color:var(--gray);text-decoration:none;font-weight:600;letter-spacing:0.5px;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">&#x2302; Home</a>
+</div>
 
 </div><!-- /container -->
 
